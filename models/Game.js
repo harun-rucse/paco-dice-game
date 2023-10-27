@@ -3,7 +3,7 @@ const { Schema, model } = mongoose;
 
 const gameSchema = new Schema(
   {
-    playerAddress: {
+    publicKey: {
       type: String,
       required: true,
     },
@@ -15,7 +15,7 @@ const gameSchema = new Schema(
       type: Number,
       required: true,
     },
-    betNumber: {
+    prediction: {
       type: Number,
       required: true,
     },

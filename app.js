@@ -1,28 +1,34 @@
 const express = require("express");
 const cors = require("cors");
-const dotenv = require("dotenv");
-dotenv.config({ path: `${__dirname}/.env.${process.env.NODE_ENV}` });
-const controllers = require("./controllers");
-const db = require("./config/db");
+const accountController = require("./controllers/account");
+const authController = require("./controllers/auth");
+const gameController = require("./controllers/game");
+const { auth } = require("./middlewares/auth");
+const globalErrorHandler = require("./controllers/error");
+const AppError = require("./utils/app-error");
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// database connection
-db()
-  .then(() => console.log("DB Connect successfull"))
-  .catch((err) => console.log("DB Connect failed!", err));
-
 // routes
-app.get("/api/hello", controllers.hello);
-app.post("/api/register", controllers.register);
-app.post("/api/login", controllers.login);
-app.post("/api/games", controllers.createGame);
-app.get("/api/games", controllers.getGamesHistory);
+app.get("/api/hello", gameController.hello);
+app.post("/api/auth/register", authController.register);
+app.post("/api/auth/login", authController.login);
+app.post("/api/games", auth, gameController.createGame);
+app.get("/api/games", auth, gameController.getGamesHistory);
+app.patch("/api/account/deposite", auth, accountController.deposite);
+app.patch("/api/account/withdraw", auth, accountController.withdraw);
 
-const PORT = process.env.PORT || 4000;
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+app.all("*", (req, res, next) => {
+  next(
+    new AppError(
+      `Can't find ${req.method} ${req.originalUrl} on this server.`,
+      404
+    )
+  );
 });
+
+app.use(globalErrorHandler);
+
+module.exports = app;

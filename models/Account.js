@@ -24,6 +24,26 @@ const accountSchema = new Schema(
       type: String,
       required: true,
     },
+    btc: {
+      type: Number,
+      default: 0,
+    },
+    usdt: {
+      type: Number,
+      default: 0,
+    },
+    paco: {
+      type: Number,
+      default: 0,
+    },
+    eth: {
+      type: Number,
+      default: 0,
+    },
+    bnb: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,
