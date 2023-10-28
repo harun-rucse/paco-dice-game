@@ -1,33 +1,16 @@
-import { Link } from "react-router-dom";
-import { ConnectKitButton } from "connectkit";
-import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 import { useState } from "react";
-
-function BalanceItem({ name, value, imgUrl, onSelect, onHide }) {
-  return (
-    <div
-      onClick={() => {
-        onSelect({ name, imgUrl, value });
-        onHide(false);
-      }}
-      className="flex items-center justify-between bg-[#4d316c] transition-all hover:scale-105 px-3 py-1 rounded-lg cursor-pointer"
-    >
-      <div className="flex items-center gap-2">
-        <img src={imgUrl} alt="" className="h-7" />
-        <strong className="text-gray-300 font-extrabold">{name}</strong>
-      </div>
-      <strong className="text-white font-extrabold">{value}</strong>
-    </div>
-  );
-}
+import { Link } from "react-router-dom";
+import { MdOutlineKeyboardArrowDown } from "react-icons/md";
+import { FiLogOut, FiLogIn } from "react-icons/fi";
+import Modal from "./Modal";
+import Transaction from "../features/transactions/Transaction";
+import Authentication from "../features/authentication/Authentication";
+import Balance from "./Balance";
+import { useCurrentUser } from "../features/authentication/useCurrentUser";
 
 function Header() {
-  const [showBalance, setShowBalance] = useState(false);
-  const [currentBalance, setCurrentBalance] = useState({
-    name: "BTC",
-    value: "0.10189005",
-    imgUrl: "/tokens/btc.png",
-  });
+  const [showMenu, setShowMenu] = useState(false);
+  const { isAuthenticated } = useCurrentUser();
 
   return (
     <header className="p-0">
@@ -70,105 +53,61 @@ function Header() {
         </div>
         <div className="flex items-center justify-between md:justify-end gap-2 w-full md:w-fit">
           {/* Balance button */}
-          <div className="relative">
-            <button
-              onClick={() => setShowBalance((show) => !show)}
-              className="flex items-center justify-between text-white gap-2 bg-[#2e2550] rounded-2xl px-2 md:px-4 py-1 md:py-2 shadow-[0px_4px_4px_0px_#00000040]"
-            >
-              <img src={currentBalance.imgUrl} alt="" className="h-6 md:h-7" />
-              <span className="uppercase font-extrabold text-sm md:text-base">
-                {currentBalance.value}
-              </span>
-              <MdOutlineKeyboardArrowDown />
-            </button>
-
-            {showBalance && (
-              <div className="absolute w-[18rem] top-12 left-0 bg-[#3c2f61] p-2 rounded-2xl space-y-2 z-[999] shadow-md">
-                <BalanceItem
-                  name="BTC"
-                  value="0.10189005"
-                  imgUrl="/tokens/btc.png"
-                  onHide={setShowBalance}
-                  onSelect={setCurrentBalance}
-                />
-
-                <BalanceItem
-                  name="USDT"
-                  value="0.10189005"
-                  imgUrl="/tokens/usdt.png"
-                  onHide={setShowBalance}
-                  onSelect={setCurrentBalance}
-                />
-
-                <BalanceItem
-                  name="PACO"
-                  value="0.10189005"
-                  imgUrl="/tokens/paco.png"
-                  onHide={setShowBalance}
-                  onSelect={setCurrentBalance}
-                />
-
-                <BalanceItem
-                  name="ETH"
-                  value="0.10189005"
-                  imgUrl="/tokens/eth.png"
-                  onHide={setShowBalance}
-                  onSelect={setCurrentBalance}
-                />
-
-                <BalanceItem
-                  name="BNB"
-                  value="0.10189005"
-                  imgUrl="/tokens/bnb.png"
-                  onHide={setShowBalance}
-                  onSelect={setCurrentBalance}
-                />
-              </div>
-            )}
-          </div>
+          <Balance />
 
           {/* Wallet button */}
-          <button className="hidden md:flex items-center justify-between text-white gap-2 bg-[#d11f1f] rounded-2xl px-4 py-2 shadow-[0px_4px_4px_0px_#00000040]">
-            <img src="/icons/wallet.png" alt="" className="h-7 pt-1" />
-            <span className="uppercase font-extrabold text-base">Wallet</span>
-          </button>
+          <Modal>
+            <Modal.Open opens="wallet">
+              <button className="hidden md:flex items-center justify-between text-white gap-2 bg-[#d11f1f] rounded-2xl px-4 py-2 shadow-[0px_4px_4px_0px_#00000040]">
+                <img src="/icons/wallet.png" alt="" className="h-7 pt-1" />
+                <span className="uppercase font-extrabold text-base">
+                  Wallet
+                </span>
+              </button>
+            </Modal.Open>
+            <Modal.Body name="wallet">
+              <Transaction />
+            </Modal.Body>
+          </Modal>
 
-          {/* Connect wallet */}
-          <ConnectKitButton.Custom>
-            {({ isConnected, show, address }) => {
-              return (
-                <button
-                  onClick={show}
-                  className={
-                    isConnected &&
-                    "hidden md:block bg-[#2e2550] text-white text-sm md:text-base font-extrabold px-2 md:px-4 py-1 md:py-2 rounded-2xl shadow-[0px_4px_4px_0px_#00000040]"
-                  }
-                >
-                  {isConnected ? (
-                    address.slice(0, 6) + "..." + address.slice(-4)
-                  ) : (
-                    <button className="hidden md:flex items-center text-white gap-2 bg-[#2e2550] rounded-2xl px-2 md:px-4 py-1 md:py-2 shadow-[0px_4px_4px_0px_#00000040]">
-                      <span className="uppercase font-extrabold text-sm md:text-base">
-                        Connect
-                      </span>
-                      <img src="/icons/metamask.png" alt="" className="h-6" />
-                    </button>
-                  )}
-                </button>
-              );
-            }}
-          </ConnectKitButton.Custom>
-          {/* <Link to="/login" className="hidden md:block">
-            <button className="flex items-center text-white gap-2 bg-[#2e2550] rounded-2xl px-8 py-2 shadow-[0px_4px_4px_0px_#00000040]">
-              <span className="uppercase font-extrabold text-base">Login</span>
-            </button>
-          </Link> */}
-          <button className="flex items-center text-white gap-2 bg-[#2e2550] rounded-2xl p-2 shadow-[0px_4px_4px_0px_#00000040]">
-            <div className="w-8 h-8 rounded-full bg-[#d11f9f] flex justify-center items-center">
-              <img src="/slider-img.png" alt="" className="h-7" />
+          {/* Login/Register */}
+
+          {isAuthenticated ? (
+            <div className="relative">
+              <button
+                onClick={() => setShowMenu((show) => !show)}
+                className="flex items-center text-white gap-2 bg-[#2e2550] rounded-2xl p-2 shadow-[0px_4px_4px_0px_#00000040]"
+              >
+                <div className="w-8 h-8 rounded-full bg-[#d11f9f] flex justify-center items-center">
+                  <img src="/slider-img.png" alt="" className="h-7" />
+                </div>
+                <MdOutlineKeyboardArrowDown size={20} />
+              </button>
+
+              {showMenu && (
+                <div className="absolute w-[10rem] top-12 right-0 bg-[#3c2f61] p-2 rounded-2xl space-y-2 z-[999] shadow-md">
+                  <span className="text-white cursor-pointer px-2 uppercase text-sm font-bold flex items-center gap-2">
+                    <FiLogOut />
+                    Logout
+                  </span>
+                </div>
+              )}
             </div>
-            <MdOutlineKeyboardArrowDown size={20} />
-          </button>
+          ) : (
+            <Modal>
+              <Modal.Open opens="authentication">
+                <button className="items-center text-white gap-2 bg-[#2e2550] rounded-xl px-2 md:px-8 py-1 md:py-2 shadow-[0px_4px_4px_0px_#00000040]">
+                  <span className="uppercase font-extrabold text-base flex items-center gap-2">
+                    <FiLogIn />
+                    Login
+                  </span>
+                </button>
+              </Modal.Open>
+              <Modal.Body name="authentication">
+                <Authentication />
+              </Modal.Body>
+            </Modal>
+          )}
         </div>
       </div>
     </header>

@@ -1,6 +1,6 @@
 import { useRef, useEffect } from "react";
-import Spinner from "../Spinner";
-import useGamesHistory from "../../hooks/useGamesHistory";
+import Spinner from "../../components/Spinner";
+import useGamesHistory from "./useGamesHistory";
 
 function Item({ value, status }) {
   return (

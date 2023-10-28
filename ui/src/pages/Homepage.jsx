@@ -1,4 +1,4 @@
-import DiceGame from "../components/game/DiceGame";
+import DiceGame from "../features/games/DiceGame";
 
 function Homepage() {
   return (

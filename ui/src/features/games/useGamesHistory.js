@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getGamesHistory as getGamesHistoryApi } from "../services/game";
+import { getGamesHistory as getGamesHistoryApi } from "../../services/game";
 
 export default function useGamesHistory(reFetchHistory) {
   const [loading, setLoading] = useState(false);
