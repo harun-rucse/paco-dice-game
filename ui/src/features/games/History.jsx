@@ -7,7 +7,7 @@ function Item({ value, status }) {
     <div
       className={`${
         status === "win" ? "gradient-green-bg" : "gradient-red-bg"
-      } flex-shrink-0 rounded-full w-[50px] h-[50px] md:w-[60px] md:h-[54px] flex justify-center items-center border border-black`}
+      } flex-shrink-0 rounded-full w-[40px] h-[40px] md:w-[60px] md:h-[54px] flex justify-center items-center border border-black`}
     >
       <p className="text-white text-lg md:text-[32px] leading-normal font-bold">
         {value}
@@ -23,7 +23,7 @@ function Item({ value, status }) {
 
 function History({ reFetchHistory }) {
   const ref = useRef(null);
-  const { data: histories, loading } = useGamesHistory(reFetchHistory);
+  const { games: histories, isLoading } = useGamesHistory(reFetchHistory);
 
   useEffect(() => {
     if (ref.current) {
@@ -34,7 +34,7 @@ function History({ reFetchHistory }) {
     }
   }, [histories]);
 
-  if (loading) return <Spinner />;
+  if (isLoading) return <Spinner />;
 
   return (
     <div className="flex bg-[#522c83] rounded-[29px] border border-[#522c83] px-2 py-2 relative shadow-lg h-[60px] md:h-[80px]">

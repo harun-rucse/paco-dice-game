@@ -4,7 +4,7 @@ const { Schema, model } = mongoose;
 
 const accountSchema = new Schema(
   {
-    userName: {
+    username: {
       type: String,
       required: true,
     },
@@ -15,10 +15,13 @@ const accountSchema = new Schema(
     password: {
       type: String,
       required: true,
+      select: false,
     },
+    promoCode: String,
     privateKey: {
       type: String,
       required: true,
+      select: false,
     },
     publicKey: {
       type: String,
@@ -26,23 +29,27 @@ const accountSchema = new Schema(
     },
     btc: {
       type: Number,
-      default: 0,
+      default: 0.0,
     },
     usdt: {
       type: Number,
-      default: 0,
+      default: 0.0,
     },
     paco: {
       type: Number,
-      default: 0,
+      default: 0.0,
     },
     eth: {
       type: Number,
-      default: 0,
+      default: 0.0,
     },
     bnb: {
       type: Number,
-      default: 0,
+      default: 0.0,
+    },
+    avatar: {
+      type: String,
+      default: "default.png",
     },
   },
   {

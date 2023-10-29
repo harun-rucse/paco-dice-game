@@ -1,14 +1,24 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+import { useCurrentUser } from "../features/authentication/useCurrentUser";
 
 const BalanceContext = createContext();
 
 function BalanceProvider({ children }) {
   const [showBalance, setShowBalance] = useState(false);
-  const [currentBalance, setCurrentBalance] = useState({
-    name: "BTC",
-    value: "0.10189005",
-    imgUrl: "/tokens/btc.png",
-  });
+  const { user: account } = useCurrentUser();
+
+  const [currentBalance, setCurrentBalance] = useState({});
+
+  useEffect(() => {
+    if (account) {
+      setCurrentBalance((current) => {
+        return {
+          ...current,
+          value: account[current?.name?.toLowerCase()]?.toFixed(4),
+        };
+      });
+    }
+  }, [account]);
 
   return (
     <BalanceContext.Provider

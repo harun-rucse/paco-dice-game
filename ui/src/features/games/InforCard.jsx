@@ -1,3 +1,5 @@
+import { useBalance } from "../../context/BalanceContext";
+
 const MAX_BET = 500;
 const MIN_BET = 1;
 
@@ -11,7 +13,11 @@ function InforCard({
   rollType,
   setRollType,
   winChance,
+  showError,
+  setShowError,
 }) {
+  const { currentBalance } = useBalance();
+
   return (
     <div className="gradient-infor-card-bg rounded-[29px] border-2 border-[#491b7f61] px-4 md:px-16 py-6 relative z-50 flex flex-col gap-10 items-center">
       <div className="flex flex-col md:flex-row gap-6 md:gap-0 justify-between w-full">
@@ -46,18 +52,26 @@ function InforCard({
       <div className="flex flex-col gap-2 w-full">
         <h4 className="text-white text-xl uppercase">Bet Amount</h4>
         <div className="flex flex-col md:flex-row items-center gap-6 md:gap-12 w-full">
-          <div className="flex items-center rounded-2xl border border-[#c786f2] relative w-full">
+          <div
+            className={`flex items-center rounded-2xl border ${
+              showError ? "border-red-500" : "border-[#c786f2]"
+            } relative w-full`}
+          >
             <input
               type="number"
               className="bg-transparent focus:outline-none text-white text-2xl px-6 py-3 w-full md:w-[95%]"
               value={betAmount}
-              onChange={(e) => setBetAmount(Number(e.target.value))}
+              onChange={(e) => {
+                setBetAmount(Number(e.target.value));
+                setShowError("");
+              }}
             />
 
             <div className="absolute top-2 right-3">
-              <img src="/btc.png" alt="" className="w-9" />
+              <img src={currentBalance.imgUrl} alt="" className="w-9" />
             </div>
           </div>
+
           <div className="flex items-center gap-6 w-full">
             <div
               className="text-[#370843] uppercase cursor-pointer text-2xl flex items-center justify-center bg-[#8149b3] border border-[#120425] shadow-[0px_15px_8px_#19032461] rounded-[20px] w-[95px] h-[65px] transition hover:-translate-y-1"
@@ -101,6 +115,7 @@ function InforCard({
             className="bg-transparent focus:outline-none text-white text-2xl px-6 py-3 w-full rounded-2xl border border-[#c786f2]"
             value={Number(multiplier).toFixed(4) + "X"}
             onChange={(e) => setMultiplier(e.target.value)}
+            readOnly
           />
         </div>
 
@@ -113,6 +128,7 @@ function InforCard({
               // eslint-disable-next-line no-extra-boolean-cast
               value={Boolean(Number(payout)) ? Number(payout).toFixed(8) : 0}
               onChange={(e) => setPayout(e.target.value)}
+              readOnly
             />
 
             <div className="absolute top-3 right-5">

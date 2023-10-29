@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
-import { useAccount } from "wagmi";
 import Control from "./Control";
 import Footer from "./Footer";
 import GameCard from "./GameCard";
 import History from "./History";
 import InforCard from "./InforCard";
-import { createGame } from "../../services/game";
+import { useCreateGame } from "./useCreateGame";
+import { useBalance } from "../../context/BalanceContext";
 
 function DiceGame() {
-  const { address } = useAccount();
   const [prediction, setPrediction] = useState(50);
   const [result, setResult] = useState(0);
   const [betAmount, setBetAmount] = useState("");
@@ -16,8 +15,11 @@ function DiceGame() {
   const [payout, setPayout] = useState("0.00039200 BTC");
   const [rollType, setRollType] = useState("rollUnder");
   const [winChance, setWinChance] = useState(50);
+  const [showError, setShowError] = useState("");
 
   const [reFetchHistory, setReFetchHistory] = useState(false);
+  const { create, isLoading } = useCreateGame();
+  const { currentBalance } = useBalance();
 
   useEffect(() => {
     // same logic copy pase in backend
@@ -42,23 +44,24 @@ function DiceGame() {
   }
 
   async function handleRoll() {
-    if (!address) return alert("Please connect your wallet first");
+    if (!betAmount) setShowError("Bet amount is required");
+
     if (!betAmount || !prediction || !rollType) return;
 
-    try {
-      const data = await createGame({
-        playerAddress: address,
+    create(
+      {
+        paymentType: currentBalance?.name?.toLowerCase(),
         betAmount,
-        betNumber: prediction,
+        prediction,
         rollType,
-      });
-
-      setResult(data.winNumber);
-      setReFetchHistory((reFetchHistory) => !reFetchHistory);
-      alert(data.status);
-    } catch (err) {
-      console.log(err);
-    }
+      },
+      {
+        onSuccess: (data) => {
+          setResult(data.winNumber);
+          setReFetchHistory((reFetchHistory) => !reFetchHistory);
+        },
+      }
+    );
   }
 
   return (
@@ -72,6 +75,7 @@ function DiceGame() {
           result={result}
           onRoll={handleRoll}
           rollType={rollType}
+          isLoading={isLoading}
         />
         <InforCard
           betAmount={betAmount}
@@ -83,6 +87,8 @@ function DiceGame() {
           rollType={rollType}
           setRollType={handleCahngeOFRoll}
           winChance={winChance}
+          showError={showError}
+          setShowError={setShowError}
         />
       </div>
       <Footer />

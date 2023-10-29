@@ -1,6 +1,6 @@
 import ReactSlider from "react-slider";
 
-function GameCard({ prediction, setPrediction, result, onRoll, rollType }) {
+function GameCard({ prediction, setPrediction, result, onRoll, rollType, isLoading }) {
   return (
     <div className="gradient-card-bg rounded-[29px] border-2 border-[#491b7f61] px-4 md:px-16 py-8 md:py-3 relative z-50 flex flex-col gap-16 md:gap-12 items-center">
       <div className="flex gap-2 md:gap-0 items-center justify-between w-full md:pt-2">
@@ -42,6 +42,7 @@ function GameCard({ prediction, setPrediction, result, onRoll, rollType }) {
       <div className="mt-5">
         <button
           onClick={onRoll}
+          disabled={isLoading}
           className="bg-[#a04cd5] transition hover:bg-[#8942b6] rounded-full text-[#430658] border-2 border-black text-xl md:text-2xl px-12 md:px-16 py-2 shadow-[0px_8px_4px_#00000040] hover:-translate-y-1"
         >
           Roll

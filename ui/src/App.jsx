@@ -38,8 +38,8 @@ const queryClient = new QueryClient({
 
 function App() {
   return (
-    <BalanceProvider>
-      <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient}>
+      <BalanceProvider>
         <ReactQueryDevtools initialIsOpen={false} />
         <WagmiConfig config={config}>
           <ConnectKitProvider>
@@ -63,8 +63,8 @@ function App() {
             />
           </ConnectKitProvider>
         </WagmiConfig>
-      </QueryClientProvider>
-    </BalanceProvider>
+      </BalanceProvider>
+    </QueryClientProvider>
   );
 }
 

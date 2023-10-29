@@ -6,7 +6,7 @@ function Transaction() {
   const [current, setCurrent] = useState("deposite");
 
   return (
-    <div className="flex flex-col md:flex-row items-start mb-10 md:mb-0">
+    <div className="flex flex-col md:flex-row items-start h-[80vh] md:h-full mb-10 md:mb-0">
       <div className="w-full md:w-[24rem] md:h-[36rem] bg-[#411b6a] space-y-3 px-6 py-8">
         <div
           onClick={() => setCurrent("deposite")}

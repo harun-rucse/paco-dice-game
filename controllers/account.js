@@ -35,6 +35,8 @@ const withdraw = catchAsync(async (req, res, next) => {
   if (!paymentType || !amount)
     return next(new AppError("PaymentType and amount is required", 400));
 
+  if (amount <= 0) return next(new AppError("Please select valid amount", 400));
+
   const account = await Account.findOne({ publicKey: req.account.publicKey });
   if (!account) {
     return next(new AppError("Account not found with that public key", 400));

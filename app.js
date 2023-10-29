@@ -15,6 +15,7 @@ app.use(express.json());
 app.get("/api/hello", gameController.hello);
 app.post("/api/auth/register", authController.register);
 app.post("/api/auth/login", authController.login);
+app.get("/api/auth/current-user", auth, authController.currentUser);
 app.post("/api/games", auth, gameController.createGame);
 app.get("/api/games", auth, gameController.getGamesHistory);
 app.patch("/api/account/deposite", auth, accountController.deposite);

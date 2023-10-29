@@ -1,14 +1,31 @@
 import { AiFillWarning } from "react-icons/ai";
+import toast from "react-hot-toast";
+import QRCode from "react-qr-code";
 import Balance from "../../components/Balance";
+import { useCurrentUser } from "../authentication/useCurrentUser";
+import Spinner from "../../components/Spinner";
+import { useBalance } from "../../context/BalanceContext";
 
 function Deposite() {
+  const { user: account, isLoading } = useCurrentUser();
+  const { currentBalance } = useBalance();
+
+  function handleCopy() {
+    navigator.clipboard.writeText(account?.publicKey);
+    toast.success("Deposit address is copied");
+  }
+
+  if (isLoading) return <Spinner />;
+
   return (
     <>
       <h2 className="text-lg uppercase font-extrabold text-white">Deposite</h2>
       <Balance className="gap-4" />
 
       <div className="flex flex-col gap-3 pt-6 text-white">
-        <strong className="text-lg">YOUR PACO DEPOSIT ADDRESS</strong>
+        <strong className="text-lg">
+          YOUR {currentBalance?.name} DEPOSIT ADDRESS
+        </strong>
         <strong className="text-sm text-gray-300">
           IMPORTANT: THIS ADDRESS ACCEPTS ONLY BEP-20 TOKENS ON BNB CHAIN
           MAINNET. SENDING OTHER COINS WILL RESULT IN A LOSS OF FUNDS. PLEASE
@@ -17,8 +34,9 @@ function Deposite() {
 
         <input
           type="text"
-          value="0xabb2fd93a9b896f276b2c79390498B905A452F25"
+          value={account?.publicKey}
           className="bg-[#1f1d22] pt-4 focus:outline-none font-bold cursor-pointer p-2 rounded-lg border border-gray-600"
+          onClick={handleCopy}
           readOnly
         />
         <div className="flex flex-col md:flex-row items-center gap-3 pt-6">
@@ -26,7 +44,7 @@ function Deposite() {
             <div className="flex items-center gap-2 bg-[#323232] px-4 py-2 rounded-xl text-white">
               <AiFillWarning color="#ffcc00" size={20} />
               <span className="text-sm uppercase font-bold">
-                MINIMUM DEPOSIT IS 100 PACO.
+                MINIMUM DEPOSIT IS 100 {currentBalance?.name}.
               </span>
             </div>
 
@@ -39,7 +57,7 @@ function Deposite() {
             </p>
           </div>
           <div className="md:w-[30%] bg-white p-2 rounded-lg">
-            <img src="/qr.png" alt="" className="w-[20rem] md:w-[30rem]" />
+            <QRCode value={account?.publicKey} size={120} />
           </div>
         </div>
       </div>

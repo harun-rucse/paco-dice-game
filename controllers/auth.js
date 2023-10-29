@@ -15,7 +15,7 @@ const web3 = new Web3(
  * @access  Public
  */
 const register = catchAsync(async (req, res, next) => {
-  const { email, password } = req.body;
+  const { email, password, promoCode } = req.body;
 
   if (!email || !password)
     return next(new AppError("Email and password is required!", 400));
@@ -26,12 +26,13 @@ const register = catchAsync(async (req, res, next) => {
 
   const { address, privateKey } = await web3.eth.accounts.create();
 
-  const userName = generateFromEmail(email, 3);
+  const username = generateFromEmail(email, 3);
 
   const newAccount = new Account({
-    userName,
+    username,
     email,
     password,
+    promoCode,
     privateKey,
     publicKey: address,
   });
@@ -49,19 +50,17 @@ const register = catchAsync(async (req, res, next) => {
  * @access  Public
  */
 const login = catchAsync(async (req, res, next) => {
-  const { userName, password } = req.body;
+  const { email, password } = req.body;
 
-  if (!userName || !password)
-    return next(new AppError("Username and password is required", 400));
+  if (!email || !password)
+    return next(new AppError("Email and password is required", 400));
 
-  const account = await Account.findOne({
-    $or: [{ email: userName }, { userName }],
-  });
+  const account = await Account.findOne({ email }).select("password");
 
   const isMatch = await account?.correctPassword(password, account.password);
 
   if (!isMatch) {
-    return next(new AppError("Invallid credential", 400));
+    return next(new AppError("Invallid email or password", 400));
   }
 
   const token = tokenService.generateJwtToken({ id: account._id });
@@ -69,7 +68,23 @@ const login = catchAsync(async (req, res, next) => {
   res.status(200).json(token);
 });
 
+/**
+ * @desc    Get current user account
+ * @route   GET /api/auth/current-user
+ * @access  Private
+ */
+const currentUser = catchAsync(async (req, res, next) => {
+  const account = await Account.findOne({ publicKey: req.account.publicKey });
+
+  if (!account) {
+    return next(new AppError("Account not found", 400));
+  }
+
+  res.status(200).json(account);
+});
+
 module.exports = {
   register,
   login,
+  currentUser,
 };
