@@ -16,6 +16,7 @@ function DiceGame() {
   const [rollType, setRollType] = useState("rollUnder");
   const [winChance, setWinChance] = useState(50);
   const [showError, setShowError] = useState("");
+  const [betStatus, setBetStatus] = useState("");
 
   const [reFetchHistory, setReFetchHistory] = useState(false);
   const { create, isLoading } = useCreateGame();
@@ -58,6 +59,7 @@ function DiceGame() {
       {
         onSuccess: (data) => {
           setResult(data.winNumber);
+          setBetStatus(data.status);
           setReFetchHistory((reFetchHistory) => !reFetchHistory);
         },
       }
@@ -76,6 +78,7 @@ function DiceGame() {
           onRoll={handleRoll}
           rollType={rollType}
           isLoading={isLoading}
+          betStatus={betStatus}
         />
         <InforCard
           betAmount={betAmount}

@@ -87,7 +87,9 @@ const createGame = catchAsync(async (req, res, next) => {
  * @access  Private
  */
 const getGamesHistory = catchAsync(async (req, res) => {
-  const games = await Game.find().sort({ createdAt: 1 }).limit(100);
+  const games = await Game.find({ publicKey: req.account.publicKey })
+    .sort({ createdAt: 1 })
+    .limit(100);
 
   res.json(games);
 });

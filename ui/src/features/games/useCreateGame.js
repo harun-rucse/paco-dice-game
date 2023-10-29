@@ -7,11 +7,7 @@ export function useCreateGame() {
 
   const { isLoading, mutate: create } = useMutation({
     mutationFn: createGameApi,
-    onSuccess: (data) => {
-      data?.status === "win"
-        ? toast.success("Hurra! You own the bet")
-        : toast.error("Sorry! You lost the bet");
-
+    onSuccess: () => {
       queryClient.invalidateQueries(["user"]);
     },
     onError: (error) => {
