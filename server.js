@@ -2,11 +2,15 @@ const dotenv = require("dotenv");
 dotenv.config({ path: `${__dirname}/.env.${process.env.NODE_ENV}` });
 const app = require("./app");
 const db = require("./config/db");
+const { listEvent } = require("./services/event-service");
 
 // database connection
 db()
   .then(() => console.log("DB Connect successfull"))
   .catch((err) => console.log("DB Connect failed!", err));
+
+// lister event
+listEvent();
 
 const PORT = process.env.PORT || 4000;
 

@@ -51,6 +51,11 @@ const accountSchema = new Schema(
       type: String,
       default: "default.png",
     },
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
+    },
   },
   {
     timestamps: true,

@@ -14,7 +14,7 @@ function BalanceProvider({ children }) {
       setCurrentBalance((current) => {
         return {
           ...current,
-          value: account[current?.name?.toLowerCase()]?.toFixed(4),
+          value: account[current?.name?.toLowerCase()],
         };
       });
     }

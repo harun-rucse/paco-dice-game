@@ -20,6 +20,19 @@
   }
 }
 
+.active {
+  background: #161616;
+  border: 1px solid #403e3e;
+}
+
+.footer:not(:has(*)) {
+  display: none;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
 @font-face {
   font-family: "Baloo";
   src: url("/fonts/BalooChettan-Regular.ttf");

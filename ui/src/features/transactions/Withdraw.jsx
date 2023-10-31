@@ -69,15 +69,12 @@ function Withdraw() {
           <div className="relative">
             <input
               type="number"
+              step="any"
               placeholder="Enter Amount"
               className="bg-[#1f1d22] focus:outline-none placeholder:uppercase font-bold px-4 py-3 rounded-lg border border-gray-600"
               disabled={isLoading}
               {...register("amount", {
                 required: "Amount is required",
-                max: {
-                  value: currentBalance.value,
-                  message: "Insufficient balance",
-                },
               })}
             />
             <span
@@ -95,7 +92,7 @@ function Withdraw() {
                 Balance
               </span>
               <strong className="text-white text-sm font-bold">
-                {currentBalance.value}
+                {currentBalance.value?.toFixed(4)}
               </strong>
             </div>
           </div>
@@ -117,9 +114,7 @@ function Withdraw() {
         <div className="mt-[5rem] w-full">
           <button
             className="bg-[#d11f1f] w-full uppercase text-sm font-extrabold px-6 py-3 rounded-lg shadow-[ 0px_4px_4px_0px_#00000040]"
-            disabled={
-              isLoading || getValues().amount <= 0 || errors?.amount?.message
-            }
+            disabled={isLoading}
           >
             {isLoading ? "Withdrawing..." : "Withdraw"}
           </button>

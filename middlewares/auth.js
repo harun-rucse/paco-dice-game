@@ -36,4 +36,16 @@ const auth = catchAsync(async (req, res, next) => {
   next();
 });
 
-module.exports = { auth };
+const restrictTo = (...roles) => {
+  return catchAsync(async (req, res, next) => {
+    if (roles.includes(req.account.role)) {
+      return next();
+    }
+
+    return next(
+      new AppError("You don't have permission to perform this.", 403)
+    );
+  });
+};
+
+module.exports = { auth, restrictTo };

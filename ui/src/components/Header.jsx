@@ -4,7 +4,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 import { FiLogOut, FiLogIn } from "react-icons/fi";
 import Modal from "./Modal";
-import Spinner from "./Spinner";
 import Transaction from "../features/transactions/Transaction";
 import Authentication from "../features/authentication/Authentication";
 import Balance from "./Balance";
@@ -13,7 +12,7 @@ import { useCurrentUser } from "../features/authentication/useCurrentUser";
 function Header() {
   const queryClient = useQueryClient();
   const [showMenu, setShowMenu] = useState(false);
-  const { isAuthenticated, isLoading } = useCurrentUser();
+  const { isAuthenticated, user, isLoading } = useCurrentUser();
 
   function handleLogout() {
     localStorage.removeItem("jwt-token");
@@ -98,7 +97,16 @@ function Header() {
               </button>
 
               {showMenu && (
-                <div className="absolute w-[10rem] top-12 right-0 bg-[#3c2f61] p-2 rounded-2xl space-y-2 z-[999] shadow-md">
+                <div className="absolute w-[10rem] top-12 right-0 bg-[#3c2f61] p-2 rounded-2xl space-y-3 z-[999] shadow-md">
+                  {user?.role === "admin" && (
+                    <Link
+                      to="/admin"
+                      className="text-white cursor-pointer border-b pb-2 border-gray-600 px-2 uppercase text-sm font-bold flex items-center gap-2"
+                    >
+                      <FiLogOut />
+                      Admin Panel
+                    </Link>
+                  )}
                   <span
                     onClick={handleLogout}
                     className="text-white cursor-pointer px-2 uppercase text-sm font-bold flex items-center gap-2"

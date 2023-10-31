@@ -17,7 +17,7 @@ function BalanceItem({ name, value, imgUrl, onSelect, onHide }) {
         <strong className="text-gray-300 font-extrabold">{name}</strong>
       </div>
       <strong className="text-white font-extrabold text-sm md:text-base">
-        {value}
+        {value?.toFixed(4)}
       </strong>
     </div>
   );
@@ -43,7 +43,7 @@ function Balance({ className }) {
           className="h-6 md:h-7"
         />
         <span className="uppercase font-extrabold text-sm md:text-base">
-          {currentBalance.value || account?.btc.toFixed(4)}
+          {currentBalance.value?.toFixed(4) || account?.btc.toFixed(4)}
         </span>
         <MdOutlineKeyboardArrowDown />
       </button>
@@ -52,7 +52,7 @@ function Balance({ className }) {
         <div className="absolute w-[13rem] md:w-[18rem] top-12 left-0 bg-[#3c2f61] p-2 rounded-2xl space-y-2 z-[999] shadow-md">
           <BalanceItem
             name="BTC"
-            value={account?.btc.toFixed(4)}
+            value={account?.btc}
             imgUrl="/tokens/btc.png"
             onHide={setShowBalance}
             onSelect={setCurrentBalance}
@@ -60,7 +60,7 @@ function Balance({ className }) {
 
           <BalanceItem
             name="USDT"
-            value={account?.usdt.toFixed(4)}
+            value={account?.usdt}
             imgUrl="/tokens/usdt.png"
             onHide={setShowBalance}
             onSelect={setCurrentBalance}
@@ -68,7 +68,7 @@ function Balance({ className }) {
 
           <BalanceItem
             name="PACO"
-            value={account?.paco.toFixed(4)}
+            value={account?.paco}
             imgUrl="/tokens/paco.png"
             onHide={setShowBalance}
             onSelect={setCurrentBalance}
@@ -76,7 +76,7 @@ function Balance({ className }) {
 
           <BalanceItem
             name="ETH"
-            value={account?.eth.toFixed(4)}
+            value={account?.eth}
             imgUrl="/tokens/eth.png"
             onHide={setShowBalance}
             onSelect={setCurrentBalance}
@@ -84,7 +84,7 @@ function Balance({ className }) {
 
           <BalanceItem
             name="BNB"
-            value={account?.bnb.toFixed(4)}
+            value={account?.bnb}
             imgUrl="/tokens/bnb.png"
             onHide={setShowBalance}
             onSelect={setCurrentBalance}

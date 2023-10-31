@@ -1,5 +1,5 @@
 import { Suspense, lazy } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { WagmiConfig, createConfig } from "wagmi";
 import { ConnectKitProvider, getDefaultConfig } from "connectkit";
 import { bsc, sepolia } from "wagmi/chains";
@@ -10,10 +10,14 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import PageNotFound from "./pages/PageNotFound";
 import Spinner from "./components/Spinner";
 import { BalanceProvider } from "./context/BalanceContext";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const AppLayout = lazy(() => import("./components/AppLayout"));
+const AdminLayout = lazy(() => import("./components/admin/AdminLayout"));
 const ComingSoon = lazy(() => import("./pages/ComingSoon"));
 const Homepage = lazy(() => import("./pages/Homepage"));
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
+const AdminApproval = lazy(() => import("./pages/AdminApproval"));
 
 const chains = [bsc];
 const config = createConfig(
@@ -48,8 +52,24 @@ function App() {
                 <Routes>
                   <Route path="/" element={<AppLayout />}>
                     <Route index element={<Homepage />} />
+
                     <Route path="/staking" element={<ComingSoon />} />
                     <Route path="*" element={<PageNotFound />} />
+                  </Route>
+                  <Route
+                    path="/admin"
+                    element={
+                      <ProtectedRoute>
+                        <AdminLayout />
+                      </ProtectedRoute>
+                    }
+                  >
+                    <Route
+                      index
+                      element={<Navigate replace to="dashboard" />}
+                    />
+                    <Route path="dashboard" element={<AdminDashboard />} />
+                    <Route path="approval" element={<AdminApproval />} />
                   </Route>
                 </Routes>
               </Suspense>

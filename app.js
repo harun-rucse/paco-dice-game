@@ -3,7 +3,7 @@ const cors = require("cors");
 const accountController = require("./controllers/account");
 const authController = require("./controllers/auth");
 const gameController = require("./controllers/game");
-const { auth } = require("./middlewares/auth");
+const { auth, restrictTo } = require("./middlewares/auth");
 const globalErrorHandler = require("./controllers/error");
 const AppError = require("./utils/app-error");
 
@@ -18,8 +18,22 @@ app.post("/api/auth/login", authController.login);
 app.get("/api/auth/current-user", auth, authController.currentUser);
 app.post("/api/games", auth, gameController.createGame);
 app.get("/api/games", auth, gameController.getGamesHistory);
-app.patch("/api/account/deposite", auth, accountController.deposite);
-app.patch("/api/account/withdraw", auth, accountController.withdraw);
+app.get(
+  "/api/account/withdraws",
+  [auth, restrictTo("admin")],
+  accountController.getAllWithdraw
+);
+app.post("/api/account/withdraw", auth, accountController.withdraw);
+app.patch(
+  "/api/account/approve-withdraw/:id",
+  [auth, restrictTo("admin")],
+  accountController.confirmWithdraw
+);
+app.get(
+  "/api/account/stats",
+  [auth, restrictTo("admin")],
+  accountController.getStats
+);
 
 app.all("*", (req, res, next) => {
   next(

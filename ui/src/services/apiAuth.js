@@ -40,8 +40,6 @@ export const getCurrentUser = async () => {
       },
     });
 
-    console.log(res);
-
     return res.data;
   } catch (err) {
     throw new Error(err?.response?.data?.message);

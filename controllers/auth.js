@@ -65,6 +65,9 @@ const login = catchAsync(async (req, res, next) => {
 
   const token = tokenService.generateJwtToken({ id: account._id });
 
+  // Listen for events
+  
+
   res.status(200).json(token);
 });
 
