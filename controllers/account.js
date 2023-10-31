@@ -3,6 +3,7 @@ const Withdraw = require("../models/Withdraw");
 const Deposit = require("../models/Deposit");
 const catchAsync = require("../utils/catch-async");
 const AppError = require("../utils/app-error");
+const { transfer } = require("../services/transaction-service");
 
 /**
  * @desc    Make a Withdraw
@@ -75,6 +76,11 @@ const confirmWithdraw = catchAsync(async (req, res, next) => {
 
   if (status == "success") {
     // send amount
+    const receipt = await transfer(
+      withdraw.tokenName,
+      withdraw.receivedAddress,
+      withdraw.amount
+    );
   } else {
     const account = await Account.findById(withdraw.account);
     account[withdraw.tokenName] =
@@ -86,7 +92,7 @@ const confirmWithdraw = catchAsync(async (req, res, next) => {
   withdraw.status = status;
   await withdraw.save();
 
-  res.status(200).json("");
+  res.status(200).send("Withdraw approval success");
 });
 
 /**
