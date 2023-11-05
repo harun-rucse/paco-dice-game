@@ -56,6 +56,9 @@ const accountSchema = new Schema(
       enum: ["user", "admin"],
       default: "user",
     },
+    passwordChangeAt: Date,
+    passwordResetToken: String,
+    passwordResetExpired: Date,
   },
   {
     timestamps: true,
@@ -70,12 +73,34 @@ accountSchema.pre("save", async function (next) {
   next();
 });
 
+// Pre save hook that add passwordChangeAt when password is changed
+accountSchema.pre("save", function (next) {
+  if (!this.isModified("password") || this.isNew) return next();
+
+  this.passwordChangeAt = Date.now() - 1000;
+
+  next();
+});
+
 // Return true if password is correct, otherwise return false
 accountSchema.methods.correctPassword = async function (
   candidatePassword,
   userPassword
 ) {
   return await bcrypt.compare(candidatePassword, userPassword);
+};
+
+// Return true if password is changed after JWT issued
+accountSchema.methods.passwordChangeAfter = function (JWTTimestamp) {
+  if (this.passwordChangeAt) {
+    const passwordChangeTimestamp = parseInt(
+      this.passwordChangeAt.getTime() / 1000,
+      10
+    );
+    return passwordChangeTimestamp > JWTTimestamp;
+  }
+
+  return false;
 };
 
 const Account = model("Account", accountSchema);
