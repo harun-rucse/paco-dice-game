@@ -25,6 +25,11 @@
   border: 1px solid #403e3e;
 }
 
+& .recharts-cartesian-grid-horizontal line,
+& .recharts-cartesian-grid-vertical line {
+  stroke: transparent;
+}
+
 .footer:not(:has(*)) {
   display: none;
 }
@@ -55,7 +60,7 @@ input:disabled {
 /* width */
 ::-webkit-scrollbar {
   /* width: 8px; */
-  width: 5px;
+  width: 0px;
   height: 5px;
 }
 

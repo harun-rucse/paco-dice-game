@@ -7,9 +7,29 @@ const items = [
     href: "/admin/dashboard",
   },
   {
+    title: "Staking",
+    image: "/icons/staking-icon.png",
+    href: "/admin/staking",
+  },
+  {
     title: "Approval",
     image: "/tokens/paco.png",
     href: "/admin/approval",
+  },
+  {
+    title: "Events",
+    image: "/icons/events.png",
+    href: "/admin/events",
+  },
+  {
+    title: "Lottery",
+    image: "/icons/lottery.png",
+    href: "/admin/lottery",
+  },
+  {
+    title: "Users",
+    image: "/icons/user.png",
+    href: "/admin/users",
   },
 ];
 
