@@ -26,7 +26,7 @@ function Header() {
     <header className="p-0">
       <div className="flex items-center justify-between bg-[#432663] px-3 shadow-md">
         <div className="flex items-center gap-4">
-          <Link to="/dashboard">
+          <Link to="/">
             <img
               src="/icon.png"
               alt="Paco Dice"

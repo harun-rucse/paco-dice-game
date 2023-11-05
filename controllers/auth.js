@@ -140,7 +140,7 @@ const forgotPassword = catchAsync(async (req, res, next) => {
   await account.save({ validateBeforeSave: false });
 
   // send email
-  const resetURL = `${process.env.BASE_URL}/api/auth/reset-password/${resetToken}`;
+  const resetURL = `${process.env.FRONTEND_BASE_URL}/reset-password/${resetToken}`;
   try {
     await new Email(account, resetURL).sendPasswordReset();
   } catch (err) {

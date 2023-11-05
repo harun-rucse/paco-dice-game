@@ -15,6 +15,7 @@ const ComingSoon = lazy(() => import("./pages/ComingSoon"));
 const Homepage = lazy(() => import("./pages/Homepage"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const AdminApproval = lazy(() => import("./pages/AdminApproval"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -35,6 +36,10 @@ function App() {
               <Route path="/" element={<AppLayout />}>
                 <Route index element={<Homepage />} />
 
+                <Route
+                  path="/reset-password/:resetToken"
+                  element={<ResetPassword />}
+                />
                 <Route path="/staking" element={<ComingSoon />} />
                 <Route path="*" element={<PageNotFound />} />
               </Route>

@@ -1,15 +1,15 @@
 import { useForm } from "react-hook-form";
-import { useLogin } from "./useLogin";
+import { useForgotPassword } from "./useForgotPassword";
 import FormRow from "../../components/FormRow";
 
-function LoginForm({ setCurrent }) {
+function ForgotPasswordForm() {
   const { register, handleSubmit, reset, formState } = useForm();
   const { errors } = formState;
-  const { isLoading, login } = useLogin();
+  const { isLoading, forgotPassword } = useForgotPassword();
 
-  function onSubmit({ email, password }) {
-    login(
-      { email, password },
+  function onSubmit({ email }) {
+    forgotPassword(
+      { email },
       {
         onSuccess: () => {
           reset();
@@ -45,49 +45,15 @@ function LoginForm({ setCurrent }) {
           />
         </FormRow>
 
-        <FormRow
-          name="password"
-          label="Password"
-          error={errors?.password?.message}
-        >
-          <input
-            type="password"
-            id="password"
-            placeholder="Password"
-            className="w-full bg-[#1f1d22] focus:outline-none placeholder:uppercase placeholder:text-sm font-bold px-4 py-3 rounded-lg border border-gray-600"
-            disabled={isLoading}
-            {...register("password", {
-              required: "Password is required",
-            })}
-          />
-        </FormRow>
-
         <button
           className="self-center bg-[#2e2550] text-white uppercase text-sm font-extrabold px-8 py-3 rounded-lg shadow-[0px_4px_4px_0px_#00000040]"
           disabled={isLoading}
         >
-          Login
+          {isLoading ? "Sending..." : "Send reset token"}
         </button>
-
-        <p
-          className="text-[#da8b2f] text-center font-bold cursor-pointer"
-          onClick={() => setCurrent("forgot")}
-        >
-          Forgot your password?
-        </p>
-
-        <p className="text-white text-center font-bold">
-          Don't have an account?{" "}
-          <span
-            className="underline cursor-pointer"
-            onClick={() => setCurrent("register")}
-          >
-            Join Now
-          </span>
-        </p>
       </form>
     </>
   );
 }
 
-export default LoginForm;
+export default ForgotPasswordForm;

@@ -45,3 +45,32 @@ export const getCurrentUser = async () => {
     throw new Error(err?.response?.data?.message);
   }
 };
+
+export const forgotPassword = async ({ email }) => {
+  try {
+    const { data } = await axios.post(`${API_URL}/auth/forgot-password`, {
+      email,
+    });
+
+    return data;
+  } catch (err) {
+    throw new Error(err?.response?.data?.message);
+  }
+};
+
+export const resetPassword = async ({ password, resetToken }) => {
+  try {
+    const { data } = await axios.patch(
+      `${API_URL}/auth/reset-password/${resetToken}`,
+      {
+        password,
+      }
+    );
+
+    localStorage.setItem("jwt-token", JSON.stringify(data));
+
+    return data;
+  } catch (err) {
+    throw new Error(err?.response?.data?.message);
+  }
+};
