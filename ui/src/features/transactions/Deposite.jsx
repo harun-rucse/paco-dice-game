@@ -19,7 +19,7 @@ function Deposite() {
 
   return (
     <>
-      <h2 className="text-lg uppercase font-extrabold text-white">Deposite</h2>
+      <h2 className="text-lg uppercase font-semibold text-white">Deposite</h2>
       <Balance className="gap-4" />
 
       <div className="flex flex-col gap-3 pt-6 text-white">
@@ -35,7 +35,7 @@ function Deposite() {
         <input
           type="text"
           value={account?.publicKey}
-          className="bg-[#1f1d22] pt-4 focus:outline-none font-bold cursor-pointer p-2 rounded-lg border border-gray-600"
+          className="bg-[#1f1d22] pt-4 focus:outline-none font-semibold cursor-pointer p-2 rounded-lg border border-gray-600"
           onClick={handleCopy}
           readOnly
         />
@@ -43,7 +43,7 @@ function Deposite() {
           <div className="space-y-4 md:w-[70%]">
             <div className="flex items-center gap-2 bg-[#323232] px-4 py-2 rounded-xl text-white">
               <AiFillWarning color="#ffcc00" size={20} />
-              <span className="text-sm uppercase font-bold">
+              <span className="text-sm uppercase font-semibold">
                 MINIMUM DEPOSIT IS 100 {currentBalance?.name}.
               </span>
             </div>

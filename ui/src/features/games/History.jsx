@@ -9,7 +9,7 @@ function Item({ value, status }) {
         status === "win" ? "gradient-green-bg" : "gradient-red-bg"
       } flex-shrink-0 rounded-full w-[40px] h-[40px] md:w-[60px] md:h-[54px] flex justify-center items-center border border-black`}
     >
-      <p className="text-white text-lg md:text-[32px] leading-normal font-bold">
+      <p className="text-white text-lg md:text-[32px] leading-normal font-semibold">
         {value}
       </p>
     </div>

@@ -12,7 +12,7 @@ function MobileNavbar() {
 
   return (
     <div className="block md:hidden fixed left-0 bottom-1 w-full z-[999999999] ">
-      <div className="flex justify-between bg-[#432663] px-6 py-2 m-2 text-white font-bold rounded-3xl shadow-md shadow-[#432663]">
+      <div className="flex justify-between bg-[#432663] px-6 py-2 m-2 text-white font-semibold rounded-3xl shadow-md shadow-[#432663]">
         <NavLink to="/" className="hover:bg-[#423566] px-4 py-2 rounded-md">
           <AiOutlineHome size={26} />
         </NavLink>
@@ -34,9 +34,9 @@ function MobileNavbar() {
         {!isLoading && isAuthenticated && (
           <Modal>
             <Modal.Open opens="wallet">
-              <NavLink className="hover:bg-[#423566] px-4 py-2 rounded-md">
+              <span className="hover:bg-[#423566] px-4 py-2 rounded-md">
                 <CiWallet size={26} />
-              </NavLink>
+              </span>
             </Modal.Open>
             <Modal.Body name="wallet">
               <Transaction />

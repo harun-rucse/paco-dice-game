@@ -44,7 +44,7 @@ function WithdrawTable() {
             <span
               className={`${getColor(
                 item.status
-              )} w-[6.5rem] h-fit text-center py-1 rounded-full uppercase font-extrabold`}
+              )} w-[6.5rem] h-fit text-center py-1 rounded-full uppercase font-semibold`}
             >
               {item.status === "success"
                 ? "completed"
@@ -55,13 +55,13 @@ function WithdrawTable() {
             <span>{item.receivedAddress}</span>
             <span className="space-x-3">
               <button
-                className="bg-[#acffb9] text-[#36c45b] p-2 rounded-full uppercase font-extrabold text-center"
+                className="bg-[#acffb9] text-[#36c45b] p-2 rounded-full uppercase font-semibold text-center"
                 onClick={() => handleApproval(item._id, "success")}
               >
                 Yes
               </button>
               <button
-                className="bg-[#ff8181] text-[#db1947] p-2 rounded-full uppercase font-extrabold text-center"
+                className="bg-[#ff8181] text-[#db1947] p-2 rounded-full uppercase font-semibold text-center"
                 onClick={() => handleApproval(item._id, "fail")}
               >
                 No
@@ -70,7 +70,7 @@ function WithdrawTable() {
           </Table.Row>
         ))}
         {withdraws?.length === 0 && (
-          <span className="flex justify-center font-bold py-2">
+          <span className="flex justify-center font-semibold py-2">
             No data found!
           </span>
         )}

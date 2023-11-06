@@ -12,7 +12,7 @@ function TableBody({ children }) {
 
 function TableRow({ children }) {
   return (
-    <div className="grid grid-cols-[0.5fr_1fr_1fr_1fr_1fr] md:grid-cols-[1fr_2fr_1fr_3fr_1fr] text-sm font-bold px-6 md:py-1 border-b-2 border-gray-700 first:border-t-0 last:border-b-0">
+    <div className="grid grid-cols-[0.5fr_1fr_1fr_1fr_1fr] md:grid-cols-[1fr_2fr_1fr_3fr_1fr] text-sm font-semibold px-6 md:py-1 border-b-2 border-gray-700 first:border-t-0 last:border-b-0">
       {children}
     </div>
   );

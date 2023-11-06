@@ -3,17 +3,17 @@ import { useNavigate } from "react-router-dom";
 import { useCurrentUser } from "../features/authentication/useCurrentUser";
 import Spinner from "./Spinner";
 
-function ProtectedRoute({ children, roles = [] }) {
+function PublicdRoute({ children }) {
   const navigate = useNavigate();
-  const { user, isLoading } = useCurrentUser();
+  const { isLoading, isAuthenticated } = useCurrentUser();
 
   useEffect(() => {
-    if (!isLoading && !roles.includes(user?.role)) navigate("/");
-  }, [user, isLoading, roles, navigate]);
+    if (!isLoading && isAuthenticated) navigate("/");
+  }, [isLoading, isAuthenticated, navigate]);
 
   if (isLoading) return <Spinner />;
 
-  if (roles.includes(user?.role)) return children;
+  if (!isLoading && !isAuthenticated) return children;
 }
 
-export default ProtectedRoute;
+export default PublicdRoute;

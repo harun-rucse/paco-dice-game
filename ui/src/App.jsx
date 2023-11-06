@@ -8,6 +8,7 @@ import PageNotFound from "./pages/PageNotFound";
 import Spinner from "./components/Spinner";
 import { BalanceProvider } from "./context/BalanceContext";
 import ProtectedRoute from "./components/ProtectedRoute";
+import PublicdRoute from "./components/PublicRoute";
 
 const AppLayout = lazy(() => import("./components/AppLayout"));
 const AdminLayout = lazy(() => import("./components/admin/AdminLayout"));
@@ -16,6 +17,7 @@ const Homepage = lazy(() => import("./pages/Homepage"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const AdminApproval = lazy(() => import("./pages/AdminApproval"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const Profile = lazy(() => import("./pages/Profile"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -37,8 +39,21 @@ function App() {
                 <Route index element={<Homepage />} />
 
                 <Route
+                  path="/profile"
+                  element={
+                    <ProtectedRoute roles={["admin", "user"]}>
+                      <Profile />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
                   path="/reset-password/:resetToken"
-                  element={<ResetPassword />}
+                  element={
+                    <PublicdRoute>
+                      <ResetPassword />
+                    </PublicdRoute>
+                  }
                 />
                 <Route path="/staking" element={<ComingSoon />} />
                 <Route path="*" element={<PageNotFound />} />
@@ -46,7 +61,7 @@ function App() {
               <Route
                 path="/admin"
                 element={
-                  <ProtectedRoute>
+                  <ProtectedRoute roles={["admin"]}>
                     <AdminLayout />
                   </ProtectedRoute>
                 }

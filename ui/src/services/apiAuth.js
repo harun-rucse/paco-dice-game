@@ -74,3 +74,28 @@ export const resetPassword = async ({ password, resetToken }) => {
     throw new Error(err?.response?.data?.message);
   }
 };
+
+export const passwordChange = async ({ currentPassword, password }) => {
+  try {
+    const { data } = await axios.patch(
+      `${API_URL}/auth/update-password`,
+      {
+        currentPassword,
+        password,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${
+            JSON.parse(localStorage.getItem("jwt-token")) || ""
+          }`,
+        },
+      }
+    );
+
+    localStorage.removeItem("jwt-token");
+
+    return data;
+  } catch (err) {
+    throw new Error(err?.response?.data?.message);
+  }
+};

@@ -19,7 +19,7 @@ function Header({ setShowSidebar }) {
       <div className="flex items-center gap-5">
         <div className="relative">
           <img src="/icons/bell.png" alt="" className="w-7" />
-          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold w-3 h-3 rounded-full flex justify-center items-center p-2">
+          <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-semibold w-3 h-3 rounded-full flex justify-center items-center p-2">
             3
           </span>
         </div>
