@@ -26,7 +26,7 @@ function WithdrawTable() {
   if (isLoading1 || isLoading2) return <Spinner />;
 
   return (
-    <Table>
+    <Table columns="grid-cols-[0.5fr_1fr_1fr_1fr_1fr] md:grid-cols-[1fr_2fr_1fr_3fr_1fr]">
       <Table.Header>
         <span>Username</span>
         <span>Withdraw Amount</span>
@@ -44,7 +44,7 @@ function WithdrawTable() {
             <span
               className={`${getColor(
                 item.status
-              )} w-[6.5rem] h-fit text-center py-1 rounded-full uppercase font-semibold`}
+              )} w-[6.5rem] h-fit text-center py-1 rounded-full uppercase font-extralight`}
             >
               {item.status === "success"
                 ? "completed"
@@ -55,13 +55,13 @@ function WithdrawTable() {
             <span>{item.receivedAddress}</span>
             <span className="space-x-3">
               <button
-                className="bg-[#acffb9] text-[#36c45b] p-2 rounded-full uppercase font-semibold text-center"
+                className="bg-[#acffb9] text-[#36c45b] p-2 rounded-full uppercase font-extralight text-center"
                 onClick={() => handleApproval(item._id, "success")}
               >
                 Yes
               </button>
               <button
-                className="bg-[#ff8181] text-[#db1947] p-2 rounded-full uppercase font-semibold text-center"
+                className="bg-[#ff8181] text-[#db1947] p-2 rounded-full uppercase font-extralight text-center"
                 onClick={() => handleApproval(item._id, "fail")}
               >
                 No
@@ -70,7 +70,7 @@ function WithdrawTable() {
           </Table.Row>
         ))}
         {withdraws?.length === 0 && (
-          <span className="flex justify-center font-semibold py-2">
+          <span className="flex justify-center font-extralight py-2">
             No data found!
           </span>
         )}

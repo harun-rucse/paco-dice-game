@@ -18,7 +18,7 @@ function Filter({ filterField, options = [] }) {
         <div
           className={`${
             currentFilter === option.value ? "bg-[#9141f8]" : ""
-          } px-3 py-1 rounded-xl font-semibold cursor-pointer`}
+          } px-3 py-1 rounded-xl font-extralight cursor-pointer`}
           key={option.value}
           disabled={currentFilter === option.value}
           onClick={() => handleClick(option.value)}

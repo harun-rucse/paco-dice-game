@@ -1,6 +1,7 @@
 import { Outlet } from "react-router-dom";
 import Header from "./Header";
 import MobileNavbar from "./MobileNavbar";
+import Footer from "./Footer";
 
 function AppLayout() {
   return (
@@ -13,6 +14,8 @@ function AppLayout() {
           <Outlet />
         </div>
       </div>
+
+      <Footer />
     </div>
   );
 }

@@ -20,10 +20,10 @@ function ChangePassword() {
   }
 
   return (
-    <div className="w-full bg-[#2b1346] text-white flex flex-col items-center gap-2 p-6 rounded-xl">
+    <div className="w-full bg-[#2b1346] text-white flex flex-col items-center gap-2 p-6 rounded-xl border border-[#613692]">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="w-full md:px-10 flex flex-col gap-6 md:pt-5"
+        className="w-full md:px-6 flex flex-col gap-10 md:pt-5"
       >
         <FormRow
           name="currentPassword"
@@ -34,7 +34,7 @@ function ChangePassword() {
             type="password"
             id="currentPassword"
             placeholder="Current Password"
-            className="w-full bg-[#1f1d22] focus:outline-none placeholder:uppercase placeholder:text-sm font-semibold px-4 py-3 rounded-lg border border-gray-600"
+            className="w-full bg-[#1f1d22] focus:outline-none placeholder:uppercase placeholder:text-sm font-extralight px-4 py-3 rounded-lg border border-gray-600"
             disabled={isLoading}
             {...register("currentPassword", {
               required: "Current Password is required",
@@ -51,7 +51,7 @@ function ChangePassword() {
             type="password"
             id="password"
             placeholder="Password"
-            className="w-full bg-[#1f1d22] focus:outline-none placeholder:uppercase placeholder:text-sm font-semibold px-4 py-3 rounded-lg border border-gray-600"
+            className="w-full bg-[#1f1d22] focus:outline-none placeholder:uppercase placeholder:text-sm font-extralight px-4 py-3 rounded-lg border border-gray-600"
             disabled={isLoading}
             {...register("password", {
               required: "New Password is required",
@@ -68,7 +68,7 @@ function ChangePassword() {
             type="password"
             id="repeatPassword"
             placeholder="Repeat New Password"
-            className="w-full bg-[#1f1d22] focus:outline-none placeholder:text-sm font-semibold px-4 py-3 rounded-lg border border-gray-600"
+            className="w-full bg-[#1f1d22] focus:outline-none placeholder:text-sm font-extralight px-4 py-3 rounded-lg border border-gray-600"
             disabled={isLoading}
             {...register("repeatPassword", {
               required: "Repeat Password is required",
@@ -79,7 +79,7 @@ function ChangePassword() {
         </FormRow>
 
         <button
-          className="self-center bg-[#2e2550] text-sm uppercase font-semibold px-4 py-3 rounded-xl"
+          className="self-center bg-[#2e2550] text-sm uppercase font-extralight px-4 py-3 rounded-xl"
           disabled={isLoading}
         >
           Change password
@@ -90,9 +90,9 @@ function ChangePassword() {
         <input
           type="text"
           value="pacopower@gmail.com"
-          className="bg-transparent p-2 rounded-lg text-lg font-semibold"
+          className="bg-transparent p-2 rounded-lg text-lg font-extralight"
         />
-        <button className="bg-[#2e2550] text-sm uppercase font-semibold px-4 py-3 rounded-xl">
+        <button className="bg-[#2e2550] text-sm uppercase font-extralight px-4 py-3 rounded-xl">
           Change Email
         </button>
       </div>

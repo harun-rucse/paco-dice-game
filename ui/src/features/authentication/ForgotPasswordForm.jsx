@@ -24,7 +24,7 @@ function ForgotPasswordForm() {
       <div className="flex justify-center absolute top-10 md:top-36 left-[45%] md:left-[56%]">
         <img src="/lock.png" alt="" className="h-16 object-cover" />
       </div>
-      <h2 className="text-2xl md:text-3xl uppercase text-center font-semibold text-white md:pt-4">
+      <h2 className="text-2xl md:text-3xl uppercase text-center font-extralight text-white md:pt-4">
         Reset Password
       </h2>
 
@@ -37,7 +37,7 @@ function ForgotPasswordForm() {
             type="email"
             id="email"
             placeholder="Email"
-            className="w-full bg-[#1f1d22] focus:outline-none placeholder:text-sm font-semibold px-4 py-3 rounded-lg border border-gray-600"
+            className="w-full bg-[#1f1d22] focus:outline-none placeholder:text-sm font-extralight px-4 py-3 rounded-lg border border-gray-600"
             disabled={isLoading}
             {...register("email", {
               required: "Email is required",
@@ -46,7 +46,7 @@ function ForgotPasswordForm() {
         </FormRow>
 
         <button
-          className="self-center bg-[#2e2550] text-white uppercase text-sm font-semibold px-8 py-3 rounded-lg shadow-[0px_4px_4px_0px_#00000040]"
+          className="self-center bg-[#2e2550] text-white uppercase text-sm font-extralight px-8 py-3 rounded-lg shadow-[0px_4px_4px_0px_#00000040]"
           disabled={isLoading}
         >
           {isLoading ? "Sending..." : "Send reset token"}

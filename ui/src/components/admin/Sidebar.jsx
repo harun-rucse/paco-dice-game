@@ -40,7 +40,7 @@ function SidebarItem({ item }) {
       className="flex px-3 py-1 rounded-lg items-center gap-4 border border-transparent"
     >
       <img src={item.image} alt="" className="w-8" />
-      <span className="text-lg font-semibold">{item.title}</span>
+      <span className="text-lg font-extralight">{item.title}</span>
     </NavLink>
   );
 }

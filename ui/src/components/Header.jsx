@@ -37,7 +37,7 @@ function Header() {
             <Link to="/">
               <button className="flex items-center gap-2 text-white">
                 <img src="/icons/games.png" alt="" className="h-7" />
-                <span className="text-base font-semibold uppercase mt-1">
+                <span className="text-base font-extralight uppercase mt-1">
                   Games
                 </span>
               </button>
@@ -45,7 +45,7 @@ function Header() {
             <Link to="/staking">
               <button className="flex items-center gap-2 text-white">
                 <img src="/icons/staking.png" alt="" className="h-7" />
-                <span className="text-base font-semibold uppercase">
+                <span className="text-base font-extralight uppercase">
                   Staking
                 </span>
               </button>
@@ -53,7 +53,9 @@ function Header() {
             <Link to="/trade">
               <button className="flex items-center gap-2 text-white">
                 <img src="/icons/trade.png" alt="" className="h-7" />
-                <span className="text-base font-semibold uppercase">Trade</span>
+                <span className="text-base font-extralight uppercase">
+                  Trade
+                </span>
               </button>
             </Link>
           </div>
@@ -69,7 +71,7 @@ function Header() {
               <Modal.Open opens="wallet">
                 <button className="hidden md:flex items-center justify-between text-white gap-2 bg-[#d11f1f] rounded-2xl px-4 py-2 shadow-[0px_4px_4px_0px_#00000040]">
                   <img src="/icons/wallet.png" alt="" className="h-7 pt-1" />
-                  <span className="uppercase font-semibold text-base">
+                  <span className="uppercase font-extralight text-base">
                     Wallet
                   </span>
                 </button>
@@ -99,7 +101,7 @@ function Header() {
                   {user?.role === "admin" && (
                     <Link
                       to="/admin"
-                      className="text-white cursor-pointer border-b pb-2 border-gray-600 px-2 uppercase text-sm font-semibold flex items-center gap-2"
+                      className="text-white cursor-pointer border-b pb-2 border-gray-600 px-2 uppercase text-sm font-extralight flex items-center gap-2"
                     >
                       <FiLogOut />
                       Admin Panel
@@ -109,7 +111,7 @@ function Header() {
                   {isAuthenticated && (
                     <Link
                       to="/profile"
-                      className="text-white cursor-pointer border-b pb-2 border-gray-600 px-2 uppercase text-sm font-semibold flex items-center gap-2"
+                      className="text-white cursor-pointer border-b pb-2 border-gray-600 px-2 uppercase text-sm font-extralight flex items-center gap-2"
                     >
                       <FiUser />
                       Profile
@@ -117,7 +119,7 @@ function Header() {
                   )}
                   <span
                     onClick={handleLogout}
-                    className="text-white cursor-pointer px-2 uppercase text-sm font-semibold flex items-center gap-2"
+                    className="text-white cursor-pointer px-2 uppercase text-sm font-extralight flex items-center gap-2"
                   >
                     <FiLogOut />
                     Logout
@@ -129,7 +131,7 @@ function Header() {
             <Modal>
               <Modal.Open opens="authentication">
                 <button className="items-center text-white gap-2 bg-[#2e2550] rounded-xl px-2 md:px-8 py-1 md:py-2 shadow-[0px_4px_4px_0px_#00000040]">
-                  <span className="uppercase font-semibold text-base flex items-center gap-2">
+                  <span className="uppercase font-extralight text-base flex items-center gap-2">
                     <FiLogIn />
                     Login
                   </span>

@@ -10,13 +10,13 @@ function Transaction() {
       <div className="w-full md:w-[24rem] md:h-[36rem] bg-[#411b6a] space-y-3 px-6 py-8">
         <div
           onClick={() => setCurrent("deposite")}
-          className="bg-[#1f5cb8] text-sm px-8 py-3 cursor-pointer rounded-lg uppercase font-semibold text-white shadow-[0px_4px_4px_0px_#00000040]"
+          className="bg-[#1f5cb8] text-sm px-8 py-3 cursor-pointer rounded-lg uppercase font-extralight text-white shadow-[0px_4px_4px_0px_#00000040]"
         >
           Deposite
         </div>
         <div
           onClick={() => setCurrent("withdraw")}
-          className="bg-[#6c1fb8] text-sm px-8 py-3 cursor-pointer rounded-lg uppercase font-semibold text-white shadow-[0px_4px_4px_0px_#00000040]"
+          className="bg-[#6c1fb8] text-sm px-8 py-3 cursor-pointer rounded-lg uppercase font-extralight text-white shadow-[0px_4px_4px_0px_#00000040]"
         >
           Withdraw
         </div>

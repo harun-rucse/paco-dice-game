@@ -43,7 +43,7 @@ function Withdraw() {
 
   return (
     <>
-      <h2 className="text-lg uppercase font-semibold text-white">Withdraw</h2>
+      <h2 className="text-lg uppercase font-extralight text-white">Withdraw</h2>
       <Balance className="gap-4" />
 
       <form
@@ -53,7 +53,7 @@ function Withdraw() {
         <input
           type="text"
           placeholder="Enter Address"
-          className="bg-[#1f1d22] focus:outline-none placeholder:uppercase font-semibold px-4 py-3 rounded-lg border border-gray-600"
+          className="bg-[#1f1d22] focus:outline-none placeholder:uppercase font-extralight px-4 py-3 rounded-lg border border-gray-600"
           disabled={isLoading}
           {...register("address", {
             required: "Wallet address is required",
@@ -71,7 +71,7 @@ function Withdraw() {
               type="number"
               step="any"
               placeholder="Enter Amount"
-              className="bg-[#1f1d22] focus:outline-none placeholder:uppercase font-semibold px-4 py-3 rounded-lg border border-gray-600"
+              className="bg-[#1f1d22] focus:outline-none placeholder:uppercase font-extralight px-4 py-3 rounded-lg border border-gray-600"
               disabled={isLoading}
               {...register("amount", {
                 required: "Amount is required",
@@ -88,10 +88,10 @@ function Withdraw() {
           <div className="relative w-full flex items-center gap-2 bg-[#1f1d22] px-4 py-2 rounded-lg border border-gray-600">
             <img src={currentBalance.imgUrl} alt="" className="h-7" />
             <div className="flex flex-col ">
-              <span className="uppercase text-gray-400 font-semibold text-xs">
+              <span className="uppercase text-gray-400 font-extralight text-xs">
                 Balance
               </span>
-              <strong className="text-white text-sm font-semibold">
+              <strong className="text-white text-sm font-extralight">
                 {currentBalance.value?.toFixed(4)}
               </strong>
             </div>
@@ -106,19 +106,19 @@ function Withdraw() {
 
         <div className="flex items-center gap-2 bg-[#323232] px-4 py-2 rounded-xl text-white mt-6">
           <AiFillWarning color="#ffcc00" size={20} />
-          <span className="text-sm uppercase font-semibold">
+          <span className="text-sm uppercase font-extralight">
             MINIMUM WITHDRAWAL AMOUNT IS 500000 PACO.
           </span>
         </div>
 
         <div className="mt-[5rem] w-full">
           <button
-            className="bg-[#d11f1f] w-full uppercase text-sm font-semibold px-6 py-3 rounded-lg shadow-[ 0px_4px_4px_0px_#00000040]"
+            className="bg-[#d11f1f] w-full uppercase text-sm font-extralight px-6 py-3 rounded-lg shadow-[ 0px_4px_4px_0px_#00000040]"
             disabled={isLoading}
           >
             {isLoading ? "Withdrawing..." : "Withdraw"}
           </button>
-          <p className="text-xs font-semibold mt-2">
+          <p className="text-xs font-extralight mt-2">
             TRANSACTION FEE - 10000 PACO.
           </p>
         </div>

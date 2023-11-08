@@ -37,14 +37,14 @@ function Pagination({ count }) {
       </p>
       <div className="text-sm flex gap-2 items-center">
         <button
-          className="hover:bg-[#161616] px-2 py-1 rounded-md font-semibold flex items-center"
+          className="hover:bg-[#161616] px-2 py-1 rounded-md font-extralight flex items-center"
           onClick={handlePrev}
           disabled={currentPage === 1}
         >
           <HiChevronLeft /> <span>Previous</span>
         </button>
         <button
-          className="hover:bg-[#161616] px-2 py-1 rounded-md font-semibold flex items-center"
+          className="hover:bg-[#161616] px-2 py-1 rounded-md font-extralight flex items-center"
           onClick={handleNext}
           disabled={currentPage === pageCount}
         >

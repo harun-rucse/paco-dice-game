@@ -12,7 +12,7 @@ function MobileNavbar() {
 
   return (
     <div className="block md:hidden fixed left-0 bottom-1 w-full z-[999999999] ">
-      <div className="flex justify-between bg-[#432663] px-6 py-2 m-2 text-white font-semibold rounded-3xl shadow-md shadow-[#432663]">
+      <div className="flex justify-between bg-[#432663] px-6 py-2 m-2 text-white font-extralight rounded-3xl shadow-md shadow-[#432663]">
         <NavLink to="/" className="hover:bg-[#423566] px-4 py-2 rounded-md">
           <AiOutlineHome size={26} />
         </NavLink>

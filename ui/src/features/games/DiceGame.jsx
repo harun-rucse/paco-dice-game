@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Control from "./Control";
-import Footer from "./Footer";
+import Footer from "../../components/Footer";
 import GameCard from "./GameCard";
 import History from "./History";
 import InforCard from "./InforCard";
@@ -67,34 +67,31 @@ function DiceGame() {
   }
 
   return (
-    <div>
-      <div className="flex flex-col gap-6 mb-40">
-        <Control />
-        <History reFetchHistory={reFetchHistory} />
-        <GameCard
-          prediction={prediction}
-          setPrediction={setPrediction}
-          result={result}
-          onRoll={handleRoll}
-          rollType={rollType}
-          isLoading={isLoading}
-          betStatus={betStatus}
-        />
-        <InforCard
-          betAmount={betAmount}
-          setBetAmount={setBetAmount}
-          multiplier={multiplier}
-          setMultiplier={setMultiplier}
-          payout={payout}
-          setPayout={setPayout}
-          rollType={rollType}
-          setRollType={handleCahngeOFRoll}
-          winChance={winChance}
-          showError={showError}
-          setShowError={setShowError}
-        />
-      </div>
-      <Footer />
+    <div className="flex flex-col gap-6 mb-40">
+      <Control />
+      <History reFetchHistory={reFetchHistory} />
+      <GameCard
+        prediction={prediction}
+        setPrediction={setPrediction}
+        result={result}
+        onRoll={handleRoll}
+        rollType={rollType}
+        isLoading={isLoading}
+        betStatus={betStatus}
+      />
+      <InforCard
+        betAmount={betAmount}
+        setBetAmount={setBetAmount}
+        multiplier={multiplier}
+        setMultiplier={setMultiplier}
+        payout={payout}
+        setPayout={setPayout}
+        rollType={rollType}
+        setRollType={handleCahngeOFRoll}
+        winChance={winChance}
+        showError={showError}
+        setShowError={setShowError}
+      />
     </div>
   );
 }
