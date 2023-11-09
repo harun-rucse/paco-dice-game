@@ -1,4 +1,5 @@
 import { useBalance } from "../../context/BalanceContext";
+import Switch from "../../components/Switch";
 
 const MAX_BET = 500;
 const MIN_BET = 1;
@@ -138,13 +139,9 @@ function InforCard({
         </div>
       </div>
 
-      <div className="w-full flex flex-col md:flex-row items-center justify-center gap-8 md:gap-12 pt-5">
-        <button>
-          <img src="/icons/switch.png" alt="" className="w-36" />
-        </button>
-        <button className="text-white text-2xl uppercase -mt-3">
-          Auto bet
-        </button>
+      <div className="w-full flex items-end justify-center gap-6 md:gap-8 pt-5">
+        <Switch onSwitch={(status) => console.log(status)} />
+        <button className="text-white text-xl uppercase -mt-3">Auto bet</button>
       </div>
     </div>
   );

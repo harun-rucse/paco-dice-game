@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import Control from "./Control";
-import Footer from "../../components/Footer";
 import GameCard from "./GameCard";
 import History from "./History";
 import InforCard from "./InforCard";
+import AutoBet from "./AutoBet";
 import { useCreateGame } from "./useCreateGame";
 import { useBalance } from "../../context/BalanceContext";
 
@@ -17,6 +17,13 @@ function DiceGame() {
   const [winChance, setWinChance] = useState(50);
   const [showError, setShowError] = useState("");
   const [betStatus, setBetStatus] = useState("");
+
+  const [numberOfBet, setNumberOfBet] = useState("");
+  const [stopToWin, setStopToWin] = useState("");
+  const [stopToLoss, setStopToLoss] = useState("");
+  const [maxBetAmount, setMaxBetAmount] = useState("");
+  const [onWinReset, setOnWinReset] = useState("");
+  const [onLossIncrease, setOnLossIncrease] = useState("");
 
   const [reFetchHistory, setReFetchHistory] = useState(false);
   const { create, isLoading } = useCreateGame();
@@ -91,6 +98,20 @@ function DiceGame() {
         winChance={winChance}
         showError={showError}
         setShowError={setShowError}
+      />
+      <AutoBet
+        numberOfBet={numberOfBet}
+        setNumberOfBet={setNumberOfBet}
+        stopToWin={stopToWin}
+        setStopToWin={setStopToWin}
+        stopToLoss={stopToLoss}
+        setStopToLoss={setStopToLoss}
+        maxBetAmount={maxBetAmount}
+        setMaxBetAmount={setMaxBetAmount}
+        onWinReset={onWinReset}
+        setOnWinReset={setOnWinReset}
+        onLossIncrease={onLossIncrease}
+        setOnLossIncrease={setOnLossIncrease}
       />
     </div>
   );

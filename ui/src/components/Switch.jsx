@@ -1,10 +1,13 @@
 import { useState } from "react";
 
-function Switch() {
+function Switch({ onSwitch }) {
   const [isOn, setIsOn] = useState(false);
 
   const toggleSwitch = () => {
-    setIsOn(!isOn);
+    setIsOn((state) => {
+      onSwitch(!state);
+      return !state;
+    });
   };
 
   return (
@@ -17,13 +20,13 @@ function Switch() {
           onChange={toggleSwitch}
         />
         <div
-          className={`w-12 h-5 ${
+          className={`w-16 h-6 ${
             isOn ? "bg-green-400" : "bg-gray-400"
-          } rounded-full shadow-inner`}
+          } rounded-full border border-green-200 shadow-inner`}
         ></div>
         <div
-          className={`absolute w-5 h-5 bg-white rounded-full shadow-md transform transition-transform ${
-            isOn ? "translate-x-7" : ""
+          className={`absolute top-[2px] w-5 h-5 bg-white rounded-full shadow-md transform transition-transform ${
+            isOn ? "translate-x-10" : "translate-x-1"
           }`}
         ></div>
       </div>
