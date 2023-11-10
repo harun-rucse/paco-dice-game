@@ -1,8 +1,6 @@
 import { Suspense, lazy } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { WagmiConfig, createConfig } from "wagmi";
-import { ConnectKitProvider, getDefaultConfig } from "connectkit";
-import { bsc, sepolia } from "wagmi/chains";
+
 import { Toaster } from "react-hot-toast";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -19,19 +17,6 @@ const Homepage = lazy(() => import("./pages/Homepage"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const AdminApproval = lazy(() => import("./pages/AdminApproval"));
 
-const chains = [bsc];
-const config = createConfig(
-  getDefaultConfig({
-    alchemyId: "EbWpcrEoNB5gzeDJi_clFzLbpbgTtuRt",
-    walletConnectProjectId: "1134b8f033ffc7945c3513d4fa5f0459",
-    chains,
-    appName: "Your App Name",
-    appDescription: "Your App Description",
-    appUrl: "https://family.co",
-    appIcon: "https://family.co/logo.png",
-  })
-);
-
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -45,44 +30,38 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <BalanceProvider>
         <ReactQueryDevtools initialIsOpen={false} />
-        <WagmiConfig config={config}>
-          <ConnectKitProvider>
-            <BrowserRouter>
-              <Suspense fallback={<Spinner />}>
-                <Routes>
-                  <Route path="/" element={<AppLayout />}>
-                    <Route index element={<Homepage />} />
 
-                    <Route path="/staking" element={<ComingSoon />} />
-                    <Route path="*" element={<PageNotFound />} />
-                  </Route>
-                  <Route
-                    path="/admin"
-                    element={
-                      <ProtectedRoute>
-                        <AdminLayout />
-                      </ProtectedRoute>
-                    }
-                  >
-                    <Route
-                      index
-                      element={<Navigate replace to="dashboard" />}
-                    />
-                    <Route path="dashboard" element={<AdminDashboard />} />
-                    <Route path="approval" element={<AdminApproval />} />
-                  </Route>
-                </Routes>
-              </Suspense>
-            </BrowserRouter>
-            <Toaster
-              position="top-center"
-              reverseOrder={false}
-              containerStyle={{
-                zIndex: 999999999,
-              }}
-            />
-          </ConnectKitProvider>
-        </WagmiConfig>
+        <BrowserRouter>
+          <Suspense fallback={<Spinner />}>
+            <Routes>
+              <Route path="/" element={<AppLayout />}>
+                <Route index element={<Homepage />} />
+
+                <Route path="/staking" element={<ComingSoon />} />
+                <Route path="*" element={<PageNotFound />} />
+              </Route>
+              <Route
+                path="/admin"
+                element={
+                  <ProtectedRoute>
+                    <AdminLayout />
+                  </ProtectedRoute>
+                }
+              >
+                <Route index element={<Navigate replace to="dashboard" />} />
+                <Route path="dashboard" element={<AdminDashboard />} />
+                <Route path="approval" element={<AdminApproval />} />
+              </Route>
+            </Routes>
+          </Suspense>
+        </BrowserRouter>
+        <Toaster
+          position="top-center"
+          reverseOrder={false}
+          containerStyle={{
+            zIndex: 999999999,
+          }}
+        />
       </BalanceProvider>
     </QueryClientProvider>
   );

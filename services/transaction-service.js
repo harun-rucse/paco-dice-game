@@ -1,7 +1,5 @@
 const Web3 = require("web3");
-const web3 = new Web3(
-  "wss://sepolia.infura.io/ws/v3/650fe48d07f143f9b110e717c48bae4d"
-);
+const web3 = new Web3("wss://go.getblock.io/a9849d67489d4d1faeb5b22d671ae50a");
 const { tokenABI } = require("../utils/contracts");
 
 const usdtTokenAddress = "0x95D59d33E017533b996eAf351cf7428fE7510bc0";

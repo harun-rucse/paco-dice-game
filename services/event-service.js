@@ -4,9 +4,7 @@ const Deposit = require("../models/Deposit");
 const { tokenABI } = require("../utils/contracts");
 
 // Connect to Binance Smart Chain Mainnet
-const web3 = new Web3(
-  "wss://sepolia.infura.io/ws/v3/650fe48d07f143f9b110e717c48bae4d"
-);
+const web3 = new Web3("wss://go.getblock.io/a9849d67489d4d1faeb5b22d671ae50a");
 
 const usdtTokenAddress = "0x95D59d33E017533b996eAf351cf7428fE7510bc0";
 const btcTokenAddress = "0x1F13a6C0FF10C15919c9D2F7Cc92a6847D415658";
