@@ -6,7 +6,7 @@ function Security() {
       <span>2-FACTOR AUTHENTICATION</span>
       <div className="flex items-center gap-3">
         <span>2FA</span>
-        <Switch />
+        <Switch onSwitch={(state) => console.log(state)} />
         <span>Disabled</span>
       </div>
 

@@ -1,11 +1,21 @@
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { usePasswordChange } from "./usePasswordChange";
 import FormRow from "../../components/FormRow";
+import { useCurrentUser } from "../authentication/useCurrentUser";
+import Spinner from "../../components/Spinner";
 
 function ChangePassword() {
+  const [email, setEmail] = useState("");
   const { register, handleSubmit, reset, formState, getValues } = useForm();
   const { errors } = formState;
+
+  const { user, isLoading: isLoading1 } = useCurrentUser();
   const { isLoading, passwordChange } = usePasswordChange();
+
+  useEffect(() => {
+    if (!isLoading1 && user) setEmail(user?.email);
+  }, [isLoading1, user]);
 
   function onSubmit({ currentPassword, password }) {
     passwordChange(
@@ -18,6 +28,8 @@ function ChangePassword() {
       }
     );
   }
+
+  if (isLoading1) return <Spinner />;
 
   return (
     <div className="w-full bg-[#2b1346] text-white flex flex-col items-center gap-2 p-6 rounded-xl border border-[#613692]">
@@ -89,7 +101,8 @@ function ChangePassword() {
       <div className="flex flex-col items-center gap-6 pt-12">
         <input
           type="text"
-          value="pacopower@gmail.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           className="bg-transparent p-2 rounded-lg text-lg font-extralight"
         />
         <button className="bg-[#2e2550] text-sm uppercase font-extralight px-4 py-3 rounded-xl">

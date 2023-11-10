@@ -44,9 +44,7 @@ function ProfileInfo() {
 
         <div className="flex flex-col">
           <span className="text-lg text-gray-400 font-extralight">Email</span>
-          <strong className="text-lg font-extralight">
-            pacopower@gmail.com
-          </strong>
+          <strong className="text-lg font-extralight">{user?.email}</strong>
         </div>
 
         <div className="flex flex-col w-full">
