@@ -22,7 +22,7 @@ const handleJWTExpiredError = () => {
 };
 
 const sendErrorDev = (err, req, res) => {
-  console.error(err);
+  console.error(err.message);
 
   res.status(err.statusCode).json({
     status: err.status,

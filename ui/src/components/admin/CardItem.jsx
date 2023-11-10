@@ -5,7 +5,7 @@ function CardItem({ item }) {
         <img src={item.image} alt="" className="w-10" />
         <div className="flex flex-col gap-3">
           <strong>{item.label}</strong>
-          <strong className="font-extrabold text-lg">
+          <strong className="font-extralight text-lg">
             ${item.amount.toFixed(2)}
           </strong>
         </div>

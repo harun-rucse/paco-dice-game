@@ -21,10 +21,10 @@ function LoginForm({ setCurrent }) {
 
   return (
     <>
-      <div className="flex justify-center absolute top-10 md:top-0 left-[45%] md:left-[57%]">
+      <div className="flex justify-center absolute top-10 md:top-36 left-[45%] md:left-[56%]">
         <img src="/lock.png" alt="" className="h-16 object-cover" />
       </div>
-      <h2 className="text-3xl uppercase text-center font-extrabold text-white md:pt-4">
+      <h2 className="text-3xl uppercase text-center font-extralight text-white md:pt-4">
         Login
       </h2>
 
@@ -37,7 +37,7 @@ function LoginForm({ setCurrent }) {
             type="email"
             id="email"
             placeholder="Email"
-            className="w-full bg-[#1f1d22] focus:outline-none placeholder:text-sm font-bold px-4 py-3 rounded-lg border border-gray-600"
+            className="w-full bg-[#1f1d22] focus:outline-none placeholder:text-sm font-extralight px-4 py-3 rounded-lg border border-gray-600"
             disabled={isLoading}
             {...register("email", {
               required: "Email is required",
@@ -54,7 +54,7 @@ function LoginForm({ setCurrent }) {
             type="password"
             id="password"
             placeholder="Password"
-            className="w-full bg-[#1f1d22] focus:outline-none placeholder:uppercase placeholder:text-sm font-bold px-4 py-3 rounded-lg border border-gray-600"
+            className="w-full bg-[#1f1d22] focus:outline-none placeholder:uppercase placeholder:text-sm font-extralight px-4 py-3 rounded-lg border border-gray-600"
             disabled={isLoading}
             {...register("password", {
               required: "Password is required",
@@ -63,13 +63,20 @@ function LoginForm({ setCurrent }) {
         </FormRow>
 
         <button
-          className="self-center bg-[#2e2550] text-white uppercase text-sm font-extrabold px-8 py-3 rounded-lg shadow-[0px_4px_4px_0px_#00000040]"
+          className="self-center bg-[#2e2550] text-white uppercase text-sm font-extralight px-8 py-3 rounded-lg shadow-[0px_4px_4px_0px_#00000040]"
           disabled={isLoading}
         >
           Login
         </button>
 
-        <p className="text-white text-center font-bold">
+        <p
+          className="text-[#da8b2f] text-center font-extralight cursor-pointer"
+          onClick={() => setCurrent("forgot")}
+        >
+          Forgot your password?
+        </p>
+
+        <p className="text-white text-center font-extralight">
           Don't have an account?{" "}
           <span
             className="underline cursor-pointer"

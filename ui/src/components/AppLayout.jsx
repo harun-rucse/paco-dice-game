@@ -1,6 +1,7 @@
 import { Outlet } from "react-router-dom";
 import Header from "./Header";
 import MobileNavbar from "./MobileNavbar";
+import Footer from "./Footer";
 
 function AppLayout() {
   return (
@@ -9,10 +10,12 @@ function AppLayout() {
 
       <div className="flex gap-10 lg:px-8 py-6">
         <MobileNavbar />
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 max-w-[1200px] mx-auto px-4 overflow-hidden">
           <Outlet />
         </div>
       </div>
+
+      <Footer />
     </div>
   );
 }

@@ -7,7 +7,7 @@ function Button({ children, className, to, ...rest }) {
       <Link
         to={to}
         className={cn(
-          "flex items-center gap-1 bg-[#2e2552] transition hover:bg-[#423566] text-white text-lg font-extrabold px-6 py-2 rounded-2xl",
+          "flex items-center gap-1 bg-[#2e2552] transition hover:bg-[#423566] text-white text-lg font-extralight px-6 py-2 rounded-2xl",
           className
         )}
       >

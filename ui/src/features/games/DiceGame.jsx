@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import Control from "./Control";
-import Footer from "./Footer";
 import GameCard from "./GameCard";
 import History from "./History";
 import InforCard from "./InforCard";
+import AutoBet from "./AutoBet";
 import { useCreateGame } from "./useCreateGame";
 import { useBalance } from "../../context/BalanceContext";
 
@@ -17,6 +17,13 @@ function DiceGame() {
   const [winChance, setWinChance] = useState(50);
   const [showError, setShowError] = useState("");
   const [betStatus, setBetStatus] = useState("");
+
+  const [numberOfBet, setNumberOfBet] = useState("");
+  const [stopToWin, setStopToWin] = useState("");
+  const [stopToLoss, setStopToLoss] = useState("");
+  const [maxBetAmount, setMaxBetAmount] = useState("");
+  const [onWinReset, setOnWinReset] = useState("");
+  const [onLossIncrease, setOnLossIncrease] = useState("");
 
   const [reFetchHistory, setReFetchHistory] = useState(false);
   const { create, isLoading } = useCreateGame();
@@ -67,34 +74,45 @@ function DiceGame() {
   }
 
   return (
-    <div>
-      <div className="flex flex-col gap-6 mb-40">
-        <Control />
-        <History reFetchHistory={reFetchHistory} />
-        <GameCard
-          prediction={prediction}
-          setPrediction={setPrediction}
-          result={result}
-          onRoll={handleRoll}
-          rollType={rollType}
-          isLoading={isLoading}
-          betStatus={betStatus}
-        />
-        <InforCard
-          betAmount={betAmount}
-          setBetAmount={setBetAmount}
-          multiplier={multiplier}
-          setMultiplier={setMultiplier}
-          payout={payout}
-          setPayout={setPayout}
-          rollType={rollType}
-          setRollType={handleCahngeOFRoll}
-          winChance={winChance}
-          showError={showError}
-          setShowError={setShowError}
-        />
-      </div>
-      <Footer />
+    <div className="flex flex-col gap-6 mb-40">
+      <Control />
+      <History reFetchHistory={reFetchHistory} />
+      <GameCard
+        prediction={prediction}
+        setPrediction={setPrediction}
+        result={result}
+        onRoll={handleRoll}
+        rollType={rollType}
+        isLoading={isLoading}
+        betStatus={betStatus}
+      />
+      <InforCard
+        betAmount={betAmount}
+        setBetAmount={setBetAmount}
+        multiplier={multiplier}
+        setMultiplier={setMultiplier}
+        payout={payout}
+        setPayout={setPayout}
+        rollType={rollType}
+        setRollType={handleCahngeOFRoll}
+        winChance={winChance}
+        showError={showError}
+        setShowError={setShowError}
+      />
+      <AutoBet
+        numberOfBet={numberOfBet}
+        setNumberOfBet={setNumberOfBet}
+        stopToWin={stopToWin}
+        setStopToWin={setStopToWin}
+        stopToLoss={stopToLoss}
+        setStopToLoss={setStopToLoss}
+        maxBetAmount={maxBetAmount}
+        setMaxBetAmount={setMaxBetAmount}
+        onWinReset={onWinReset}
+        setOnWinReset={setOnWinReset}
+        onLossIncrease={onLossIncrease}
+        setOnLossIncrease={setOnLossIncrease}
+      />
     </div>
   );
 }
