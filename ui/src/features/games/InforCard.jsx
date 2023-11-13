@@ -16,6 +16,7 @@ function InforCard({
   winChance,
   showError,
   setShowError,
+  setAuto,
 }) {
   const { currentBalance } = useBalance();
 
@@ -140,7 +141,7 @@ function InforCard({
       </div>
 
       <div className="w-full flex items-end justify-center gap-6 md:gap-8 pt-5">
-        <Switch onSwitch={(status) => console.log(status)} />
+        <Switch onSwitch={(status) => setAuto(status)} />
         <button className="text-white text-xl uppercase -mt-3">Auto bet</button>
       </div>
     </div>
