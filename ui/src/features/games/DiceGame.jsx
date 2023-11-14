@@ -6,6 +6,10 @@ import InforCard from "./InforCard";
 import AutoBet from "./AutoBet";
 import { useCreateGame } from "./useCreateGame";
 import { useBalance } from "../../context/BalanceContext";
+import AnimateSpinner from "../../components/AnimateSpinner";
+
+const winAudio = new Audio("/audio/win.mp3");
+const loseAudio = new Audio("/audio/lose.mp3");
 
 function DiceGame() {
   const loopRef = useRef();
@@ -28,6 +32,7 @@ function DiceGame() {
 
   const [auto, setAuto] = useState(false);
   const [stopRoll, setStopRoll] = useState(false);
+  const [playAudio, setPlayAudio] = useState(true);
 
   const [reFetchHistory, setReFetchHistory] = useState(false);
   const { create, isLoading } = useCreateGame();
@@ -55,23 +60,35 @@ function DiceGame() {
       let initialBetAmount = betAmount;
 
       if (!auto) {
-        create(
-          {
-            paymentType: currentBalance?.name?.toLowerCase(),
-            betAmount,
-            prediction,
-            rollType,
-          },
-          {
-            onSuccess: (data) => {
-              setResult(data.winNumber);
-              setBetStatus(data.status);
-              setReFetchHistory((reFetchHistory) => !reFetchHistory);
+        loopRef.current = setInterval(() => {
+          create(
+            {
+              paymentType: currentBalance?.name?.toLowerCase(),
+              betAmount,
+              prediction,
+              rollType,
             },
-          }
-        );
+            {
+              onSuccess: (data) => {
+                setResult(data.winNumber);
+                setBetStatus(data.status);
+                setReFetchHistory((reFetchHistory) => !reFetchHistory);
+                if (data.status === "lost") {
+                  // stop win audio if loss
+                  winAudio.pause();
+                  loseAudio.play();
+                } else {
+                  // stop loss audio if win
+                  loseAudio.pause();
+                  winAudio.play();
+                }
+              },
+            }
+          );
+          clearInterval(loopRef.current);
+          setStopRoll(false);
+        }, 1000);
 
-        setStopRoll(false);
         return;
       }
 
@@ -97,6 +114,10 @@ function DiceGame() {
                 setBetStatus(data.status);
                 setReFetchHistory((reFetchHistory) => !reFetchHistory);
                 if (data.status === "lost") {
+                  // play audio
+                  winAudio.pause();
+                  loseAudio.play();
+
                   lossAmount += betAmount;
                   if (onWinReset) setBetAmount(initialBetAmount);
 
@@ -108,6 +129,10 @@ function DiceGame() {
                 }
 
                 if (data.status === "win") {
+                  // play audio
+                  loseAudio.pause();
+                  winAudio.play();
+
                   winAmount += payout - betAmount;
                   // based on percentage of win amount set bet amount
                   if (onWinReset) {
@@ -153,6 +178,10 @@ function DiceGame() {
               setBetStatus(data.status);
               setReFetchHistory((reFetchHistory) => !reFetchHistory);
               if (data.status === "lost") {
+                // play audio
+                winAudio.pause();
+                loseAudio.play();
+
                 lossAmount += betAmount;
                 if (onWinReset) setBetAmount(initialBetAmount);
 
@@ -164,6 +193,10 @@ function DiceGame() {
               }
 
               if (data.status === "win") {
+                // play audio
+                loseAudio.pause();
+                winAudio.play();
+
                 winAmount += payout - betAmount;
                 // based on percentage of win amount set bet amount
                 if (onWinReset) {
@@ -192,6 +225,17 @@ function DiceGame() {
     };
   }, [stopRoll]);
 
+  // controll audio
+  useEffect(() => {
+    if (playAudio) {
+      winAudio.volume = 0.8;
+      loseAudio.volume = 0.8;
+    } else {
+      winAudio.volume = 0;
+      loseAudio.volume = 0;
+    }
+  }, [playAudio]);
+
   async function handleCahngeOFRoll(type = "rollUnder") {
     setRollType(type);
     if (type === "rollUnder" && prediction > 95) {
@@ -210,56 +254,11 @@ function DiceGame() {
     console.log("stop roll");
   }
 
-  console.log("stopRoll", stopRoll);
-
-  const handleRoll = () => {
-    let x = 100000;
-    while (x) {
-      console.log("handle roll", stopRoll);
-      x--;
-    }
-  };
-  // function handleRoll() {
-  //   console.log("handle roll", stopRoll);
-  //   if (!betAmount) return setShowError("Bet amount is required");
-
-  //   if (!betAmount || !prediction || !rollType) return;
-
-  //   if (auto) {
-  //     if (numberOfBet > 0) {
-  //       // for loop
-  //       for (let i = 0; i < numberOfBet; i++) {
-  //         console.log("i=", i);
-  //       }
-  //     } else {
-  //       while (1) {
-  //         // infinite loop
-  //         console.log("infinite loop");
-  //       }
-  //     }
-  //   } else {
-  //     create(
-  //       {
-  //         paymentType: currentBalance?.name?.toLowerCase(),
-  //         betAmount,
-  //         prediction,
-  //         rollType,
-  //       },
-  //       {
-  //         onSuccess: (data) => {
-  //           setResult(data.winNumber);
-  //           setBetStatus(data.status);
-  //           setReFetchHistory((reFetchHistory) => !reFetchHistory);
-  //         },
-  //       }
-  //     );
-  //   }
-  //   setStopRoll(false);
-  // }
+  // console.log("stopRoll", stopRoll);
 
   return (
     <div className="flex flex-col gap-6 mb-40">
-      <Control />
+      <Control playAudio={playAudio} setPlayAudio={setPlayAudio} />
       <History reFetchHistory={reFetchHistory} />
       <GameCard
         prediction={prediction}
@@ -272,7 +271,6 @@ function DiceGame() {
         betStatus={betStatus}
         stopRoll={stopRoll}
         setStopRoll={setStopRoll}
-        handleRoll={handleRoll}
       />
       <InforCard
         betAmount={betAmount}

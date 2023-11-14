@@ -45,9 +45,12 @@ function History({ reFetchHistory }) {
         className="flex items-center gap-4 md:gap-6 w-full overflow-y-hidden overflow-x-auto cursor-pointer"
         ref={ref}
       >
-        {[...histories].reverse()?.map((game, index) => (
-          <Item key={index} value={game.winNumber} status={game.status} />
-        ))}
+        {histories &&
+          [...histories]
+            ?.reverse()
+            ?.map((game, index) => (
+              <Item key={index} value={game.winNumber} status={game.status} />
+            ))}
       </div>
     </div>
   );

@@ -6,15 +6,15 @@ const AppError = require("../utils/app-error");
 
 function caclPacoReward(amount, coinName) {
   let reward = 0;
-  if (coinName === "btc" && amount >= 1) {
+  if (coinName === "btc" && amount >= 10) {
     reward = 1;
-  } else if (coinName === "usdt" && amount >= 1) {
+  } else if (coinName === "usdt" && amount >= 10) {
     reward = 1;
-  } else if (coinName === "paco" && amount >= 1) {
+  } else if (coinName === "paco" && amount >= 10) {
     reward = 1;
-  } else if (coinName === "eth" && amount >= 1) {
+  } else if (coinName === "eth" && amount >= 10) {
     reward = 1;
-  } else if (coinName === "bnb" && amount >= 1) {
+  } else if (coinName === "bnb" && amount >= 10) {
     reward = 1;
   }
 

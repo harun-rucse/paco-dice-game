@@ -1,5 +1,5 @@
-import { set } from "mongoose";
 import ReactSlider from "react-slider";
+import AnimateSpinner from "../../components/AnimateSpinner";
 
 function GameCard({
   prediction,
@@ -72,6 +72,8 @@ function GameCard({
           {console.log(stopRoll)}
         </button>
       </div>
+
+      {stopRoll && <AnimateSpinner />}
     </div>
   );
 }
