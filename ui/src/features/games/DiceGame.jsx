@@ -6,7 +6,6 @@ import InforCard from "./InforCard";
 import AutoBet from "./AutoBet";
 import { useCreateGame } from "./useCreateGame";
 import { useBalance } from "../../context/BalanceContext";
-import { set } from "mongoose";
 
 function DiceGame() {
   const loopRef = useRef();
@@ -21,11 +20,11 @@ function DiceGame() {
   const [betStatus, setBetStatus] = useState("");
 
   const [numberOfBet, setNumberOfBet] = useState(null);
-  const [stopToWin, setStopToWin] = useState("");
-  const [stopToLoss, setStopToLoss] = useState("");
-  const [maxBetAmount, setMaxBetAmount] = useState("");
-  const [onWinReset, setOnWinReset] = useState("");
-  const [onLossIncrease, setOnLossIncrease] = useState("");
+  const [stopToWin, setStopToWin] = useState(null);
+  const [stopToLoss, setStopToLoss] = useState(null);
+  const [maxBetAmount, setMaxBetAmount] = useState(null);
+  const [onWinReset, setOnWinReset] = useState(null);
+  const [onLossIncrease, setOnLossIncrease] = useState(null);
 
   const [auto, setAuto] = useState(false);
   const [stopRoll, setStopRoll] = useState(false);
@@ -50,6 +49,11 @@ function DiceGame() {
   useEffect(() => {
     if (stopRoll) {
       // Start the loop
+
+      let lossAmount = 0;
+      let winAmount = 0;
+      let initialBetAmount = betAmount;
+
       if (!auto) {
         create(
           {
@@ -79,6 +83,63 @@ function DiceGame() {
           return;
         }
 
+        if (!numberOfBet) {
+          create(
+            {
+              paymentType: currentBalance?.name?.toLowerCase(),
+              betAmount,
+              prediction,
+              rollType,
+            },
+            {
+              onSuccess: (data) => {
+                setResult(data.winNumber);
+                setBetStatus(data.status);
+                setReFetchHistory((reFetchHistory) => !reFetchHistory);
+                if (data.status === "lost") {
+                  lossAmount += betAmount;
+                  if (onWinReset) setBetAmount(initialBetAmount);
+
+                  if (onLossIncrease) {
+                    setBetAmount((betAmount) => {
+                      return betAmount + (betAmount * onLossIncrease) / 100;
+                    });
+                  }
+                }
+
+                if (data.status === "win") {
+                  winAmount += payout - betAmount;
+                  // based on percentage of win amount set bet amount
+                  if (onWinReset) {
+                    setBetAmount((betAmount) => {
+                      return betAmount + (betAmount * onWinReset) / 100;
+                    });
+                  }
+
+                  if (onLossIncrease) setBetAmount(initialBetAmount);
+                }
+              },
+            }
+          );
+        }
+
+        if (maxBetAmount > 0 && betAmount > maxBetAmount) {
+          setStopRoll(false);
+          clearInterval(loopRef.current);
+          return;
+        }
+
+        if (stopToLoss && lossAmount >= stopToLoss) {
+          setStopRoll(false);
+          clearInterval(loopRef.current);
+          return;
+        }
+
+        if (stopToWin && winAmount >= stopToWin) {
+          setStopRoll(false);
+          clearInterval(loopRef.current);
+          return;
+        }
         create(
           {
             paymentType: currentBalance?.name?.toLowerCase(),
@@ -91,6 +152,28 @@ function DiceGame() {
               setResult(data.winNumber);
               setBetStatus(data.status);
               setReFetchHistory((reFetchHistory) => !reFetchHistory);
+              if (data.status === "lost") {
+                lossAmount += betAmount;
+                if (onWinReset) setBetAmount(initialBetAmount);
+
+                if (onLossIncrease) {
+                  setBetAmount((betAmount) => {
+                    return betAmount + (betAmount * onLossIncrease) / 100;
+                  });
+                }
+              }
+
+              if (data.status === "win") {
+                winAmount += payout - betAmount;
+                // based on percentage of win amount set bet amount
+                if (onWinReset) {
+                  setBetAmount((betAmount) => {
+                    return betAmount + (betAmount * onWinReset) / 100;
+                  });
+                }
+
+                if (onLossIncrease) setBetAmount(initialBetAmount);
+              }
             },
           }
         );
@@ -126,64 +209,6 @@ function DiceGame() {
     setStopRoll(false);
     console.log("stop roll");
   }
-
-  // useEffect(() => {
-  //   if (stopRoll) {
-  //     console.log("handle roll", stopRoll);
-  //     if (!betAmount) return setShowError("Bet amount is required");
-
-  //     if (!betAmount || !prediction || !rollType) return;
-
-  //     let timeoutIndex;
-
-  //     if (auto) {
-  //       if (numberOfBet > 0) {
-  //         const finiteBet = (i) => {
-  //           if (i >= numberOfBet && !stopRoll) {
-  //             console.log("stp roll");
-  //             setStopRoll(false);
-  //             clearTimeout(timeoutIndex);
-  //             return;
-  //           }
-  //           console.log(stopRoll);
-  //           console.log("i=", i);
-  //           i++;
-
-  //           timeoutIndex = setTimeout(() => finiteBet(i), 1000);
-  //         };
-  //         finiteBet(0);
-  //       } else {
-  //         const finiteBet = (i) => {
-  //           if (!stopRoll) {
-  //             setStopRoll(false);
-  //             clearTimeout(timeoutIndex);
-  //             return;
-  //           }
-  //           console.log("i=", i);
-
-  //           timeoutIndex = setTimeout(() => finiteBet(i), 1000);
-  //         };
-  //         finiteBet(0);
-  //       }
-  //     } else {
-  //       create(
-  //         {
-  //           paymentType: currentBalance?.name?.toLowerCase(),
-  //           betAmount,
-  //           prediction,
-  //           rollType,
-  //         },
-  //         {
-  //           onSuccess: (data) => {
-  //             setResult(data.winNumber);
-  //             setBetStatus(data.status);
-  //             setReFetchHistory((reFetchHistory) => !reFetchHistory);
-  //           },
-  //         }
-  //       );
-  //     }
-  //   }
-  // }, [stopRoll]);
 
   console.log("stopRoll", stopRoll);
 

@@ -4,6 +4,23 @@ const { generateUniqueBet, generateRandomNumber } = require("../utils");
 const catchAsync = require("../utils/catch-async");
 const AppError = require("../utils/app-error");
 
+function caclPacoReward(amount, coinName) {
+  let reward = 0;
+  if (coinName === "btc" && amount >= 1) {
+    reward = 1;
+  } else if (coinName === "usdt" && amount >= 1) {
+    reward = 1;
+  } else if (coinName === "paco" && amount >= 1) {
+    reward = 1;
+  } else if (coinName === "eth" && amount >= 1) {
+    reward = 1;
+  } else if (coinName === "bnb" && amount >= 1) {
+    reward = 1;
+  }
+
+  return reward;
+}
+
 /**
  * @desc    Get Hello World message
  * @route   GET /api/hello
@@ -39,7 +56,7 @@ const createGame = catchAsync(async (req, res, next) => {
   if (!account)
     return next(new AppError("Account not found with that public key", 400));
 
-  if (account[paymentType] < betAmount)
+  if (account[paymentType ? paymentType : "btc"] < betAmount)
     return next(new AppError("Insufficient Balance for play", 400));
 
   const betId = generateUniqueBet(publicKey);
@@ -69,6 +86,9 @@ const createGame = catchAsync(async (req, res, next) => {
   // reduce balance amount of betAmount
   account[paymentType] = account[paymentType] - betAmount;
 
+  // add paco balance reward
+  account["paco"] = account["paco"] + caclPacoReward(betAmount, paymentType);
+
   // If win add win Reward
   if (game.status === "win") {
     game.rewardAmount = Number(betAmount) * multiplier;
@@ -88,7 +108,9 @@ const createGame = catchAsync(async (req, res, next) => {
  */
 const getGamesHistory = catchAsync(async (req, res) => {
   const games = await Game.find({ publicKey: req.account.publicKey })
-    .sort({ createdAt: 1 })
+    .sort({
+      createdAt: -1,
+    })
     .limit(100);
 
   res.json(games);

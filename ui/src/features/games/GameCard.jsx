@@ -12,8 +12,6 @@ function GameCard({
   betStatus,
   stopRoll,
 }) {
-  console.log(stopRoll);
-
   function handleClick() {
     if (stopRoll) {
       onStopRoll();

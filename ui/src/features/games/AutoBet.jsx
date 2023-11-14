@@ -45,14 +45,20 @@ function AutoBet({
           name="onWinReset"
           label="On win -Reset"
           value={onWinReset}
-          onChange={(e) => setOnWinReset(e.target.value)}
+          onChange={(e) => {
+            setOnWinReset(e.target.value);
+            setOnLossIncrease("");
+          }}
           icon="%"
         />
         <Input
           name="onLossIncrease"
           label="On Loss -Increase"
           value={onLossIncrease}
-          onChange={(e) => setOnLossIncrease(e.target.value)}
+          onChange={(e) => {
+            setOnLossIncrease(e.target.value);
+            setOnWinReset("");
+          }}
           icon="%"
         />
       </div>
