@@ -6,7 +6,6 @@ import InforCard from "./InforCard";
 import AutoBet from "./AutoBet";
 import { useCreateGame } from "./useCreateGame";
 import { useBalance } from "../../context/BalanceContext";
-import AnimateSpinner from "../../components/AnimateSpinner";
 
 const winAudio = new Audio("/audio/win.mp3");
 const loseAudio = new Audio("/audio/lose.mp3");
@@ -212,8 +211,6 @@ function DiceGame() {
         );
 
         i++;
-
-        // Loop logic goes here
       }, 1000); // Loop every 1 second
     }
 
@@ -247,14 +244,12 @@ function DiceGame() {
 
   function handleStartRoll() {
     setStopRoll(true);
-    console.log("start roll");
+    // console.log("start roll");
   }
   function handleStopRoll() {
     setStopRoll(false);
-    console.log("stop roll");
+    // console.log("stop roll");
   }
-
-  // console.log("stopRoll", stopRoll);
 
   return (
     <div className="flex flex-col gap-6 mb-40">

@@ -69,7 +69,6 @@ function GameCard({
           className="bg-[#a04cd5] transition hover:bg-[#8942b6] rounded-full text-[#430658] border-2 border-black text-xl md:text-2xl px-12 md:px-16 py-2 shadow-[0px_8px_4px_#00000040] hover:-translate-y-1"
         >
           {stopRoll ? "Stop Roll" : "Start Roll"}
-          {console.log(stopRoll)}
         </button>
       </div>
 
