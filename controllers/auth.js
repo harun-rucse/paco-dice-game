@@ -56,7 +56,7 @@ const login = catchAsync(async (req, res, next) => {
   if (!email || !password)
     return next(new AppError("Email and password is required", 400));
 
-  const account = await Account.findOne({ email }).select("password");
+  const account = await Account.findOne({ email }).select("+password");
 
   const isMatch = await account?.correctPassword(password, account.password);
 
