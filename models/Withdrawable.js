@@ -31,6 +31,9 @@ const withdrawableSchema = new Schema(
       type: Number,
       default: 0.0,
     },
+    tokenName: {
+      type: String,
+    },
     status: {
       type: String,
       enum: ["pending", "success"],
