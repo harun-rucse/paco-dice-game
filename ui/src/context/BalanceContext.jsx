@@ -10,6 +10,34 @@ function BalanceProvider({ children }) {
   const [currentBalance, setCurrentBalance] = useState({});
 
   useEffect(() => {
+    if (!account) return;
+    // get the highest balance with name and value from the account object
+    let maxBalance = -Infinity;
+    let maxKey = "";
+    let imgUrl = "";
+
+    for (const key in account) {
+      if (typeof account[key] === "number") {
+        if (account[key] > maxBalance) {
+          maxBalance = account[key];
+          maxKey = key;
+          imgUrl = `/tokens/${key}.png`;
+        }
+      }
+    }
+
+    // setCurrentBalance({ name: maxKey, value: maxBalance });
+    setCurrentBalance((current) => {
+      return {
+        ...current,
+        imgUrl,
+        name: maxKey,
+        value: maxBalance,
+      };
+    });
+  }, [account]);
+
+  useEffect(() => {
     if (account) {
       setCurrentBalance((current) => {
         return {

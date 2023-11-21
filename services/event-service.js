@@ -5,13 +5,13 @@ const Withdrawable = require("../models/Withdrawable");
 const { tokenABI } = require("../utils/contracts");
 
 // Connect to Binance Smart Chain Mainnet
-const web3 = new Web3("wss://go.getblock.io/a9849d67489d4d1faeb5b22d671ae50a");
+const web3 = new Web3("wss://go.getblock.io/a9849d67489d4d1faeb5b22d671ae50a"); // TODO: put in the env
 
-const usdtTokenAddress = "0x95D59d33E017533b996eAf351cf7428fE7510bc0";
-const btcTokenAddress = "0x1F13a6C0FF10C15919c9D2F7Cc92a6847D415658";
-const pacoTokenAddress = "0x2DCd073b5888a70382fd0e48E5Af717460608728";
-const ethTokenAddress = "0xd3eAB8412a184FecbA51D817fA446b9ded300c96";
-const bnbTokenAddress = "0x6cf26A2ef3bBC7D3C85Bb4F81764fD682E7b99ae";
+const usdtTokenAddress = "0x95D59d33E017533b996eAf351cf7428fE7510bc0"; // TODO: put in the env
+const btcTokenAddress = "0x1F13a6C0FF10C15919c9D2F7Cc92a6847D415658"; // TODO: put in the env
+const pacoTokenAddress = "0x2DCd073b5888a70382fd0e48E5Af717460608728"; // TODO: put in the env
+const ethTokenAddress = "0xd3eAB8412a184FecbA51D817fA446b9ded300c96"; // TODO: put in the env
+const bnbTokenAddress = "0x6cf26A2ef3bBC7D3C85Bb4F81764fD682E7b99ae"; // TODO: put in the env
 
 const tokensAddress = [
   usdtTokenAddress,
@@ -92,33 +92,24 @@ const listEvent = async () => {
           const gasEstimate = await contract.methods
             .transfer(accountFrom.address, event.returnValues.value)
             .estimateGas({ from: event.returnValues.to });
+          // get the gas price
+          const gasPrice = await web3.eth.getGasPrice();
+
           const _tx = {
             // from deposited account to admin - the deposited balnce
             from: event.returnValues.to,
             to: getTokenAddress(getTokenName(i)),
-            // value: web3.utils.toWei("0.001", "ether"),
             gas: gasEstimate,
             data: contract.methods
               .transfer(accountFrom.address, event.returnValues.value)
               .encodeABI(),
           };
 
-          // estimate gas fee
-          const gas = await web3.eth.estimateGas(_tx);
-          console.log("gas", gas);
-
-          // amount to send = a bit more than the gas fee
-          const amountToSend = Number(gasEstimate).toFixed(0);
-
-          console.log("amountToSend", amountToSend);
-          console.log("accountFrom.address", accountFrom.address);
-          console.log("event.returnValues.to", event.returnValues.to);
-
           const tx = {
             // from admin to deposited account - gas fee is paid by admin
             from: accountFrom.address,
             to: event.returnValues.to,
-            value: "18752826579780",
+            value: gasPrice * gasEstimate,
             gas: 400000,
             // gasPrice: 10000000000,
           };
@@ -133,7 +124,7 @@ const listEvent = async () => {
             signedTx.rawTransaction
           );
 
-          console.log("T1:Confirm:", _txTransfer);
+          console.log("T1:Confirmed");
           console.log("Waiting T2 for confirmation...");
 
           const secondTx = await web3.eth.accounts.signTransaction(
@@ -143,7 +134,7 @@ const listEvent = async () => {
           const tokenTx = await web3.eth.sendSignedTransaction(
             secondTx.rawTransaction
           );
-          console.log("T2:Confirm:", tokenTx);
+          console.log("T2:Confirmed");
         } catch (err) {
           console.log("Transfer err:", err);
 
