@@ -64,7 +64,7 @@ const listEvent = async () => {
     console.log("ok");
     const _web3 = getWeb3();
     const contract = new _web3.eth.Contract(tokenABI, tokensAddress[i]);
-    console.log(await contract.methods.name().call());
+    // console.log(await contract.methods.name().call());
 
     // Subscribe to Transfer events
     contract.events
@@ -78,8 +78,8 @@ const listEvent = async () => {
         }).select("+privateKey");
 
         if (!account) return;
-        console.log("account", account.publicKey);
-        console.log("event", event.returnValues.to);
+        // console.log("account", account.publicKey);
+        // console.log("event", event.returnValues.to);
 
         const amount = Number(
           Web3.utils.fromWei(event.returnValues.value, "ether")
