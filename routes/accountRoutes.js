@@ -3,6 +3,13 @@ const accountController = require("../controllers/account");
 const { auth, restrictTo } = require("../middlewares/auth");
 
 const router = express.Router();
+
+router.get(
+  "/user-transactions/:type",
+  auth,
+  accountController.getAllUserTransactions
+);
+
 router.get(
   "/withdraws",
   [auth, restrictTo("admin")],

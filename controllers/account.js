@@ -137,9 +137,38 @@ const getStats = catchAsync(async (req, res, next) => {
   });
 });
 
+/**
+ * @desc    Get all user Withdraw
+ * @route   GET /api/account/user-transactions/:type
+ * @access  Private(user)
+ */
+const getAllUserTransactions = catchAsync(async (req, res, next) => {
+  const page = Number(req.query.page);
+  const limit = Number(req.query.limit);
+  const { type } = req.params;
+
+  let count;
+  let data;
+
+  if (type === "deposits") {
+    count = await Deposit.countDocuments();
+    data = await Deposit.find({ account: req.account._id })
+      .limit(limit)
+      .skip(limit * (page - 1));
+  } else {
+    count = await Withdraw.countDocuments();
+    data = await Withdraw.find({ account: req.account._id })
+      .limit(limit)
+      .skip(limit * (page - 1));
+  }
+
+  res.status(200).json({ result: data, count });
+});
+
 module.exports = {
   withdraw,
   getAllWithdraw,
   confirmWithdraw,
   getStats,
+  getAllUserTransactions,
 };

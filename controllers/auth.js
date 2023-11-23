@@ -21,6 +21,11 @@ const register = catchAsync(async (req, res, next) => {
   if (!email || !password)
     return next(new AppError("Email and password is required!", 400));
 
+  // Validate email address
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email))
+    return next(new AppError("Email address is invalid!", 400));
+
   // Return error if account already exitsts
   const isExist = await Account.findOne({ email });
   if (isExist) return next(new AppError("Account already exists", 400));

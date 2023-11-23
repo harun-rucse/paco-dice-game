@@ -81,3 +81,22 @@ export const getStats = async () => {
     throw new Error(err?.response?.data?.message);
   }
 };
+
+export const getUserTransactions = async (type, page = 1, limit = 10) => {
+  try {
+    const { data } = await axios.get(
+      `${API_URL}/account/user-transactions/${type}?page=${page}&limit=${limit}`,
+      {
+        headers: {
+          Authorization: `Bearer ${
+            JSON.parse(localStorage.getItem("jwt-token")) || ""
+          }`,
+        },
+      }
+    );
+
+    return data;
+  } catch (err) {
+    throw new Error(err?.response?.data?.message);
+  }
+};
