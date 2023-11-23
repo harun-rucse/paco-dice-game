@@ -1,7 +1,7 @@
 const Web3 = require("web3");
-const BTC_PRICE_FEED = "0x264990fbd0A4796A3E3d8E37C4d5F87a3aCa5Ebf";
-const ETH_PRICE_FEED = "0x9ef1B8c0E4F7dc8bF5719Ea496883DC6401d5b2e";
-const BNB_PRICE_FEED = "0x0567F2323251f0Aab15c8dFb1967E4e8A7D42aeE";
+const BTC_PRICE_FEED = process.env.BTC_PRICE_FEED;
+const ETH_PRICE_FEED = process.env.ETH_PRICE_FEED;
+const BNB_PRICE_FEED = process.env.BNB_PRICE_FEED;
 const PRICE_FEED_ABI = [
   {
     inputs: [],
@@ -51,28 +51,34 @@ const PRICE_FEED_ABI = [
     type: "function",
   },
 ];
-const web3 = new Web3("wss://go.getblock.io/ea110be7d253459ab72dca48b7f80d9a");
+
 // from chainlink with the pricefeed address
 const getCoinPrice = async (name = "btc") => {
-  if (name === "btc") {
-    const priceFeed = new web3.eth.Contract(PRICE_FEED_ABI, BTC_PRICE_FEED);
-    const { answer } = await priceFeed.methods.latestRoundData().call();
-    console.log(answer / 10 ** 8);
-    return Number(answer / 10 ** 8).toFixed(3);
-  } else if (name === "usdt") {
-    return 1;
-  } else if (name === "paco") {
-    return 0;
-  } else if (name === "eth") {
-    const priceFeed = new web3.eth.Contract(PRICE_FEED_ABI, ETH_PRICE_FEED);
-    const { answer } = await priceFeed.methods.latestRoundData().call();
-    console.log(answer / 10 ** 8);
-    return answer / 10 ** 8;
-  } else if (name === "bnb") {
-    const priceFeed = new web3.eth.Contract(PRICE_FEED_ABI, BNB_PRICE_FEED);
-    const { answer } = await priceFeed.methods.latestRoundData().call();
-    console.log(answer / 10 ** 8);
-    return answer / 10 ** 8;
+  const web3 = new Web3(process.env.RPC);
+  try {
+    if (name === "btc") {
+      const priceFeed = new web3.eth.Contract(PRICE_FEED_ABI, BTC_PRICE_FEED);
+      const { answer } = await priceFeed.methods.latestRoundData().call();
+      console.log(answer / 10 ** 8);
+      return Number(answer / 10 ** 8).toFixed(3);
+    } else if (name === "usdt") {
+      return 1;
+    } else if (name === "paco") {
+      return 0;
+    } else if (name === "eth") {
+      const priceFeed = new web3.eth.Contract(PRICE_FEED_ABI, ETH_PRICE_FEED);
+      const { answer } = await priceFeed.methods.latestRoundData().call();
+      console.log(answer / 10 ** 8);
+      return answer / 10 ** 8;
+    } else if (name === "bnb") {
+      const priceFeed = new web3.eth.Contract(PRICE_FEED_ABI, BNB_PRICE_FEED);
+      const { answer } = await priceFeed.methods.latestRoundData().call();
+      console.log(answer / 10 ** 8);
+      return answer / 10 ** 8;
+    }
+  } catch (err) {
+    console.log(err);
+    throw new Error("Error of geeting token price from api");
   }
 };
 module.exports = getCoinPrice;

@@ -4,7 +4,6 @@ const { generateUniqueBet, generateRandomNumber } = require("../utils");
 const catchAsync = require("../utils/catch-async");
 const AppError = require("../utils/app-error");
 const getCoinPrice = require("../services/token-price-service");
-const Web3 = require("web3");
 
 async function caclPacoReward(amount, coinName) {
   let reward = 0;
@@ -38,8 +37,6 @@ async function caclPacoReward(amount, coinName) {
 
   return reward;
 }
-
-// caclPacoReward(1, "usdt").then((res) => console.log(res));
 
 /**
  * @desc    Get Hello World message

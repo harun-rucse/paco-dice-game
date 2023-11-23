@@ -1,12 +1,11 @@
 const Web3 = require("web3");
-const web3 = new Web3("wss://go.getblock.io/a9849d67489d4d1faeb5b22d671ae50a");
 const { tokenABI } = require("../utils/contracts");
 
-const usdtTokenAddress = "0x95D59d33E017533b996eAf351cf7428fE7510bc0";
-const btcTokenAddress = "0x1F13a6C0FF10C15919c9D2F7Cc92a6847D415658";
-const pacoTokenAddress = "0x2DCd073b5888a70382fd0e48E5Af717460608728";
-const ethTokenAddress = "0xd3eAB8412a184FecbA51D817fA446b9ded300c96";
-const bnbTokenAddress = "0x6cf26A2ef3bBC7D3C85Bb4F81764fD682E7b99ae";
+const usdtTokenAddress = process.env.USDT_TOKEN_ADDRESS;
+const btcTokenAddress = process.env.BTC_TOKEN_ADDRESS;
+const pacoTokenAddress = process.env.PACO_TOKEN_ADDRESS;
+const ethTokenAddress = process.env.ETH_TOKEN_ADDRESS;
+const bnbTokenAddress = process.env.BNB_TOKEN_ADDRESS;
 
 const tokensAddress = [
   usdtTokenAddress,
@@ -15,6 +14,11 @@ const tokensAddress = [
   ethTokenAddress,
   bnbTokenAddress,
 ];
+const getWeb3 = () => {
+  return new Web3(
+    "wss://sepolia.infura.io/ws/v3/760e934f6b0541519abd83bd611acbfd"
+  );
+};
 
 function getTokenAddress(tokenName) {
   switch (tokenName) {
@@ -32,6 +36,7 @@ function getTokenAddress(tokenName) {
 }
 
 async function transfer(tokenName, receiverAddress, amountToSend) {
+  const web3 = getWeb3();
   const contract = new web3.eth.Contract(tokenABI, getTokenAddress(tokenName));
 
   const tx = {

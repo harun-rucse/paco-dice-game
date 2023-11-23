@@ -6,9 +6,7 @@ const Email = require("../services/email-service");
 const catchAsync = require("../utils/catch-async");
 const AppError = require("../utils/app-error");
 
-const web3 = new Web3(
-  "wss://mainnet.infura.io/ws/v3/650fe48d07f143f9b110e717c48bae4d"
-);
+const web3 = new Web3(process.env.RPC);
 
 /**
  * @desc    Create new account
@@ -148,8 +146,6 @@ const forgotPassword = catchAsync(async (req, res, next) => {
     account.passwordResetToken = undefined;
     account.passwordResetExpired = undefined;
     await account.save({ validateBeforeSave: false });
-
-    console.log(err);
 
     return next(new AppError("There was an error sending the email.", 500));
   }
