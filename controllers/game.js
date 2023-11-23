@@ -3,19 +3,36 @@ const Account = require("../models/Account");
 const { generateUniqueBet, generateRandomNumber } = require("../utils");
 const catchAsync = require("../utils/catch-async");
 const AppError = require("../utils/app-error");
+const getCoinPrice = require("../services/token-price-service");
 
-function caclPacoReward(amount, coinName) {
+async function caclPacoReward(amount, coinName) {
   let reward = 0;
-  if (coinName === "btc" && amount >= 10) {
-    reward = 1;
-  } else if (coinName === "usdt" && amount >= 10) {
-    reward = 1;
-  } else if (coinName === "paco" && amount >= 10) {
-    reward = 1;
-  } else if (coinName === "eth" && amount >= 10) {
-    reward = 1;
-  } else if (coinName === "bnb" && amount >= 10) {
-    reward = 1;
+  if (coinName === "btc") {
+    let price = await getCoinPrice("btc");
+    // price = price * 1000;
+    const satoshiPrice = price / 100000000;
+    console.log("satoshiPrice", satoshiPrice);
+    reward = amount / satoshiPrice;
+  } else if (coinName === "usdt") {
+    let _btcPrice = await getCoinPrice("btc");
+    let _satoshiPrice = _btcPrice / 100000000;
+    reward = amount / _satoshiPrice;
+  } else if (coinName === "paco") {
+    reward = 0;
+  } else if (coinName === "eth") {
+    let _btcPrice = await getCoinPrice("btc");
+    let _ethPrice = await getCoinPrice("eth");
+    const _amountPrice = amount * _ethPrice;
+    const _satoshiPrice = _btcPrice / 100000000;
+    console.log("satoshiPrice", _satoshiPrice);
+    reward = _amountPrice / _satoshiPrice;
+  } else if (coinName === "bnb") {
+    let _btcPrice = await getCoinPrice("btc");
+    let _bnbPrice = await getCoinPrice("bnb");
+    const _amountPrice = amount * _bnbPrice;
+    const _satoshiPrice = _btcPrice / 100000000;
+    console.log("satoshiPrice", _satoshiPrice);
+    reward = _amountPrice / _satoshiPrice;
   }
 
   return reward;
@@ -87,7 +104,12 @@ const createGame = catchAsync(async (req, res, next) => {
   account[paymentType] = account[paymentType] - betAmount;
 
   // add paco balance reward
-  account["paco"] = account["paco"] + caclPacoReward(betAmount, paymentType);
+  if (paymentType !== "paco") {
+    console.log("paco reward", account["paco"]);
+    console.log("paco reward", await caclPacoReward(betAmount, paymentType));
+    account["paco"] =
+      account["paco"] + Number(await caclPacoReward(betAmount, paymentType));
+  }
 
   // If win add win Reward
   if (game.status === "win") {
