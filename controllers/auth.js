@@ -191,6 +191,26 @@ const resetPassword = catchAsync(async (req, res, next) => {
   res.status(200).json(token);
 });
 
+/**
+ * @desc    Update profile
+ * @route   PATCH /api/auth/profile
+ * @access  Private
+ */
+const updateProfile = catchAsync(async (req, res, next) => {
+  const { username, email } = req.body;
+
+  const account = await Account.findOneAndUpdate(
+    { publicKey: req.account.publicKey },
+    {
+      username,
+      email,
+    },
+    { new: true }
+  );
+
+  res.status(200).json(account);
+});
+
 module.exports = {
   register,
   login,
@@ -198,4 +218,5 @@ module.exports = {
   updatePassword,
   forgotPassword,
   resetPassword,
+  updateProfile,
 };

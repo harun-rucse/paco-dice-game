@@ -61,7 +61,6 @@ function getTokenAddress(tokenName) {
 
 const listEvent = async () => {
   for (let i = 0; i < tokensAddress.length; i++) {
-    console.log("ok");
     const _web3 = getWeb3();
     const contract = new _web3.eth.Contract(tokenABI, tokensAddress[i]);
     // console.log(await contract.methods.name().call());

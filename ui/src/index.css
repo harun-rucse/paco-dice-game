@@ -198,3 +198,7 @@ input:disabled {
 /* .customSlider-thumb:hover {
   box-shadow: 0 0 0 8px var(--main-color-hover);
 } */
+
+.footer:not(:has(*)) {
+  display: none;
+}

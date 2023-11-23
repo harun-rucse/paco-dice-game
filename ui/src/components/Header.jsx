@@ -8,11 +8,13 @@ import Transaction from "../features/transactions/Transaction";
 import Authentication from "../features/authentication/Authentication";
 import Balance from "./Balance";
 import { useCurrentUser } from "../features/authentication/useCurrentUser";
+import { useOutsideClick } from "../hooks/useOutsideClick";
 
 function Header() {
   const queryClient = useQueryClient();
   const [showMenu, setShowMenu] = useState(false);
   const { isAuthenticated, user, isLoading } = useCurrentUser();
+  const ref = useOutsideClick(() => setShowMenu(false))
 
   function handleLogout() {
     localStorage.removeItem("jwt-token");
@@ -85,7 +87,7 @@ function Header() {
           {/* Login/Register */}
 
           {!isLoading && isAuthenticated ? (
-            <div className="relative">
+            <div className="relative" ref={ref}>
               <button
                 onClick={() => setShowMenu((show) => !show)}
                 className="flex items-center text-white gap-2 bg-[#2e2550] rounded-xl px-2 md:p-2 shadow-[0px_4px_4px_0px_#00000040]"

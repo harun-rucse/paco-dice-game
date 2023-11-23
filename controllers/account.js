@@ -151,12 +151,12 @@ const getAllUserTransactions = catchAsync(async (req, res, next) => {
   let data;
 
   if (type === "deposits") {
-    count = await Deposit.countDocuments();
+    count = await Deposit.countDocuments({ account: req.account._id });
     data = await Deposit.find({ account: req.account._id })
       .limit(limit)
       .skip(limit * (page - 1));
   } else {
-    count = await Withdraw.countDocuments();
+    count = await Withdraw.countDocuments({ account: req.account._id });
     data = await Withdraw.find({ account: req.account._id })
       .limit(limit)
       .skip(limit * (page - 1));

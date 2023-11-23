@@ -11,5 +11,6 @@ router.patch("/reset-password/:resetToken", authController.resetPassword);
 
 router.get("/current-user", auth, authController.currentUser);
 router.patch("/update-password", auth, authController.updatePassword);
+router.patch("/profile", auth, authController.updateProfile);
 
 module.exports = router;

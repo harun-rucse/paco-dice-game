@@ -99,3 +99,26 @@ export const passwordChange = async ({ currentPassword, password }) => {
     throw new Error(err?.response?.data?.message);
   }
 };
+
+export const profileUpdate = async ({ username, email }) => {
+  try {
+    const { data } = await axios.patch(
+      `${API_URL}/auth/profile`,
+      {
+        username,
+        email,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${
+            JSON.parse(localStorage.getItem("jwt-token")) || ""
+          }`,
+        },
+      }
+    );
+
+    return data;
+  } catch (err) {
+    throw new Error(err?.response?.data?.message);
+  }
+};

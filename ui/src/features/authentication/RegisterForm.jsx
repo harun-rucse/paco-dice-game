@@ -21,7 +21,7 @@ function RegisterForm({ setCurrent }) {
 
   return (
     <>
-      <div className="flex justify-center absolute top-5 md:top-36 left-[45%] md:left-[56%]">
+      <div className="flex justify-center absolute top-5 md:top-1 2xl:top-36 left-[47%] md:left-[57%] 2xl:left-[55%]">
         <img src="/lock.png" alt="" className="h-16 object-cover" />
       </div>
       <h2 className="text-2xl uppercase text-center font-extralight text-white md:pt-4">

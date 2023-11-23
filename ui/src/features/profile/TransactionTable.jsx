@@ -79,6 +79,9 @@ function TransactionTable() {
               <span>{formatDate(item?.createdAt, "DD/MM/YYYY")}</span>
             </Table.Row>
           ))}
+          {result?.length === 0 && (
+            <p className="text-center py-3">No transactions found</p>
+          )}
         </Table.Body>
         <Table.Footer>
           <Pagination count={count} />

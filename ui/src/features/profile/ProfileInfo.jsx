@@ -1,16 +1,22 @@
 import { useEffect, useState } from "react";
 import Spinner from "../../components/Spinner";
 import { useCurrentUser } from "../authentication/useCurrentUser";
+import { useUpdateProfile } from "./useUpdateProfile";
 
 function ProfileInfo() {
   const [username, setUsername] = useState("");
   const { user, isLoading } = useCurrentUser();
+  const { isLoading: isUpdating, profileUpdate } = useUpdateProfile();
 
   useEffect(() => {
     if (!isLoading && user) setUsername(user?.username);
   }, [isLoading, user]);
 
-  if (isLoading) return <Spinner />;
+  function handleUpdate() {
+    profileUpdate({ username, email: user?.email });
+  }
+
+  if (isLoading || isUpdating) return <Spinner />;
 
   return (
     <div className="bg-[#2b1346] text-white flex flex-col gap-2 px-10 py-6 rounded-xl border border-[#613692]">
@@ -34,10 +40,14 @@ function ProfileInfo() {
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="bg-transparent py-2 rounded-lg text-lg font-extralight"
+              className="bg-transparent py-2 rounded-lg text-lg font-extralight cursor-pointer"
             />
           </div>
-          <button className="bg-[#2e2550] text-sm uppercase font-extralight px-4 py-2 rounded-xl">
+          <button
+            className="bg-[#2e2550] text-sm uppercase font-extralight px-4 py-2 rounded-xl"
+            onClick={handleUpdate}
+            disabled={isUpdating}
+          >
             Edit
           </button>
         </div>

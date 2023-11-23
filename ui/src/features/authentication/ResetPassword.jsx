@@ -26,7 +26,7 @@ function ResetPassword() {
       <div className="w-full md:w-[24rem] md:h-[40rem] bg-[#411b6a] space-y-3 px-6 py-8"></div>
 
       <div className="w-full h-[40rem] bg-[#2b1346] px-6 py-8 space-y-3">
-        <div className="flex justify-center absolute top-0 md:top-0 left-[40%] md:left-[55%]">
+        <div className="flex justify-center absolute top-0 md:top-0 left-[45%] md:left-[58%]">
           <img src="/lock.png" alt="" className="h-16 object-cover" />
         </div>
         <h2 className="text-2xl md:text-3xl uppercase text-center font-extralight text-white md:pt-12">

@@ -4,6 +4,7 @@ import { usePasswordChange } from "./usePasswordChange";
 import FormRow from "../../components/FormRow";
 import { useCurrentUser } from "../authentication/useCurrentUser";
 import Spinner from "../../components/Spinner";
+import { useUpdateProfile } from "./useUpdateProfile";
 
 function ChangePassword() {
   const [email, setEmail] = useState("");
@@ -12,6 +13,7 @@ function ChangePassword() {
 
   const { user, isLoading: isLoading1 } = useCurrentUser();
   const { isLoading, passwordChange } = usePasswordChange();
+  const { isLoading: isUpdating, profileUpdate } = useUpdateProfile();
 
   useEffect(() => {
     if (!isLoading1 && user) setEmail(user?.email);
@@ -29,7 +31,11 @@ function ChangePassword() {
     );
   }
 
-  if (isLoading1) return <Spinner />;
+  function handleUpdate() {
+    profileUpdate({ username: user?.username, email });
+  }
+
+  if (isLoading1 || isUpdating) return <Spinner />;
 
   return (
     <div className="w-full bg-[#2b1346] text-white flex flex-col items-center gap-2 p-6 rounded-xl border border-[#613692]">
@@ -103,9 +109,13 @@ function ChangePassword() {
           type="text"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="bg-transparent p-2 rounded-lg text-lg font-extralight"
+          className="bg-transparent p-2 rounded-lg text-lg font-extralight cursor-pointer"
         />
-        <button className="bg-[#2e2550] text-sm uppercase font-extralight px-4 py-3 rounded-xl">
+        <button
+          className="bg-[#2e2550] text-sm uppercase font-extralight px-4 py-3 rounded-xl"
+          onClick={handleUpdate}
+          disabled={isUpdating}
+        >
           Change Email
         </button>
       </div>
