@@ -1,5 +1,5 @@
 FROM node:18-alpine as builder
-WORKDIR /client
+WORKDIR /ui
 
 COPY package.json .
 COPY yarn.lock .

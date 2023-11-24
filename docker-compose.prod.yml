@@ -15,11 +15,11 @@ services:
       - ./:/backend-api
       - /node_modules
 
-  client:
+  ui:
     build:
       dockerfile: Dockerfile.prod
       context: ./ui
-    container_name: client
+    container_name: ui
     ports:
       - "80:80"
       - "443:443"
