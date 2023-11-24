@@ -1,32 +1,32 @@
-version: "3.8"
+version: "3.3"
 
 services:
   backend-api:
     build:
       dockerfile: Dockerfile.prod
-      context: ./backend-api
+      context: ./
     container_name: backend-api
     restart: always
     ports:
       - "4000:4000"
     env_file:
-      - ./backend-api/.env.production
+      - ./.env.production
     volumes:
-      - ./backend-api:/backend-api
-      - /backend-api/node_modules
+      - ./:/backend-api
+      - /node_modules
 
   client:
     build:
       dockerfile: Dockerfile.prod
-      context: ./client
+      context: ./ui
     container_name: client
     ports:
       - "80:80"
       - "443:443"
     env_file:
-      - ./client/.env.production
+      - ./ui/.env.production
     volumes:
-      - ./client/nginx.conf:/etc/nginx/sites-available/default
+      - ./ui/nginx.conf:/etc/nginx/sites-available/default
       - /var/certs/etc-letsencrypt:/etc/letsencrypt
     depends_on:
       - backend-api
