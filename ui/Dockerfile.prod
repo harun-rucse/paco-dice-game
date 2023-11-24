@@ -22,6 +22,6 @@ RUN apt update -y \
 EXPOSE 80
 STOPSIGNAL SIGTERM
 
-COPY --from=builder /client/dist /var/www/html
+COPY --from=builder /ui/dist /var/www/html
 
 CMD ["nginx", "-g", "daemon off;"]
