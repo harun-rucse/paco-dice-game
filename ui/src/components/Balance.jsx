@@ -82,13 +82,13 @@ function Balance({ className }) {
             onSelect={setCurrentBalance}
           />
 
-          <BalanceItem
+          {/* <BalanceItem
             name="BNB"
             value={account?.bnb}
             imgUrl="/tokens/bnb.png"
             onHide={setShowBalance}
             onSelect={setCurrentBalance}
-          />
+          /> */}
         </div>
       )}
     </div>
