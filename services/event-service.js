@@ -24,7 +24,6 @@ const tokensAddress = [
   btcTokenAddress,
   pacoTokenAddress,
   ethTokenAddress,
-  bnbTokenAddress,
 ];
 
 function getTokenName(val) {

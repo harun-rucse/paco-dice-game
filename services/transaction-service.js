@@ -12,7 +12,6 @@ const tokensAddress = [
   btcTokenAddress,
   pacoTokenAddress,
   ethTokenAddress,
-  bnbTokenAddress,
 ];
 const getWeb3 = () => {
   return new Web3(process.env.RPC);
