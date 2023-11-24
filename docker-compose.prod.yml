@@ -1,32 +1,32 @@
-version: "3.3"
+version: "3.8"
 
 services:
-  backend-api:
+  dice-api:
     build:
       dockerfile: Dockerfile.prod
-      context: ./
-    container_name: backend-api
+      context: ./dice-api
+    container_name: dice-api
     restart: always
     ports:
       - "4000:4000"
     env_file:
-      - ./.env.production
+      - ./dice-api/.env.production
     volumes:
-      - ./:/backend-api
-      - /node_modules
+      - ./dice-api:/dice-api
+      - /dice-api/node_modules
 
-  ui:
+  dice-client:
     build:
       dockerfile: Dockerfile.prod
-      context: ./ui
-    container_name: ui
+      context: ./dice-client
+    container_name: dice-client
     ports:
       - "80:80"
       - "443:443"
     env_file:
-      - ./ui/.env.production
+      - ./dice-client/.env.production
     volumes:
-      - ./ui/nginx.conf:/etc/nginx/sites-available/default
+      - ./dice-client/nginx.conf:/etc/nginx/sites-available/default
       - /var/certs/etc-letsencrypt:/etc/letsencrypt
     depends_on:
-      - backend-api
+      - dice-api

@@ -1,5 +1,5 @@
 FROM node:18-alpine
-WORKDIR /client
+WORKDIR /dice-client
 
 COPY package.json .
 COPY yarn.lock .

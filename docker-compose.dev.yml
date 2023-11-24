@@ -1,33 +1,33 @@
 version: "3.8"
 
 services:
-  backend-api:
+  dice-api:
     build:
       dockerfile: Dockerfile.dev
-      context: ./backend-api
-    container_name: backend-api
+      context: ./dice-api
+    container_name: dice-api
     restart: always
     ports:
       - "4000:4000"
     env_file:
-      - ./backend-api/.env.development
+      - ./dice-api/.env.development
     volumes:
-      - ./backend-api:/backend-api
-      - /backend-api/node_modules
+      - ./dice-api:/dice-api
+      - /dice-api/node_modules
 
-  client:
+  dice-client:
     build:
       dockerfile: Dockerfile.dev
-      context: ./client
-    container_name: client
+      context: ./dice-client
+    container_name: dice-client
     ports:
       - "3000:3000"
     env_file:
-      - ./client/.env.development
+      - ./dice-client/.env.development
     volumes:
-      - ./client:/client
-      - /client/node_modules
+      - ./dice-client:/dice-client
+      - /dice-client/node_modules
     environment:
       - CHOKIDAR_USEPOLLING=true
     depends_on:
-      - backend-api
+      - dice-api
