@@ -38,6 +38,46 @@ async function caclPacoReward(amount, coinName) {
   return reward;
 }
 
+async function checkMaxBetAmount(amount, coinName) {
+  if (coinName === "btc") {
+    const _btcPrice = await getCoinPrice("btc");
+    const _betedUsd = amount * _btcPrice;
+    if (_betedUsd > 100) {
+      return false;
+    } else {
+      return true;
+    }
+  } else if (coinName === "usdt") {
+    if (amount > 100) {
+      return false;
+    } else {
+      return true;
+    }
+  } else if (coinName === "eth") {
+    const _ethPrice = await getCoinPrice("eth");
+    const _betedUsd = amount * _ethPrice;
+    if (_betedUsd > 100) {
+      return false;
+    } else {
+      return true;
+    }
+  } else if (coinName === "bnb") {
+    const _bnbPrice = await getCoinPrice("bnb");
+    const _betedUsd = amount * _bnbPrice;
+    if (_betedUsd > 100) {
+      return false;
+    } else {
+      return true;
+    }
+  } else if (coinName === "paco") {
+    if (amount > 100000000) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+}
+
 /**
  * @desc    Get Hello World message
  * @route   GET /api/hello
@@ -59,6 +99,12 @@ const createGame = catchAsync(async (req, res, next) => {
   // Validate request
   if (!betAmount || !prediction || !rollType) {
     return next(new AppError("All fields are required!", 400));
+  }
+
+  const _checkMaxBetAmount = await checkMaxBetAmount(betAmount, paymentType);
+
+  if (!_checkMaxBetAmount) {
+    return next(new AppError("Bet amount is more than Max bet amount", 400));
   }
 
   if (rollType === "rollUnder") {

@@ -10,9 +10,7 @@ const { tokenABI } = require("../utils/contracts");
 // );
 
 const getWeb3 = () => {
-  return new Web3(
-    "wss://sepolia.infura.io/ws/v3/760e934f6b0541519abd83bd611acbfd"
-  );
+  return new Web3(process.env.RPC);
 };
 
 const usdtTokenAddress = process.env.USDT_TOKEN_ADDRESS;
