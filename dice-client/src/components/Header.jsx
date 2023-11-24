@@ -14,7 +14,7 @@ function Header() {
   const queryClient = useQueryClient();
   const [showMenu, setShowMenu] = useState(false);
   const { isAuthenticated, user, isLoading } = useCurrentUser();
-  const ref = useOutsideClick(() => setShowMenu(false))
+  const ref = useOutsideClick(() => setShowMenu(false));
 
   function handleLogout() {
     localStorage.removeItem("jwt-token");
@@ -52,7 +52,10 @@ function Header() {
                 </span>
               </button>
             </Link>
-            <Link to="/trade">
+            <Link
+              to="https://www.dexview.com/bsc/0xe1d0065c4cd16C14C539547bac404cA6F586b8ce"
+              target="_blank"
+            >
               <button className="flex items-center gap-2 text-white">
                 <img src="/icons/trade.png" alt="" className="h-7" />
                 <span className="text-base font-extralight uppercase">
