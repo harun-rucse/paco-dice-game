@@ -12,7 +12,7 @@ function Transaction() {
           onClick={() => setCurrent("deposite")}
           className="bg-[#1f5cb8] text-sm px-8 py-3 cursor-pointer rounded-lg uppercase font-extralight text-white shadow-[0px_4px_4px_0px_#00000040]"
         >
-          Deposite
+          DEPOSIT
         </div>
         <div
           onClick={() => setCurrent("withdraw")}

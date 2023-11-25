@@ -19,7 +19,7 @@ function Deposite() {
 
   return (
     <>
-      <h2 className="text-lg uppercase font-extralight text-white">Deposite</h2>
+      <h2 className="text-lg uppercase font-extralight text-white">DEPOSIT</h2>
       <Balance className="gap-4" />
 
       <div className="flex flex-col gap-3 pt-6 text-white">
@@ -44,7 +44,20 @@ function Deposite() {
             <div className="flex items-center gap-2 bg-[#323232] px-4 py-2 rounded-xl text-white">
               <AiFillWarning color="#ffcc00" size={20} />
               <span className="text-sm uppercase font-extralight">
-                MINIMUM DEPOSIT IS 100 {currentBalance?.name}.
+                MINIMUM DEPOSIT IS{" "}
+                {currentBalance?.name == "BTC"
+                  ? "0.00001000"
+                  : currentBalance?.name == "ETH"
+                  ? "0.00100000"
+                  : currentBalance?.name == "BNB"
+                  ? "0.00250000"
+                  : currentBalance?.name == "USDT"
+                  ? "0.10"
+                  : currentBalance?.name == "PACO"
+                  ? "100"
+                  : ""}
+                &nbsp;
+                {currentBalance?.name}.
               </span>
             </div>
 

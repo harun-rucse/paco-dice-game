@@ -84,142 +84,146 @@ function DiceGame() {
                   loseAudio.pause();
                   winAudio.play();
                 }
+
+                setStopRoll(false);
+                clearInterval(loopRef.current);
+              },
+              onError: (error) => {
+                console.log(error);
+                setStopRoll(false);
+                clearInterval(loopRef.current);
               },
             }
           );
-          clearInterval(loopRef.current);
-          setStopRoll(false);
         }, callTime);
+      } else {
+        let i = 0;
+        loopRef.current = setInterval(() => {
+          if (numberOfBet > 0 && i >= numberOfBet) {
+            setStopRoll(false);
+            clearInterval(loopRef.current);
+            return;
+          }
 
-        return;
+          if (!numberOfBet) {
+            create(
+              {
+                paymentType: currentBalance?.name?.toLowerCase(),
+                betAmount,
+                prediction,
+                rollType,
+              },
+              {
+                onSuccess: (data) => {
+                  setResult(data.winNumber);
+                  setBetStatus(data.status);
+                  setReFetchHistory((reFetchHistory) => !reFetchHistory);
+                  if (data.status === "lost") {
+                    // play audio
+                    winAudio.pause();
+                    loseAudio.play();
+
+                    lossAmount += betAmount;
+                    if (onWinReset) setBetAmount(initialBetAmount);
+
+                    if (onLossIncrease) {
+                      setBetAmount((betAmount) => {
+                        return betAmount + (betAmount * onLossIncrease) / 100;
+                      });
+                    }
+                  }
+
+                  if (data.status === "win") {
+                    // play audio
+                    loseAudio.pause();
+                    winAudio.play();
+
+                    winAmount += payout - betAmount;
+                    // based on percentage of win amount set bet amount
+                    if (onWinReset) {
+                      setBetAmount((betAmount) => {
+                        return betAmount + (betAmount * onWinReset) / 100;
+                      });
+                    }
+
+                    if (onLossIncrease) setBetAmount(initialBetAmount);
+                  }
+                  console.log(
+                    account?.[currentBalance?.name?.toLowerCase()],
+                    betAmount
+                  );
+                },
+              }
+            );
+          } else {
+            create(
+              {
+                paymentType: currentBalance?.name?.toLowerCase(),
+                betAmount,
+                prediction,
+                rollType,
+              },
+              {
+                onSuccess: (data) => {
+                  setResult(data.winNumber);
+                  setBetStatus(data.status);
+                  setReFetchHistory((reFetchHistory) => !reFetchHistory);
+                  if (data.status === "lost") {
+                    // play audio
+                    winAudio.pause();
+                    loseAudio.play();
+
+                    lossAmount += betAmount;
+                    if (onWinReset) setBetAmount(initialBetAmount);
+
+                    if (onLossIncrease) {
+                      setBetAmount((betAmount) => {
+                        return betAmount + (betAmount * onLossIncrease) / 100;
+                      });
+                    }
+                  }
+
+                  if (data.status === "win") {
+                    // play audio
+                    loseAudio.pause();
+                    winAudio.play();
+
+                    winAmount += payout - betAmount;
+                    // based on percentage of win amount set bet amount
+                    if (onWinReset) {
+                      setBetAmount((betAmount) => {
+                        return betAmount + (betAmount * onWinReset) / 100;
+                      });
+                    }
+
+                    if (onLossIncrease) setBetAmount(initialBetAmount);
+                  }
+                },
+              }
+            );
+          }
+
+          if (maxBetAmount > 0 && betAmount > maxBetAmount) {
+            setStopRoll(false);
+            clearInterval(loopRef.current);
+            return;
+          }
+
+          if (stopToLoss && lossAmount >= stopToLoss) {
+            setStopRoll(false);
+            clearInterval(loopRef.current);
+            return;
+          }
+
+          if (stopToWin && winAmount >= stopToWin) {
+            setStopRoll(false);
+            clearInterval(loopRef.current);
+            return;
+          }
+
+          i++;
+        }, callTime); // Loop every 1 second
       }
-
-      let i = 0;
-      loopRef.current = setInterval(() => {
-        if (numberOfBet > 0 && i >= numberOfBet) {
-          setStopRoll(false);
-          clearInterval(loopRef.current);
-          return;
-        }
-
-        if (!numberOfBet) {
-          create(
-            {
-              paymentType: currentBalance?.name?.toLowerCase(),
-              betAmount,
-              prediction,
-              rollType,
-            },
-            {
-              onSuccess: (data) => {
-                setResult(data.winNumber);
-                setBetStatus(data.status);
-                setReFetchHistory((reFetchHistory) => !reFetchHistory);
-                if (data.status === "lost") {
-                  // play audio
-                  winAudio.pause();
-                  loseAudio.play();
-
-                  lossAmount += betAmount;
-                  if (onWinReset) setBetAmount(initialBetAmount);
-
-                  if (onLossIncrease) {
-                    setBetAmount((betAmount) => {
-                      return betAmount + (betAmount * onLossIncrease) / 100;
-                    });
-                  }
-                }
-
-                if (data.status === "win") {
-                  // play audio
-                  loseAudio.pause();
-                  winAudio.play();
-
-                  winAmount += payout - betAmount;
-                  // based on percentage of win amount set bet amount
-                  if (onWinReset) {
-                    setBetAmount((betAmount) => {
-                      return betAmount + (betAmount * onWinReset) / 100;
-                    });
-                  }
-
-                  if (onLossIncrease) setBetAmount(initialBetAmount);
-                }
-                console.log(
-                  account?.[currentBalance?.name?.toLowerCase()],
-                  betAmount
-                );
-              },
-            }
-          );
-        } else {
-          create(
-            {
-              paymentType: currentBalance?.name?.toLowerCase(),
-              betAmount,
-              prediction,
-              rollType,
-            },
-            {
-              onSuccess: (data) => {
-                setResult(data.winNumber);
-                setBetStatus(data.status);
-                setReFetchHistory((reFetchHistory) => !reFetchHistory);
-                if (data.status === "lost") {
-                  // play audio
-                  winAudio.pause();
-                  loseAudio.play();
-
-                  lossAmount += betAmount;
-                  if (onWinReset) setBetAmount(initialBetAmount);
-
-                  if (onLossIncrease) {
-                    setBetAmount((betAmount) => {
-                      return betAmount + (betAmount * onLossIncrease) / 100;
-                    });
-                  }
-                }
-
-                if (data.status === "win") {
-                  // play audio
-                  loseAudio.pause();
-                  winAudio.play();
-
-                  winAmount += payout - betAmount;
-                  // based on percentage of win amount set bet amount
-                  if (onWinReset) {
-                    setBetAmount((betAmount) => {
-                      return betAmount + (betAmount * onWinReset) / 100;
-                    });
-                  }
-
-                  if (onLossIncrease) setBetAmount(initialBetAmount);
-                }
-              },
-            }
-          );
-        }
-
-        if (maxBetAmount > 0 && betAmount > maxBetAmount) {
-          setStopRoll(false);
-          clearInterval(loopRef.current);
-          return;
-        }
-
-        if (stopToLoss && lossAmount >= stopToLoss) {
-          setStopRoll(false);
-          clearInterval(loopRef.current);
-          return;
-        }
-
-        if (stopToWin && winAmount >= stopToWin) {
-          setStopRoll(false);
-          clearInterval(loopRef.current);
-          return;
-        }
-
-        i++;
-      }, callTime); // Loop every 1 second
     }
 
     // Cleanup function to stop the loop

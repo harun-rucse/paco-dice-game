@@ -15,6 +15,8 @@ function GameCard({
 }) {
   const { isLoading: isLoading2, isAuthenticated } = useCurrentUser();
 
+  console.log(stopRoll);
+
   function handleClick() {
     if (stopRoll) {
       onStopRoll();

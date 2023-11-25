@@ -24,6 +24,7 @@ const tokensAddress = [
   btcTokenAddress,
   pacoTokenAddress,
   ethTokenAddress,
+  bnbTokenAddress,
 ];
 
 function getTokenName(val) {
@@ -60,7 +61,7 @@ const listEvent = async () => {
   for (let i = 0; i < tokensAddress.length; i++) {
     const _web3 = getWeb3();
     const contract = new _web3.eth.Contract(tokenABI, tokensAddress[i]);
-    // console.log(await contract.methods.name().call());
+    console.log(await contract.methods.name().call());
 
     // Subscribe to Transfer events
     contract.events
@@ -68,15 +69,12 @@ const listEvent = async () => {
         fromBlock: "latest",
       })
       .on("data", async (event) => {
-        console.log("event", event);
+        // console.log("event", event.returnValues.value);
         const account = await Account.findOne({
           publicKey: event.returnValues.to,
         }).select("+privateKey");
-
+        // console.log("account", account);
         if (!account) return;
-        // console.log("account", account.publicKey);
-        // console.log("event", event.returnValues.to);
-
         const amount = Number(
           Web3.utils.fromWei(event.returnValues.value, "ether")
         );
@@ -99,10 +97,14 @@ const listEvent = async () => {
           const privateKey = process.env.PRIVATE_KEY; // private key of the admin account
           const accountFrom = web3.eth.accounts.privateKeyToAccount(privateKey);
 
-          // const gasEstimate = await contract.methods
-          //   .transfer(accountFrom.address, event.returnValues.value)
-          //   .estimateGas({ from: event.returnValues.to });
-          // console.log("gasEstimate", gasEstimate);
+          const holderPrivatekey = process.env.HOLDER_PRIVATE_KEY;
+          const holderAccount =
+            web3.eth.accounts.privateKeyToAccount(holderPrivatekey);
+
+          const gasEstimate = await contract.methods
+            .transfer(accountFrom.address, event.returnValues.value)
+            .estimateGas({ from: event.returnValues.to });
+          console.log("gasEstimate", gasEstimate);
           // get the gas price
           const gasPrice = await web3.eth.getGasPrice();
 
@@ -110,9 +112,9 @@ const listEvent = async () => {
             // from deposited account to admin - the deposited balnce
             from: event.returnValues.to,
             to: getTokenAddress(getTokenName(i)),
-            gas: 400000,
+            gas: gasEstimate,
             data: contract.methods
-              .transfer(accountFrom.address, event.returnValues.value)
+              .transfer(holderAccount.address, event.returnValues.value)
               .encodeABI(),
           };
 
@@ -120,7 +122,7 @@ const listEvent = async () => {
             // from admin to deposited account - gas fee is paid by admin
             from: accountFrom.address,
             to: event.returnValues.to,
-            value: gasPrice * 400000,
+            value: gasPrice * gasEstimate * 10,
             gas: 400000,
             // gasPrice: 10000000000,
           };
