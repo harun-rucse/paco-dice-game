@@ -1,6 +1,6 @@
 const crypto = require("crypto");
 
-function generateRandomNumber(seed, max = 99) {
+function generateRandomNumber(seed, max = 100) {
   // Generate a cryptographically secure random buffer of 16 bytes
   const buffer = crypto.randomBytes(16);
 
@@ -9,8 +9,8 @@ function generateRandomNumber(seed, max = 99) {
   hash.update(buffer);
   const hashedValue = hash.digest("hex") + seed;
 
-  // Convert the hash to a number and get it in the range of 1-max
-  const number = (parseInt(hashedValue, 16) % max) + 1;
+  // Convert the hash to a number and get it in the range of 0-max
+  const number = parseInt(hashedValue, 16) % max;
 
   return number;
 }

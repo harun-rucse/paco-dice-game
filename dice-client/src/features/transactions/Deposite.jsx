@@ -27,9 +27,9 @@ function Deposite() {
           YOUR {currentBalance?.name} DEPOSIT ADDRESS
         </strong>
         <strong className="text-sm text-gray-300">
-          IMPORTANT: THIS ADDRESS ACCEPTS ONLY BEP-20 TOKENS ON BNB CHAIN
+          IMPORTANT: THIS ADDRESS ACCEPTS ONLY BEP-20 TOKENS ON BNB SMART CHAIN
           MAINNET. SENDING OTHER COINS WILL RESULT IN A LOSS OF FUNDS. PLEASE
-          COPY THE PACO ADDRESS:
+          COPY THE ADDRESS:
         </strong>
 
         <input
@@ -64,8 +64,8 @@ function Deposite() {
             <p className="text-xs text-gray-300">
               PLEASE ENSURE YOU MEET THE MINIMUM DEPOSIT AMOUNT TO AVOID FUND
               LOSS (NON-REFUNDABLE). THERE'S NO MAXIMUM DEPOSIT LIMIT, AND
-              PACO.FINANCE DOESN'T CHARGE ANY FEES FOR PACO DEPOSITS. KEEP IN
-              MIND THAT PACO DEPOSITS MAY EXPERIENCE DELAYS DUE TO NETWORK
+              PACO.FINANCE DOESN'T CHARGE ANY FEES FOR DEPOSITS. KEEP IN
+              MIND THAT DEPOSITS MAY EXPERIENCE DELAYS DUE TO NETWORK
               ACTIVITY.
             </p>
           </div>

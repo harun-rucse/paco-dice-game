@@ -37,7 +37,7 @@ function TransactionTable() {
             }  border border-[#8634d8] px-6 py-2 rounded-[0px_10px_10px_0px]`}
             onClick={() => setCurrent("withdraws")}
           >
-            Withdraws
+            Withdrawals
           </button>
         </div>
       </div>
