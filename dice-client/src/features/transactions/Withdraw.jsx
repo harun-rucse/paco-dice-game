@@ -107,7 +107,19 @@ function Withdraw() {
         <div className="flex items-center gap-2 bg-[#323232] px-4 py-2 rounded-xl text-white mt-6">
           <AiFillWarning color="#ffcc00" size={20} />
           <span className="text-sm uppercase font-extralight">
-            MINIMUM WITHDRAWAL AMOUNT IS 500000 PACO.
+            MINIMUM WITHDRAWAL AMOUNT IS{" "}
+            {currentBalance?.name == "BTC"
+              ? "0.00005000"
+              : currentBalance?.name == "ETH"
+              ? "0.00100000"
+              : currentBalance?.name == "BNB"
+              ? "0.00500000"
+              : currentBalance?.name == "USDT"
+              ? "1"
+              : currentBalance?.name == "PACO"
+              ? "50000000"
+              : ""}{" "}
+            {currentBalance?.name}..
           </span>
         </div>
 
@@ -119,7 +131,20 @@ function Withdraw() {
             {isLoading ? "Withdrawing..." : "Withdraw"}
           </button>
           <p className="text-xs font-extralight mt-2">
-            TRANSACTION FEE - 10000 PACO.
+            TRANSACTION FEE -{" "}
+            {currentBalance?.name == "BTC"
+              ? "0.00002500"
+              : currentBalance?.name == "ETH"
+              ? "0.00050000"
+              : currentBalance?.name == "BNB"
+              ? "0.00100000"
+              : currentBalance?.name == "USDT"
+              ? "0.50"
+              : currentBalance?.name == "PACO"
+              ? "25000000"
+              : ""}
+            &nbsp;
+            {currentBalance?.name}.
           </p>
         </div>
       </form>

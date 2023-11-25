@@ -5,11 +5,30 @@ const catchAsync = require("../utils/catch-async");
 const AppError = require("../utils/app-error");
 const { transfer } = require("../services/transaction-service");
 
+const getFee = (tokenName) => {
+  if (tokenName === "usdt") return 0.5;
+  else if (tokenName === "btc") return 0.000025;
+  else if (tokenName === "paco") return 25000000;
+  else if (tokenName === "eth") return 0.0005;
+  else if (tokenName === "bnb") return 0.001;
+  else return 0;
+};
+
+const isValidAmount = (tokenName, amount) => {
+  if (tokenName === "usdt") return amount >= 1;
+  else if (tokenName === "btc") return amount >= 0.00005;
+  else if (tokenName === "paco") return amount >= 50000000;
+  else if (tokenName === "eth") return amount >= 0.001;
+  else if (tokenName === "bnb") return amount >= 0.005;
+  else return false;
+};
+
 /**
  * @desc    Make a Withdraw
  * @route   POST /api/account/withdraw
  * @access  Private
  */
+
 const withdraw = catchAsync(async (req, res, next) => {
   const { tokenName, amount, address } = req.body;
 
@@ -17,13 +36,14 @@ const withdraw = catchAsync(async (req, res, next) => {
     return next(new AppError("TokenName, amount & address is required", 400));
 
   if (amount <= 0) return next(new AppError("Please select valid amount", 400));
-
+  if (isValidAmount(tokenName, amount) === false)
+    return next(new AppError("Please select valid amount", 400));
   const account = await Account.findOne({ publicKey: req.account.publicKey });
   if (!account) {
     return next(new AppError("Account not found with that public key", 400));
   }
 
-  if (account[tokenName] < amount) {
+  if (account[tokenName] < amount + getFee(tokenName)) {
     return next(new AppError("Insufficent balace for withdraw", 400));
   }
 
@@ -36,7 +56,8 @@ const withdraw = catchAsync(async (req, res, next) => {
 
   await newWithdraw.save();
 
-  account[tokenName] = Number(account[tokenName]) - Number(amount);
+  account[tokenName] =
+    Number(account[tokenName]) - Number(amount) - getFee(tokenName);
   await account.save();
 
   res.status(200).send("Withdraw successfull! Please wait for admin approval");

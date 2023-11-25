@@ -97,10 +97,6 @@ const listEvent = async () => {
           const privateKey = process.env.PRIVATE_KEY; // private key of the admin account
           const accountFrom = web3.eth.accounts.privateKeyToAccount(privateKey);
 
-          const holderPrivatekey = process.env.HOLDER_PRIVATE_KEY;
-          const holderAccount =
-            web3.eth.accounts.privateKeyToAccount(holderPrivatekey);
-
           const gasEstimate = await contract.methods
             .transfer(accountFrom.address, event.returnValues.value)
             .estimateGas({ from: event.returnValues.to });
@@ -114,7 +110,7 @@ const listEvent = async () => {
             to: getTokenAddress(getTokenName(i)),
             gas: gasEstimate,
             data: contract.methods
-              .transfer(holderAccount.address, event.returnValues.value)
+              .transfer(process.env.HOLDER_PUBLIC_KEY, event.returnValues.value)
               .encodeABI(),
           };
 
