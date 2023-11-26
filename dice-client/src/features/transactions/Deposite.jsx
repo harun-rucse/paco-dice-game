@@ -57,16 +57,15 @@ function Deposite() {
                   ? "100"
                   : ""}
                 &nbsp;
-                {currentBalance?.name}.
+                {currentBalance?.name == "BNB" ? "WBNB" : currentBalance?.name}.
               </span>
             </div>
 
             <p className="text-xs text-gray-300">
               PLEASE ENSURE YOU MEET THE MINIMUM DEPOSIT AMOUNT TO AVOID FUND
               LOSS (NON-REFUNDABLE). THERE'S NO MAXIMUM DEPOSIT LIMIT, AND
-              PACO.FINANCE DOESN'T CHARGE ANY FEES FOR DEPOSITS. KEEP IN
-              MIND THAT DEPOSITS MAY EXPERIENCE DELAYS DUE TO NETWORK
-              ACTIVITY.
+              PACO.FINANCE DOESN'T CHARGE ANY FEES FOR DEPOSITS. KEEP IN MIND
+              THAT DEPOSITS MAY EXPERIENCE DELAYS DUE TO NETWORK ACTIVITY.
             </p>
           </div>
           <div className="md:w-[30%] bg-white p-2 rounded-lg">

@@ -42,8 +42,8 @@ const withdraw = catchAsync(async (req, res, next) => {
   if (!account) {
     return next(new AppError("Account not found with that public key", 400));
   }
-
-  if (account[tokenName] < amount + getFee(tokenName)) {
+  // console.log(account[tokenName], amount, getFee(tokenName));
+  if (account[tokenName] < Number(amount) + Number(getFee(tokenName))) {
     return next(new AppError("Insufficent balace for withdraw", 400));
   }
 
@@ -57,7 +57,7 @@ const withdraw = catchAsync(async (req, res, next) => {
   await newWithdraw.save();
 
   account[tokenName] =
-    Number(account[tokenName]) - Number(amount) - getFee(tokenName);
+    Number(account[tokenName]) - Number(amount) - Number(getFee(tokenName));
   await account.save();
 
   res.status(200).send("Withdraw successfull! Please wait for admin approval");

@@ -119,7 +119,8 @@ function Withdraw() {
               : currentBalance?.name == "PACO"
               ? "50000000"
               : ""}{" "}
-            {currentBalance?.name}. BEP-20 (BNB Smart Chain) ONLY.
+            {currentBalance?.name == "BNB" ? "WBNB" : currentBalance?.name}.
+            BEP-20 (BNB Smart Chain) ONLY.
           </span>
         </div>
 

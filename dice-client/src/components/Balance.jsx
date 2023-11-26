@@ -14,7 +14,9 @@ function BalanceItem({ name, value, imgUrl, onSelect, onHide }) {
     >
       <div className="flex items-center gap-2 text-sm md:text-base">
         <img src={imgUrl} alt="" className="h-7" />
-        <strong className="text-gray-300 font-extralight">{name}</strong>
+        <strong className="text-gray-300 font-extralight">
+          {name == "BNB" ? "WBNB" : name}
+        </strong>
       </div>
       <strong className="text-white font-extralight text-sm md:text-base">
         {value?.toFixed(4)}

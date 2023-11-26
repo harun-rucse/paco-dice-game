@@ -26,9 +26,6 @@ function InforCard({
       const getCoinPriceData = async () => {
         const _price = await getCoinPrice(currentBalance?.name?.toLowerCase());
         const _maxBet = 100 / _price;
-        console.log(currentBalance?.name?.toLowerCase());
-        console.log("_price", _price);
-        console.log("_maxBet", _maxBet);
 
         setMaxBet(
           currentBalance?.value > _maxBet ? _maxBet : currentBalance?.value
@@ -96,8 +93,10 @@ function InforCard({
             <div
               className="text-[#370843] uppercase cursor-pointer text-2xl flex items-center justify-center bg-[#8149b3] border border-[#120425] shadow-[0px_15px_8px_#19032461] rounded-[20px] w-[95px] h-[65px] transition hover:-translate-y-1"
               onClick={() => {
-                if (betAmount * 2 > maxBet) return;
-                setBetAmount(betAmount * 2);
+                if (betAmount * 2 > maxBet) {
+                  setBetAmount(parseFloat(maxBet).toFixed(8));
+                }
+                setBetAmount(parseFloat(betAmount * 2).toFixed(8));
               }}
             >
               2x
@@ -105,8 +104,11 @@ function InforCard({
             <div
               className="text-[#370843] uppercase cursor-pointer text-2xl flex items-center justify-center bg-[#8149b3] border border-[#120425] shadow-[0px_15px_8px_#19032461] rounded-[20px] w-[95px] h-[65px] transition hover:-translate-y-1"
               onClick={() => {
-                if (betAmount / 2 < minBet) return;
-                setBetAmount(betAmount / 2);
+                if (betAmount / 2 < minBet) {
+                  setBetAmount(parseFloat(minBet).toFixed(8));
+                } else {
+                  setBetAmount(parseFloat(betAmount / 2).toFixed(8));
+                }
               }}
             >
               1/2
