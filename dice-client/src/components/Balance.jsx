@@ -2,6 +2,7 @@ import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 import { cn } from "../utils/index";
 import { useBalance } from "../context/BalanceContext";
 import { useCurrentUser } from "../features/authentication/useCurrentUser";
+import { useEffect, useState } from "react";
 
 function BalanceItem({ name, value, imgUrl, onSelect, onHide }) {
   return (
@@ -19,7 +20,7 @@ function BalanceItem({ name, value, imgUrl, onSelect, onHide }) {
         </strong>
       </div>
       <strong className="text-white font-extralight text-sm md:text-base">
-        {value?.toFixed(4)}
+        {value?.toFixed(8)}
       </strong>
     </div>
   );
