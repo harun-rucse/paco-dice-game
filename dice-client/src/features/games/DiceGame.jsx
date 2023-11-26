@@ -99,12 +99,6 @@ function DiceGame() {
       } else {
         let i = 0;
         loopRef.current = setInterval(() => {
-          if (numberOfBet > 0 && i >= numberOfBet) {
-            setStopRoll(false);
-            clearInterval(loopRef.current);
-            return;
-          }
-
           if (!numberOfBet) {
             create(
               {
@@ -124,8 +118,8 @@ function DiceGame() {
                     loseAudio.play();
 
                     lossAmount += betAmount;
-                    if (onWinReset) setBetAmount(initialBetAmount);
 
+                    if (!onLossIncrease) setBetAmount(initialBetAmount);
                     if (onLossIncrease) {
                       setBetAmount((betAmount) => {
                         return betAmount + (betAmount * onLossIncrease) / 100;
@@ -146,7 +140,7 @@ function DiceGame() {
                       });
                     }
 
-                    if (onLossIncrease) setBetAmount(initialBetAmount);
+                    if (!onWinReset) setBetAmount(initialBetAmount);
                   }
                   console.log(
                     account?.[currentBalance?.name?.toLowerCase()],
@@ -156,6 +150,11 @@ function DiceGame() {
               }
             );
           } else {
+            if (numberOfBet > 0 && i >= numberOfBet) {
+              setStopRoll(false);
+              clearInterval(loopRef.current);
+              return;
+            }
             create(
               {
                 paymentType: currentBalance?.name?.toLowerCase(),
@@ -174,8 +173,8 @@ function DiceGame() {
                     loseAudio.play();
 
                     lossAmount += betAmount;
-                    if (onWinReset) setBetAmount(initialBetAmount);
 
+                    if (!onLossIncrease) setBetAmount(initialBetAmount);
                     if (onLossIncrease) {
                       setBetAmount((betAmount) => {
                         return betAmount + (betAmount * onLossIncrease) / 100;
@@ -196,8 +195,12 @@ function DiceGame() {
                       });
                     }
 
-                    if (onLossIncrease) setBetAmount(initialBetAmount);
+                    if (!onWinReset) setBetAmount(initialBetAmount);
                   }
+                  console.log(
+                    account?.[currentBalance?.name?.toLowerCase()],
+                    betAmount
+                  );
                 },
               }
             );

@@ -47,7 +47,7 @@ function AutoBet({
           value={onWinReset}
           onChange={(e) => {
             setOnWinReset(e.target.value);
-            setOnLossIncrease("");
+            // setOnLossIncrease("");
           }}
           icon="%"
         />
@@ -57,7 +57,7 @@ function AutoBet({
           value={onLossIncrease}
           onChange={(e) => {
             setOnLossIncrease(e.target.value);
-            setOnWinReset("");
+            // setOnWinReset("");
           }}
           icon="%"
         />

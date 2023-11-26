@@ -1,8 +1,7 @@
-import { useBalance } from "../../context/BalanceContext";
+import { useEffect, useState } from "react";
 import Switch from "../../components/Switch";
-
-const MAX_BET = 500;
-const MIN_BET = 1;
+import { useBalance } from "../../context/BalanceContext";
+import { getCoinPrice } from "../../utils/tokenPrice";
 
 function InforCard({
   betAmount,
@@ -18,7 +17,26 @@ function InforCard({
   setShowError,
   setAuto,
 }) {
+  const [maxBet, setMaxBet] = useState(0);
+  const [minBet] = useState("0.00000001");
   const { currentBalance } = useBalance();
+
+  useEffect(() => {
+    if (currentBalance) {
+      const getCoinPriceData = async () => {
+        const _price = await getCoinPrice(currentBalance?.name?.toLowerCase());
+        const _maxBet = 100 / _price;
+        console.log(currentBalance?.name?.toLowerCase());
+        console.log("_price", _price);
+        console.log("_maxBet", _maxBet);
+
+        setMaxBet(
+          currentBalance?.value > _maxBet ? _maxBet : currentBalance?.value
+        );
+      };
+      getCoinPriceData();
+    }
+  }, [currentBalance]);
 
   return (
     <div className="gradient-infor-card-bg rounded-[29px] border-2 border-[#491b7f61] px-4 md:px-16 py-6 relative z-50 flex flex-col gap-10 items-center">
@@ -78,7 +96,7 @@ function InforCard({
             <div
               className="text-[#370843] uppercase cursor-pointer text-2xl flex items-center justify-center bg-[#8149b3] border border-[#120425] shadow-[0px_15px_8px_#19032461] rounded-[20px] w-[95px] h-[65px] transition hover:-translate-y-1"
               onClick={() => {
-                if (betAmount * 2 > MAX_BET) return;
+                if (betAmount * 2 > maxBet) return;
                 setBetAmount(betAmount * 2);
               }}
             >
@@ -87,7 +105,7 @@ function InforCard({
             <div
               className="text-[#370843] uppercase cursor-pointer text-2xl flex items-center justify-center bg-[#8149b3] border border-[#120425] shadow-[0px_15px_8px_#19032461] rounded-[20px] w-[95px] h-[65px] transition hover:-translate-y-1"
               onClick={() => {
-                if (betAmount / 2 < MIN_BET) return;
+                if (betAmount / 2 < minBet) return;
                 setBetAmount(betAmount / 2);
               }}
             >
@@ -95,13 +113,13 @@ function InforCard({
             </div>
             <div
               className="text-[#370843] uppercase cursor-pointer text-2xl flex items-center justify-center bg-[#8149b3] border border-[#120425] shadow-[0px_15px_8px_#19032461] rounded-[20px] w-[95px] h-[65px] transition hover:-translate-y-1"
-              onClick={() => setBetAmount(MIN_BET)}
+              onClick={() => setBetAmount(minBet)}
             >
               Min
             </div>
             <div
               className="text-[#370843] uppercase cursor-pointer text-2xl flex items-center justify-center bg-[#8149b3] border border-[#120425] shadow-[0px_15px_8px_#19032461] rounded-[20px] w-[95px] h-[65px] transition hover:-translate-y-1"
-              onClick={() => setBetAmount(MAX_BET)}
+              onClick={() => setBetAmount(maxBet)}
             >
               Max
             </div>
