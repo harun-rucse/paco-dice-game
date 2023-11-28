@@ -7,6 +7,7 @@ import AutoBet from "./AutoBet";
 import { useCreateGame } from "./useCreateGame";
 import { useBalance } from "../../context/BalanceContext";
 import { useCurrentUser } from "../authentication/useCurrentUser";
+import useGamesHistory from "./useGamesHistory";
 
 const winAudio = new Audio("/audio/win.mp3");
 const loseAudio = new Audio("/audio/lose.mp3");
@@ -33,12 +34,23 @@ function DiceGame() {
   const [auto, setAuto] = useState(false);
   const [stopRoll, setStopRoll] = useState(false);
   const [playAudio, setPlayAudio] = useState(true);
-  const [callTime, setCallTime] = useState(3000);
+  const [callTime, setCallTime] = useState(2000);
+  const [histories, setHistories] = useState([]);
 
   const [reFetchHistory, setReFetchHistory] = useState(false);
   const { create, isLoading } = useCreateGame();
   const { currentBalance } = useBalance();
   const { account } = useCurrentUser();
+  const betAmountRef = useRef(betAmount);
+  const { games } = useGamesHistory();
+
+  useEffect(() => {
+    setHistories(games);
+  }, []);
+
+  useEffect(() => {
+    betAmountRef.current = betAmount;
+  }, [betAmount]);
 
   useEffect(() => {
     // same logic copy pase in backend
@@ -54,24 +66,35 @@ function DiceGame() {
   }, [prediction, betAmount, multiplier, rollType]);
 
   useEffect(() => {
+    let timer;
+
     if (stopRoll) {
       // Start the loop
+      console.log("stopRoll", stopRoll);
 
       let lossAmount = 0;
       let winAmount = 0;
       let initialBetAmount = betAmount;
 
       if (!auto) {
-        loopRef.current = setInterval(() => {
+        console.log("auto", auto);
+        // setTImeout
+        timer = setTimeout(() => {
           create(
             {
               paymentType: currentBalance?.name?.toLowerCase(),
-              betAmount,
+              betAmount: betAmountRef.current,
               prediction,
               rollType,
             },
             {
               onSuccess: (data) => {
+
+                // TODO:: set histories on every sucess.
+
+                // setHistories(
+                //   histories => [...histories, ]
+                // )
                 setResult(data.winNumber);
                 setBetStatus(data.status);
                 setReFetchHistory((reFetchHistory) => !reFetchHistory);
@@ -86,12 +109,10 @@ function DiceGame() {
                 }
 
                 setStopRoll(false);
-                clearInterval(loopRef.current);
               },
               onError: (error) => {
                 console.log(error);
                 setStopRoll(false);
-                clearInterval(loopRef.current);
               },
             }
           );
@@ -103,7 +124,7 @@ function DiceGame() {
             create(
               {
                 paymentType: currentBalance?.name?.toLowerCase(),
-                betAmount,
+                betAmount: betAmountRef.current,
                 prediction,
                 rollType,
               },
@@ -117,7 +138,7 @@ function DiceGame() {
                     winAudio.pause();
                     loseAudio.play();
 
-                    lossAmount += betAmount;
+                    lossAmount += betAmountRef.current;
 
                     if (!onLossIncrease) setBetAmount(initialBetAmount);
                     if (onLossIncrease) {
@@ -132,7 +153,7 @@ function DiceGame() {
                     loseAudio.pause();
                     winAudio.play();
 
-                    winAmount += payout - betAmount;
+                    winAmount += payout - betAmountRef.current;
                     // based on percentage of win amount set bet amount
                     if (onWinReset) {
                       setBetAmount((betAmount) => {
@@ -144,7 +165,7 @@ function DiceGame() {
                   }
                   console.log(
                     account?.[currentBalance?.name?.toLowerCase()],
-                    betAmount
+                    betAmountRef.current
                   );
                 },
               }
@@ -158,7 +179,7 @@ function DiceGame() {
             create(
               {
                 paymentType: currentBalance?.name?.toLowerCase(),
-                betAmount,
+                betAmount: betAmountRef.current,
                 prediction,
                 rollType,
               },
@@ -172,7 +193,7 @@ function DiceGame() {
                     winAudio.pause();
                     loseAudio.play();
 
-                    lossAmount += betAmount;
+                    lossAmount += betAmountRef.current;
 
                     if (!onLossIncrease) setBetAmount(initialBetAmount);
                     if (onLossIncrease) {
@@ -187,7 +208,7 @@ function DiceGame() {
                     loseAudio.pause();
                     winAudio.play();
 
-                    winAmount += payout - betAmount;
+                    winAmount += payout - betAmountRef.current;
                     // based on percentage of win amount set bet amount
                     if (onWinReset) {
                       setBetAmount((betAmount) => {
@@ -199,14 +220,14 @@ function DiceGame() {
                   }
                   console.log(
                     account?.[currentBalance?.name?.toLowerCase()],
-                    betAmount
+                    betAmountRef.current
                   );
                 },
               }
             );
           }
 
-          if (maxBetAmount > 0 && betAmount > maxBetAmount) {
+          if (maxBetAmount > 0 && betAmountRef.current > maxBetAmount) {
             setStopRoll(false);
             clearInterval(loopRef.current);
             return;
@@ -234,16 +255,9 @@ function DiceGame() {
       if (loopRef.current) {
         clearInterval(loopRef.current);
       }
+      clearTimeout(timer);
     };
   }, [stopRoll]);
-
-  // useEffect(() => {
-  //   if (account?.[currentBalance?.name?.toLowerCase()] < betAmount) {
-  //     setStopRoll(false);
-  //     clearInterval(loopRef.current);
-  //     return;
-  //   }
-  // }, [betAmount]);
 
   // controll audio
   useEffect(() => {

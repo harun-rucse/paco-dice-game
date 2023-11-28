@@ -7,6 +7,7 @@ export const createGame = async ({
   prediction,
   rollType,
 }) => {
+  console.log(betAmount);
   try {
     const { data } = await axios.post(
       `${API_URL}/games`,

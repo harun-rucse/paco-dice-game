@@ -1,6 +1,6 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import Spinner from "../../components/Spinner";
-import useGamesHistory from "./useGamesHistory";
+
 
 function Item({ value, status }) {
   return (
@@ -21,20 +21,22 @@ function Item({ value, status }) {
 //   60,
 // ];
 
-function History({ reFetchHistory }) {
+function History({ histories }) {
   const ref = useRef(null);
-  const { games: histories, isLoading } = useGamesHistory(reFetchHistory);
+  // const { games: histories, isLoading } = useGamesHistory(reFetchHistory);
 
-  useEffect(() => {
-    if (ref.current) {
-      ref.current.scrollTo({
-        left: ref.current.scrollWidth,
-        behavior: "smooth",
-      });
-    }
-  }, [histories]);
+  
 
-  if (isLoading) return <Spinner />;
+  // useEffect(() => {
+  //   if (ref.current) {
+  //     ref.current.scrollTo({
+  //       left: ref.current.scrollWidth,
+  //       behavior: "smooth",
+  //     });
+  //   }
+  // }, [histories]);
+
+  // if (isLoading) return <Spinner />;
 
   return (
     <div className="flex bg-[#522c83] rounded-[29px] border border-[#522c83] px-2 py-2 relative shadow-lg h-[60px] md:h-[80px]">

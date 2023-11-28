@@ -59,7 +59,7 @@ const getCoinPrice = async (name = "btc") => {
     if (name === "btc") {
       const priceFeed = new web3.eth.Contract(PRICE_FEED_ABI, BTC_PRICE_FEED);
       const { answer } = await priceFeed.methods.latestRoundData().call();
-      console.log(answer / 10 ** 8);
+
       return Number(answer / 10 ** 8).toFixed(3);
     } else if (name === "usdt") {
       return 1;
@@ -68,12 +68,12 @@ const getCoinPrice = async (name = "btc") => {
     } else if (name === "eth") {
       const priceFeed = new web3.eth.Contract(PRICE_FEED_ABI, ETH_PRICE_FEED);
       const { answer } = await priceFeed.methods.latestRoundData().call();
-      console.log(answer / 10 ** 8);
+
       return answer / 10 ** 8;
     } else if (name === "bnb") {
       const priceFeed = new web3.eth.Contract(PRICE_FEED_ABI, BNB_PRICE_FEED);
       const { answer } = await priceFeed.methods.latestRoundData().call();
-      console.log(answer / 10 ** 8);
+
       return answer / 10 ** 8;
     }
   } catch (err) {

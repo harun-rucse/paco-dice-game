@@ -35,6 +35,7 @@ function InforCard({
     }
   }, [currentBalance]);
 
+  console.log("currentBalance", currentBalance);
   return (
     <div className="gradient-infor-card-bg rounded-[29px] border-2 border-[#491b7f61] px-4 md:px-16 py-6 relative z-50 flex flex-col gap-10 items-center">
       <div className="flex flex-col md:flex-row gap-6 md:gap-0 justify-between w-full">
@@ -76,7 +77,7 @@ function InforCard({
           >
             <input
               type="number"
-              className="bg-transparent focus:outline-none text-white text-2xl px-6 py-3 w-full md:w-[95%]"
+              className="bet-amount bg-transparent focus:outline-none text-white text-2xl px-6 py-3 w-full md:w-[95%]"
               value={betAmount}
               onChange={(e) => {
                 setBetAmount(Number(e.target.value));

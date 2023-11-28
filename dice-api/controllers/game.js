@@ -5,78 +5,73 @@ const catchAsync = require("../utils/catch-async");
 const AppError = require("../utils/app-error");
 const getCoinPrice = require("../services/token-price-service");
 
+/*
+
+1 BTC 100.000.000 paco
+18.39 ETH 100.000.000 paco
+163.54 BNB 100.000.000 paco
+36977.54 USDT 100.000.000 paco
+
+*/
+
 async function caclPacoReward(amount, coinName) {
   let reward = 0;
+
   if (coinName === "btc") {
-    let price = await getCoinPrice("btc");
-    // price = price * 1000;
-    const satoshiPrice = price / 100000000;
-    console.log("satoshiPrice", satoshiPrice);
-    reward = amount / satoshiPrice;
-  } else if (coinName === "usdt") {
-    let _btcPrice = await getCoinPrice("btc");
-    let _satoshiPrice = _btcPrice / 100000000;
-    reward = amount / _satoshiPrice;
+    reward = amount * 100000000;
+  } else if (coinName === "eth") {
+    reward = (100000000 / 18.39) * amount;
   } else if (coinName === "paco") {
     reward = 0;
-  } else if (coinName === "eth") {
-    let _btcPrice = await getCoinPrice("btc");
-    let _ethPrice = await getCoinPrice("eth");
-    const _amountPrice = amount * _ethPrice;
-    const _satoshiPrice = _btcPrice / 100000000;
-    console.log("satoshiPrice", _satoshiPrice);
-    reward = _amountPrice / _satoshiPrice;
+  } else if (coinName === "usdt") {
+    reward = (100000000 / 36977.54) * amount;
   } else if (coinName === "bnb") {
-    let _btcPrice = await getCoinPrice("btc");
-    let _bnbPrice = await getCoinPrice("bnb");
-    const _amountPrice = amount * _bnbPrice;
-    const _satoshiPrice = _btcPrice / 100000000;
-    console.log("satoshiPrice", _satoshiPrice);
-    reward = _amountPrice / _satoshiPrice;
+    reward = (100000000 / 163.54) * amount;
   }
 
   return reward;
 }
 
-async function checkMaxBetAmount(amount, coinName) {
-  if (coinName === "btc") {
-    const _btcPrice = await getCoinPrice("btc");
-    const _betedUsd = amount * _btcPrice;
-    if (_betedUsd > 100) {
-      return false;
-    } else {
-      return true;
-    }
-  } else if (coinName === "usdt") {
-    if (amount > 100) {
-      return false;
-    } else {
-      return true;
-    }
-  } else if (coinName === "eth") {
-    const _ethPrice = await getCoinPrice("eth");
-    const _betedUsd = amount * _ethPrice;
-    if (_betedUsd > 100) {
-      return false;
-    } else {
-      return true;
-    }
-  } else if (coinName === "bnb") {
-    const _bnbPrice = await getCoinPrice("bnb");
-    const _betedUsd = amount * _bnbPrice;
-    if (_betedUsd > 100) {
-      return false;
-    } else {
-      return true;
-    }
-  } else if (coinName === "paco") {
-    if (amount > 100000000) {
-      return false;
-    } else {
-      return true;
-    }
-  }
-}
+// async function checkMaxBetAmount(amount, coinName) {
+//   return 5;
+//   // if (coinName === "btc") {
+//   //   const _btcPrice = await getCoinPrice("btc");
+//   //   const _betedUsd = amount * _btcPrice;
+//   //   if (_betedUsd > 100) {
+//   //     return false;
+//   //   } else {
+//   //     return true;
+//   //   }
+//   // } else if (coinName === "usdt") {
+//   //   if (amount > 100) {
+//   //     return false;
+//   //   } else {
+//   //     return true;
+//   //   }
+//   // } else if (coinName === "eth") {
+//   //   const _ethPrice = await getCoinPrice("eth");
+//   //   const _betedUsd = amount * _ethPrice;
+//   //   if (_betedUsd > 100) {
+//   //     return false;
+//   //   } else {
+//   //     return true;
+//   //   }
+//   // } else if (coinName === "bnb") {
+//   //   const _bnbPrice = await getCoinPrice("bnb");
+//   //   const _betedUsd = amount * _bnbPrice;
+//   //   if (_betedUsd > 100) {
+//   //     return false;
+//   //   } else {
+//   //     return true;
+//   //   }
+//   // } else if (coinName === "paco") {
+//   //   if (amount > 100000000) {
+//   //     return false;
+//   //   } else {
+//   //     return true;
+//   //   }
+//   // }
+// }
 
 /**
  * @desc    Get Hello World message
@@ -99,12 +94,6 @@ const createGame = catchAsync(async (req, res, next) => {
   // Validate request
   if (!betAmount || !prediction || !rollType) {
     return next(new AppError("All fields are required!", 400));
-  }
-
-  const _checkMaxBetAmount = await checkMaxBetAmount(betAmount, paymentType);
-
-  if (!_checkMaxBetAmount) {
-    return next(new AppError("Bet amount is more than Max bet amount", 400));
   }
 
   if (rollType === "rollUnder") {
@@ -151,8 +140,6 @@ const createGame = catchAsync(async (req, res, next) => {
 
   // add paco balance reward
   if (paymentType !== "paco") {
-    console.log("paco reward", account["paco"]);
-    console.log("paco reward", await caclPacoReward(betAmount, paymentType));
     account["paco"] =
       account["paco"] + Number(await caclPacoReward(betAmount, paymentType));
   }

@@ -9,7 +9,7 @@ function Control({ playAudio, setPlayAudio, setCallTime, stopRoll }) {
     if (boost) {
       setCallTime(1000);
     } else {
-      setCallTime(3000);
+      setCallTime(2000);
     }
   }, [boost]);
 
@@ -28,11 +28,11 @@ function Control({ playAudio, setPlayAudio, setCallTime, stopRoll }) {
       <img
         src="/icons/rocket.png"
         alt=""
-        className={`w-10 md:w-12  transition hover:scale-110  ${
+        className={`w-10 md:w-12  transition hover:scale-110 cursor-not-allowed ${
           !boost
             ? "grayscale-[40%] brightness-75"
             : "grayscale-0 brightness-100"
-        } ${!stopRoll ? "cursor-pointer" : "cursor-not-allowed"}`}
+        } `}
         onClick={() => {
           if (!stopRoll) setBoost((prev) => !prev);
         }}
