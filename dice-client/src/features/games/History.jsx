@@ -1,6 +1,5 @@
-import { useRef, useEffect, useState } from "react";
-import Spinner from "../../components/Spinner";
-
+import { useRef, useEffect } from "react";
+// import Spinner from "../../components/Spinner";
 
 function Item({ value, status }) {
   return (
@@ -21,20 +20,17 @@ function Item({ value, status }) {
 //   60,
 // ];
 
-function History({ histories }) {
+function History({ histories, isLoading }) {
   const ref = useRef(null);
-  // const { games: histories, isLoading } = useGamesHistory(reFetchHistory);
 
-  
-
-  // useEffect(() => {
-  //   if (ref.current) {
-  //     ref.current.scrollTo({
-  //       left: ref.current.scrollWidth,
-  //       behavior: "smooth",
-  //     });
-  //   }
-  // }, [histories]);
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.scrollTo({
+        left: ref.current.scrollWidth,
+        behavior: "smooth",
+      });
+    }
+  }, [histories]);
 
   // if (isLoading) return <Spinner />;
 
@@ -48,11 +44,13 @@ function History({ histories }) {
         ref={ref}
       >
         {histories &&
-          [...histories]
-            ?.reverse()
-            ?.map((game, index) => (
-              <Item key={index} value={game.winNumber} status={game.status} />
-            ))}
+          histories?.map((game, index) => (
+            <Item key={index} value={game.winNumber} status={game.status} />
+          ))}
+
+        {isLoading && (
+          <p className="text-white text-center w-full">Loading histories....</p>
+        )}
       </div>
     </div>
   );

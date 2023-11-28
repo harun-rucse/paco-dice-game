@@ -37,16 +37,18 @@ function DiceGame() {
   const [callTime, setCallTime] = useState(2000);
   const [histories, setHistories] = useState([]);
 
-  const [reFetchHistory, setReFetchHistory] = useState(false);
+  // const [reFetchHistory, setReFetchHistory] = useState(false);
   const { create, isLoading } = useCreateGame();
   const { currentBalance } = useBalance();
   const { account } = useCurrentUser();
   const betAmountRef = useRef(betAmount);
-  const { games } = useGamesHistory();
+  const { games, isLoading: isHistoryLoading } = useGamesHistory();
 
   useEffect(() => {
-    setHistories(games);
-  }, []);
+    if (games) {
+      setHistories([...games].reverse());
+    }
+  }, [isHistoryLoading]);
 
   useEffect(() => {
     betAmountRef.current = betAmount;
@@ -89,15 +91,13 @@ function DiceGame() {
             },
             {
               onSuccess: (data) => {
-
-                // TODO:: set histories on every sucess.
-
-                // setHistories(
-                //   histories => [...histories, ]
-                // )
+                setHistories((prev) => [
+                  ...prev,
+                  { winNumber: data.winNumber, status: data.status },
+                ]);
                 setResult(data.winNumber);
                 setBetStatus(data.status);
-                setReFetchHistory((reFetchHistory) => !reFetchHistory);
+                // setReFetchHistory((reFetchHistory) => !reFetchHistory);
                 if (data.status === "lost") {
                   // stop win audio if loss
                   winAudio.pause();
@@ -130,9 +130,13 @@ function DiceGame() {
               },
               {
                 onSuccess: (data) => {
+                  setHistories((prev) => [
+                    ...prev,
+                    { winNumber: data.winNumber, status: data.status },
+                  ]);
                   setResult(data.winNumber);
                   setBetStatus(data.status);
-                  setReFetchHistory((reFetchHistory) => !reFetchHistory);
+                  // setReFetchHistory((reFetchHistory) => !reFetchHistory);
                   if (data.status === "lost") {
                     // play audio
                     winAudio.pause();
@@ -185,9 +189,13 @@ function DiceGame() {
               },
               {
                 onSuccess: (data) => {
+                  setHistories((prev) => [
+                    ...prev,
+                    { winNumber: data.winNumber, status: data.status },
+                  ]);
                   setResult(data.winNumber);
                   setBetStatus(data.status);
-                  setReFetchHistory((reFetchHistory) => !reFetchHistory);
+                  // setReFetchHistory((reFetchHistory) => !reFetchHistory);
                   if (data.status === "lost") {
                     // play audio
                     winAudio.pause();
@@ -296,7 +304,7 @@ function DiceGame() {
         setCallTime={setCallTime}
         stopRoll={stopRoll}
       />
-      <History reFetchHistory={reFetchHistory} />
+      <History histories={histories} isLoading={isHistoryLoading} />
       <GameCard
         prediction={prediction}
         setPrediction={setPrediction}
