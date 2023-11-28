@@ -78,7 +78,7 @@ function InforCard({
             <input
               type="number"
               className="bet-amount bg-transparent focus:outline-none text-white text-2xl px-6 py-3 w-full md:w-[95%]"
-              value={parseFloat(betAmount).toFixed(14)}
+              value={parseFloat(betAmount).toFixed(8)}
               onChange={(e) => {
                 setBetAmount(Number(e.target.value));
                 setShowError("");
@@ -95,7 +95,7 @@ function InforCard({
               className="text-[#370843] uppercase cursor-pointer text-2xl flex items-center justify-center bg-[#8149b3] border border-[#120425] shadow-[0px_15px_8px_#19032461] rounded-[20px] w-[95px] h-[65px] transition hover:-translate-y-1"
               onClick={() => {
                 if (betAmount * 2 > maxBet) {
-                  setBetAmount((maxBet));
+                  setBetAmount(maxBet);
                 }
                 setBetAmount(betAmount * 2);
               }}

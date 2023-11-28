@@ -43,7 +43,7 @@ function AutoBet({
         />
         <Input
           name="onWinReset"
-          label="On win -Reset"
+          label={`ON WIN - ${onWinReset ? "INCREASE" : "RESET"}`}
           value={onWinReset}
           onChange={(e) => {
             setOnWinReset(e.target.value);
@@ -53,7 +53,7 @@ function AutoBet({
         />
         <Input
           name="onLossIncrease"
-          label="On Loss -Increase"
+          label={`ON LOSS - ${onLossIncrease ? "INCREASE" : "RESET"}`}
           value={onLossIncrease}
           onChange={(e) => {
             setOnLossIncrease(e.target.value);
