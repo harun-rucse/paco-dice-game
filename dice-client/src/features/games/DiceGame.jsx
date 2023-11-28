@@ -121,6 +121,7 @@ function DiceGame() {
         let i = 0;
         loopRef.current = setInterval(() => {
           if (!numberOfBet) {
+            console.log("UNLIMITED");
             create(
               {
                 paymentType: currentBalance?.name?.toLowerCase(),
@@ -130,6 +131,7 @@ function DiceGame() {
               },
               {
                 onSuccess: (data) => {
+                  console.log("SUCCESS");
                   setHistories((prev) => [
                     ...prev,
                     { winNumber: data.winNumber, status: data.status },
@@ -138,16 +140,24 @@ function DiceGame() {
                   setBetStatus(data.status);
                   // setReFetchHistory((reFetchHistory) => !reFetchHistory);
                   if (data.status === "lost") {
+                    console.log("LOSS");
                     // play audio
                     winAudio.pause();
                     loseAudio.play();
 
-                    lossAmount += betAmountRef.current;
+                    lossAmount += Number(betAmountRef.current);
+                    console.log("lossAmount", lossAmount);
 
                     if (!onLossIncrease) setBetAmount(initialBetAmount);
+
+                    console.log("onLossIncrease", onLossIncrease);
+
                     if (onLossIncrease) {
                       setBetAmount((betAmount) => {
-                        return betAmount + (betAmount * onLossIncrease) / 100;
+                        return parseFloat(
+                          Number(betAmount) +
+                            (Number(betAmount) * Number(onLossIncrease)) / 100
+                        );
                       });
                     }
                   }
@@ -157,20 +167,24 @@ function DiceGame() {
                     loseAudio.pause();
                     winAudio.play();
 
-                    winAmount += payout - betAmountRef.current;
+                    winAmount += payout - Number(betAmountRef.current);
                     // based on percentage of win amount set bet amount
                     if (onWinReset) {
                       setBetAmount((betAmount) => {
-                        return betAmount + (betAmount * onWinReset) / 100;
+                        return (
+                          Number(betAmount) +
+                          (Number(betAmount) * Number(onWinReset)) / 100
+                        );
                       });
                     }
 
                     if (!onWinReset) setBetAmount(initialBetAmount);
                   }
-                  console.log(
-                    account?.[currentBalance?.name?.toLowerCase()],
-                    betAmountRef.current
-                  );
+                },
+                onError: (error) => {
+                  console.log("FAIL");
+                  setStopRoll(false);
+                  clearInterval(loopRef.current);
                 },
               }
             );
@@ -203,10 +217,20 @@ function DiceGame() {
 
                     lossAmount += betAmountRef.current;
 
+                    console.log("onLossIncrease", onLossIncrease);
+
                     if (!onLossIncrease) setBetAmount(initialBetAmount);
                     if (onLossIncrease) {
+                      console.log(
+                        "onLossIncrease",
+                        Number(betAmount) +
+                          (Number(betAmount) * Number(onLossIncrease)) / 100
+                      );
                       setBetAmount((betAmount) => {
-                        return betAmount + (betAmount * onLossIncrease) / 100;
+                        return (
+                          Number(betAmount) +
+                          (Number(betAmount) * Number(onLossIncrease)) / 100
+                        );
                       });
                     }
                   }
@@ -216,20 +240,19 @@ function DiceGame() {
                     loseAudio.pause();
                     winAudio.play();
 
-                    winAmount += payout - betAmountRef.current;
+                    winAmount += payout - Number(betAmountRef.current);
                     // based on percentage of win amount set bet amount
                     if (onWinReset) {
                       setBetAmount((betAmount) => {
-                        return betAmount + (betAmount * onWinReset) / 100;
+                        return (
+                          Number(betAmount) +
+                          (Number(betAmount) * Number(onWinReset)) / 100
+                        );
                       });
                     }
 
                     if (!onWinReset) setBetAmount(initialBetAmount);
                   }
-                  console.log(
-                    account?.[currentBalance?.name?.toLowerCase()],
-                    betAmountRef.current
-                  );
                 },
               }
             );
