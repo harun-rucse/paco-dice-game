@@ -36,5 +36,16 @@ function generateUniqueBet(userSeed) {
 
   return betID;
 }
+let randomNumbers = [];
+for (i = 0; i < 500; i++) {
+  const random = generateRandomNumber(generateUniqueBet(i), 100);
+  randomNumbers.push(random);
+}
 
-module.exports = { generateRandomNumber, generateUniqueBet };
+// canculate repetation of each number
+let count = {};
+randomNumbers.forEach(function (i) {
+  count[i] = (count[i] || 0) + 1;
+});
+
+console.log(count);
