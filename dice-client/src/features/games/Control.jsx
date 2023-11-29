@@ -7,7 +7,7 @@ function Control({ playAudio, setPlayAudio, setCallTime, stopRoll }) {
     if (stopRoll) return;
 
     if (boost) {
-      setCallTime(1000);
+      setCallTime(2000);
     } else {
       setCallTime(2000);
     }
@@ -33,9 +33,7 @@ function Control({ playAudio, setPlayAudio, setCallTime, stopRoll }) {
             ? "grayscale-[40%] brightness-75"
             : "grayscale-0 brightness-100"
         } `}
-        onClick={() => {
-          if (!stopRoll) setBoost((prev) => !prev);
-        }}
+        onClick={() => {}}
       />
       <img
         src="/icons/help.png"

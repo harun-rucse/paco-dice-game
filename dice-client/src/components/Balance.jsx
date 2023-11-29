@@ -15,7 +15,7 @@ function BalanceItem({ name, value, imgUrl, onSelect, onHide }) {
     >
       <div className="flex items-center gap-2 text-sm md:text-base">
         <img src={imgUrl} alt="" className="h-7" />
-        <strong className="text-gray-300 font-extralight">
+        <strong className="text-gray-300 hidden md:block font-extralight">
           {name == "BNB" ? "WBNB" : name}
         </strong>
       </div>
@@ -46,7 +46,7 @@ function Balance({ className }) {
           className="h-6 md:h-7"
         />
         <span className="uppercase font-extralight text-sm md:text-base">
-          {currentBalance.value?.toFixed(4) || account?.btc.toFixed(4)}
+          {currentBalance.value?.toFixed(8) || account?.btc.toFixed(8)}
         </span>
         <MdOutlineKeyboardArrowDown />
       </button>

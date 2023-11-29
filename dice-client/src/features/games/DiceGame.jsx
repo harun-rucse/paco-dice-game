@@ -124,8 +124,9 @@ function DiceGame() {
         }, callTime);
       } else {
         let i = 0;
+        const _numberOfBet = numberOfBet;
         loopRef.current = setInterval(() => {
-          if (!numberOfBet) {
+          if (!_numberOfBet) {
             if (
               maxBetAmount > 0 &&
               Number(betAmountRef.current) > Number(maxBetAmount)
@@ -143,7 +144,6 @@ function DiceGame() {
               },
               {
                 onSuccess: (data) => {
-                  console.log("SUCCESS");
                   setHistories((prev) => [
                     ...prev,
                     { winNumber: data.winNumber, status: data.status },
@@ -151,7 +151,6 @@ function DiceGame() {
                   setResult(data.winNumber);
                   setBetStatus(data.status);
                   if (data.status === "lost") {
-                    console.log("LOSS");
                     // play audio
                     winAudio.pause();
                     loseAudio.play();
@@ -190,14 +189,11 @@ function DiceGame() {
                     if (!onWinReset) setBetAmount(initialBetAmount);
                   }
 
-                  console.log(stopToLoss, lossAmount >= stopToLoss);
-
                   if (stopToLoss && lossAmount >= stopToLoss) {
                     setStopRoll(false);
                     clearInterval(loopRef.current);
                     return;
                   }
-                  console.log(stopToWin, winAmount, stopToWin);
                   if (stopToWin && winAmount >= stopToWin) {
                     setStopRoll(false);
                     clearInterval(loopRef.current);
@@ -212,7 +208,7 @@ function DiceGame() {
               }
             );
           } else {
-            if (numberOfBet > 0 && i >= numberOfBet) {
+            if (_numberOfBet > 0 && i >= _numberOfBet) {
               setStopRoll(false);
               clearInterval(loopRef.current);
               return;
@@ -225,6 +221,7 @@ function DiceGame() {
               clearInterval(loopRef.current);
               return;
             }
+
             create(
               {
                 paymentType: currentBalance?.name?.toLowerCase(),
@@ -234,6 +231,7 @@ function DiceGame() {
               },
               {
                 onSuccess: (data) => {
+                  setNumberOfBet((numberOfBet) => numberOfBet - 1);
                   setHistories((prev) => [
                     ...prev,
                     { winNumber: data.winNumber, status: data.status },
@@ -248,7 +246,6 @@ function DiceGame() {
 
                     lossAmount += betAmountRef.current;
 
-                    console.log("onLossIncrease", onLossIncrease);
 
                     if (!onLossIncrease) setBetAmount(initialBetAmount);
                     if (onLossIncrease) {
