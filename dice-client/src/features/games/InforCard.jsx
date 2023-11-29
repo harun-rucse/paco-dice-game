@@ -16,9 +16,9 @@ function InforCard({
   showError,
   setShowError,
   setAuto,
+  minBet = "0.00000001",
 }) {
   const [maxBet, setMaxBet] = useState(0);
-  const [minBet] = useState("0.00000001");
   const { currentBalance } = useBalance();
 
   useEffect(() => {
@@ -79,7 +79,7 @@ function InforCard({
               className="bet-amount bg-transparent focus:outline-none text-white text-2xl px-6 py-3 w-full md:w-[95%]"
               value={betAmount}
               onChange={(e) => {
-                setBetAmount(Number(e.target.value));
+                setBetAmount(e.target.value);
                 setShowError("");
               }}
             />
@@ -94,9 +94,9 @@ function InforCard({
               className="text-[#370843] uppercase cursor-pointer text-2xl flex items-center justify-center bg-[#8149b3] border border-[#120425] shadow-[0px_15px_8px_#19032461] rounded-[20px] w-[95px] h-[65px] transition hover:-translate-y-1"
               onClick={() => {
                 if (betAmount * 2 > maxBet) {
-                  setBetAmount(maxBet);
+                  setBetAmount(parseFloat(maxBet).toFixed(8));
                 }
-                setBetAmount(betAmount * 2);
+                setBetAmount(parseFloat(betAmount * 2).toFixed(8));
               }}
             >
               2x
@@ -105,9 +105,9 @@ function InforCard({
               className="text-[#370843] uppercase cursor-pointer text-2xl flex items-center justify-center bg-[#8149b3] border border-[#120425] shadow-[0px_15px_8px_#19032461] rounded-[20px] w-[95px] h-[65px] transition hover:-translate-y-1"
               onClick={() => {
                 if (betAmount / 2 < minBet) {
-                  setBetAmount(minBet);
+                  setBetAmount(parseFloat(minBet).toFixed(8));
                 } else {
-                  setBetAmount(betAmount / 2);
+                  setBetAmount(parseFloat(betAmount / 2).toFixed(8));
                 }
               }}
             >
@@ -115,13 +115,13 @@ function InforCard({
             </div>
             <div
               className="text-[#370843] uppercase cursor-pointer text-2xl flex items-center justify-center bg-[#8149b3] border border-[#120425] shadow-[0px_15px_8px_#19032461] rounded-[20px] w-[95px] h-[65px] transition hover:-translate-y-1"
-              onClick={() => setBetAmount(minBet)}
+              onClick={() => setBetAmount(parseFloat(minBet).toFixed(8))}
             >
               Min
             </div>
             <div
               className="text-[#370843] uppercase cursor-pointer text-2xl flex items-center justify-center bg-[#8149b3] border border-[#120425] shadow-[0px_15px_8px_#19032461] rounded-[20px] w-[95px] h-[65px] transition hover:-translate-y-1"
-              onClick={() => setBetAmount(maxBet)}
+              onClick={() => setBetAmount(parseFloat(maxBet).toFixed(8))}
             >
               Max
             </div>

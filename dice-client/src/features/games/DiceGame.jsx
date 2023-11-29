@@ -60,13 +60,14 @@ function DiceGame() {
   const loopRef = useRef();
   const [prediction, setPrediction] = useState(50);
   const [result, setResult] = useState(0);
-  const [betAmount, setBetAmount] = useState("");
+  const [betAmount, setBetAmount] = useState(0);
   const [multiplier, setMultiplier] = useState("1.96X");
   const [payout, setPayout] = useState("0.00039200 BTC");
   const [rollType, setRollType] = useState("rollUnder");
   const [winChance, setWinChance] = useState(50);
   const [showError, setShowError] = useState("");
   const [betStatus, setBetStatus] = useState("");
+  const [minBet] = useState("0.00000001");
 
   const [numberOfBet, setNumberOfBet] = useState(null);
   const [stopToWin, setStopToWin] = useState(null);
@@ -104,19 +105,6 @@ function DiceGame() {
     rollRef.current = stopRoll;
   }, [stopRoll]);
 
-  // const check = async () => {
-  //   const check = await checkMaxBetAmount(
-  //     betAmount,
-  //     currentBalance?.name?.toLowerCase()
-  //   );
-  //   console.log("check", check);
-  //   if (!check) {
-  //     setStopRoll(false);
-  //     toast.error("Bet amount must be less than 100$");
-  //     return;
-  //   }
-  // };
-
   useEffect(() => {
     // same logic copy pase in backend
     if (rollType === "rollUnder") {
@@ -144,6 +132,12 @@ function DiceGame() {
         // setTImeout
         timer = setTimeout(() => {
           const check = async () => {
+            // check min bet amount
+            if (betAmount < minBet) {
+              setStopRoll(false);
+              toast.error("Bet amount must be greater than 0.00000001");
+              return;
+            }
             const check = await checkMaxBetAmount(
               betAmount,
               currentBalance?.name?.toLowerCase()
@@ -197,6 +191,11 @@ function DiceGame() {
         loopRef.current = setInterval(() => {
           if (!_numberOfBet) {
             const check = async () => {
+              if (betAmount < minBet) {
+                setStopRoll(false);
+                toast.error("Bet amount must be greater than 0.00000001");
+                return;
+              }
               const check = await checkMaxBetAmount(
                 betAmount,
                 currentBalance?.name?.toLowerCase()
@@ -238,13 +237,14 @@ function DiceGame() {
                       lossAmount += Number(betAmountRef.current);
                       console.log("lossAmount", lossAmount);
 
-                      if (!onLossIncrease) setBetAmount(initialBetAmount);
+                      if (!onLossIncrease)
+                        setBetAmount(parseFloat(initialBetAmount).toFixed(8));
                       if (onLossIncrease) {
                         setBetAmount((betAmount) => {
                           return parseFloat(
                             Number(betAmount) +
                               (Number(betAmount) * Number(onLossIncrease)) / 100
-                          );
+                          ).toFixed(8);
                         });
                       }
                     }
@@ -258,14 +258,15 @@ function DiceGame() {
                       // based on percentage of win amount set bet amount
                       if (onWinReset) {
                         setBetAmount((betAmount) => {
-                          return (
+                          return parseFloat(
                             Number(betAmount) +
-                            (Number(betAmount) * Number(onWinReset)) / 100
-                          );
+                              (Number(betAmount) * Number(onWinReset)) / 100
+                          ).toFixed(8);
                         });
                       }
 
-                      if (!onWinReset) setBetAmount(initialBetAmount);
+                      if (!onWinReset)
+                        setBetAmount(parseFloat(initialBetAmount).toFixed(8));
                     }
 
                     if (
@@ -298,6 +299,11 @@ function DiceGame() {
             check();
           } else {
             const check = async () => {
+              if (betAmount < minBet) {
+                setStopRoll(false);
+                toast.error("Bet amount must be greater than 0.00000001");
+                return;
+              }
               const check = await checkMaxBetAmount(
                 betAmount,
                 currentBalance?.name?.toLowerCase()
@@ -346,18 +352,14 @@ function DiceGame() {
 
                       lossAmount += betAmountRef.current;
 
-                      if (!onLossIncrease) setBetAmount(initialBetAmount);
+                      if (!onLossIncrease)
+                        setBetAmount(parseFloat(initialBetAmount).toFixed(8));
                       if (onLossIncrease) {
-                        console.log(
-                          "onLossIncrease",
-                          Number(betAmount) +
-                            (Number(betAmount) * Number(onLossIncrease)) / 100
-                        );
                         setBetAmount((betAmount) => {
-                          return (
+                          return parseFloat(
                             Number(betAmount) +
-                            (Number(betAmount) * Number(onLossIncrease)) / 100
-                          );
+                              (Number(betAmount) * Number(onLossIncrease)) / 100
+                          ).toFixed(8);
                         });
                       }
                     }
@@ -371,14 +373,15 @@ function DiceGame() {
                       // based on percentage of win amount set bet amount
                       if (onWinReset) {
                         setBetAmount((betAmount) => {
-                          return (
+                          return parseFloat(
                             Number(betAmount) +
-                            (Number(betAmount) * Number(onWinReset)) / 100
-                          );
+                              (Number(betAmount) * Number(onWinReset)) / 100
+                          ).toFixed(8);
                         });
                       }
 
-                      if (!onWinReset) setBetAmount(initialBetAmount);
+                      if (!onWinReset)
+                        setBetAmount(parseFloat(initialBetAmount).toFixed(8));
                     }
                     if (
                       maxBetAmount > 0 &&
