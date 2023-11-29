@@ -52,7 +52,6 @@ const PRICE_FEED_ABI = [
   },
 ];
 
-console.log(import.meta.env.VITE_ETH_PRICE_FEED);
 
 export const getCoinPrice = async (name = "btc") => {
   const web3 = new Web3(import.meta.env.VITE_RPC);

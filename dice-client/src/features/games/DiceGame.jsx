@@ -8,9 +8,53 @@ import { useCreateGame } from "./useCreateGame";
 import { useBalance } from "../../context/BalanceContext";
 import { useCurrentUser } from "../authentication/useCurrentUser";
 import useGamesHistory from "./useGamesHistory";
-
+import { getCoinPrice } from "../../utils/tokenPrice";
+import toast from "react-hot-toast";
 const winAudio = new Audio("/audio/win.mp3");
 const loseAudio = new Audio("/audio/lose.mp3");
+
+async function checkMaxBetAmount(amount, coinName) {
+  console.log("coinName", coinName);
+  if (coinName === "btc") {
+    const _btcPrice = await getCoinPrice("btc");
+    const _betedUsd = amount * _btcPrice;
+    if (_betedUsd > 100) {
+      return false;
+    } else {
+      return true;
+    }
+  } else if (coinName === "usdt") {
+    if (amount > 100) {
+      return false;
+    } else {
+      return true;
+    }
+  } else if (coinName === "eth") {
+    const _ethPrice = await getCoinPrice("eth");
+    const _betedUsd = amount * _ethPrice;
+    console.log("_betedUsd", _betedUsd);
+    if (_betedUsd > 100) {
+      console.log("false");
+      return false;
+    } else {
+      return true;
+    }
+  } else if (coinName === "bnb") {
+    const _bnbPrice = await getCoinPrice("bnb");
+    const _betedUsd = amount * _bnbPrice;
+    if (_betedUsd > 100) {
+      return false;
+    } else {
+      return true;
+    }
+  } else if (coinName === "paco") {
+    if (amount > 100000000) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+}
 
 function DiceGame() {
   const loopRef = useRef();
@@ -53,11 +97,25 @@ function DiceGame() {
 
   useEffect(() => {
     betAmountRef.current = betAmount;
+    // bet amount need o be less than 100$ and balance
   }, [betAmount]);
 
   useEffect(() => {
     rollRef.current = stopRoll;
   }, [stopRoll]);
+
+  // const check = async () => {
+  //   const check = await checkMaxBetAmount(
+  //     betAmount,
+  //     currentBalance?.name?.toLowerCase()
+  //   );
+  //   console.log("check", check);
+  //   if (!check) {
+  //     setStopRoll(false);
+  //     toast.error("Bet amount must be less than 100$");
+  //     return;
+  //   }
+  // };
 
   useEffect(() => {
     // same logic copy pase in backend
@@ -77,151 +135,25 @@ function DiceGame() {
 
     if (rollRef.current) {
       // Start the loop
-      console.log("stopRoll", rollRef.current);
 
       let lossAmount = 0;
       let winAmount = 0;
       let initialBetAmount = betAmount;
 
       if (!auto) {
-        console.log("auto", auto);
         // setTImeout
         timer = setTimeout(() => {
-          create(
-            {
-              paymentType: currentBalance?.name?.toLowerCase(),
-              betAmount: betAmountRef.current,
-              prediction,
-              rollType,
-            },
-            {
-              onSuccess: (data) => {
-                setHistories((prev) => [
-                  ...prev,
-                  { winNumber: data.winNumber, status: data.status },
-                ]);
-                setResult(data.winNumber);
-                setBetStatus(data.status);
-                // setReFetchHistory((reFetchHistory) => !reFetchHistory);
-                if (data.status === "lost") {
-                  // stop win audio if loss
-                  winAudio.pause();
-                  loseAudio.play();
-                } else {
-                  // stop loss audio if win
-                  loseAudio.pause();
-                  winAudio.play();
-                }
-
-                setStopRoll(false);
-              },
-              onError: (error) => {
-                console.log(error);
-                setStopRoll(false);
-              },
-            }
-          );
-        }, callTime);
-      } else {
-        let i = 0;
-        const _numberOfBet = numberOfBet;
-        loopRef.current = setInterval(() => {
-          if (!_numberOfBet) {
-            if (
-              maxBetAmount > 0 &&
-              Number(betAmountRef.current) > Number(maxBetAmount)
-            ) {
-              setStopRoll(false);
-              clearInterval(loopRef.current);
-              return;
-            }
-            create(
-              {
-                paymentType: currentBalance?.name?.toLowerCase(),
-                betAmount: betAmountRef.current,
-                prediction,
-                rollType,
-              },
-              {
-                onSuccess: (data) => {
-                  setHistories((prev) => [
-                    ...prev,
-                    { winNumber: data.winNumber, status: data.status },
-                  ]);
-                  setResult(data.winNumber);
-                  setBetStatus(data.status);
-                  if (data.status === "lost") {
-                    // play audio
-                    winAudio.pause();
-                    loseAudio.play();
-
-                    lossAmount += Number(betAmountRef.current);
-                    console.log("lossAmount", lossAmount);
-
-                    if (!onLossIncrease) setBetAmount(initialBetAmount);
-                    if (onLossIncrease) {
-                      setBetAmount((betAmount) => {
-                        return parseFloat(
-                          Number(betAmount) +
-                            (Number(betAmount) * Number(onLossIncrease)) / 100
-                        );
-                      });
-                    }
-                  }
-
-                  if (data.status === "win") {
-                    // play audio
-                    loseAudio.pause();
-                    winAudio.play();
-
-                    winAmount += payout - Number(betAmountRef.current);
-                    console.log("winAmount", winAmount);
-                    // based on percentage of win amount set bet amount
-                    if (onWinReset) {
-                      setBetAmount((betAmount) => {
-                        return (
-                          Number(betAmount) +
-                          (Number(betAmount) * Number(onWinReset)) / 100
-                        );
-                      });
-                    }
-
-                    if (!onWinReset) setBetAmount(initialBetAmount);
-                  }
-
-                  if (stopToLoss && lossAmount >= stopToLoss) {
-                    setStopRoll(false);
-                    clearInterval(loopRef.current);
-                    return;
-                  }
-                  if (stopToWin && winAmount >= stopToWin) {
-                    setStopRoll(false);
-                    clearInterval(loopRef.current);
-                    return;
-                  }
-                },
-                onError: (error) => {
-                  console.log("FAIL");
-                  setStopRoll(false);
-                  clearInterval(loopRef.current);
-                },
-              }
+          const check = async () => {
+            const check = await checkMaxBetAmount(
+              betAmount,
+              currentBalance?.name?.toLowerCase()
             );
-          } else {
-            if (_numberOfBet > 0 && i >= _numberOfBet) {
+            console.log("check", check);
+            if (!check) {
               setStopRoll(false);
-              clearInterval(loopRef.current);
+              toast.error("Bet amount must be less than 100$");
               return;
             }
-            if (
-              maxBetAmount > 0 &&
-              Number(betAmountRef.current) > Number(maxBetAmount)
-            ) {
-              setStopRoll(false);
-              clearInterval(loopRef.current);
-              return;
-            }
-
             create(
               {
                 paymentType: currentBalance?.name?.toLowerCase(),
@@ -231,7 +163,6 @@ function DiceGame() {
               },
               {
                 onSuccess: (data) => {
-                  setNumberOfBet((numberOfBet) => numberOfBet - 1);
                   setHistories((prev) => [
                     ...prev,
                     { winNumber: data.winNumber, status: data.status },
@@ -240,70 +171,244 @@ function DiceGame() {
                   setBetStatus(data.status);
                   // setReFetchHistory((reFetchHistory) => !reFetchHistory);
                   if (data.status === "lost") {
-                    // play audio
+                    // stop win audio if loss
                     winAudio.pause();
                     loseAudio.play();
-
-                    lossAmount += betAmountRef.current;
-
-
-                    if (!onLossIncrease) setBetAmount(initialBetAmount);
-                    if (onLossIncrease) {
-                      console.log(
-                        "onLossIncrease",
-                        Number(betAmount) +
-                          (Number(betAmount) * Number(onLossIncrease)) / 100
-                      );
-                      setBetAmount((betAmount) => {
-                        return (
-                          Number(betAmount) +
-                          (Number(betAmount) * Number(onLossIncrease)) / 100
-                        );
-                      });
-                    }
-                  }
-
-                  if (data.status === "win") {
-                    // play audio
+                  } else {
+                    // stop loss audio if win
                     loseAudio.pause();
                     winAudio.play();
-
-                    winAmount += payout - Number(betAmountRef.current);
-                    // based on percentage of win amount set bet amount
-                    if (onWinReset) {
-                      setBetAmount((betAmount) => {
-                        return (
-                          Number(betAmount) +
-                          (Number(betAmount) * Number(onWinReset)) / 100
-                        );
-                      });
-                    }
-
-                    if (!onWinReset) setBetAmount(initialBetAmount);
-                  }
-                  if (maxBetAmount > 0 && betAmountRef.current > maxBetAmount) {
-                    setStopRoll(false);
-                    clearInterval(loopRef.current);
-                    return;
                   }
 
-                  console.log(stopToLoss, lossAmount >= stopToLoss);
-
-                  if (stopToLoss && lossAmount >= stopToLoss) {
-                    setStopRoll(false);
-                    clearInterval(loopRef.current);
-                    return;
-                  }
-                  console.log(stopToWin, winAmount, stopToWin);
-                  if (stopToWin && winAmount >= stopToWin) {
-                    setStopRoll(false);
-                    clearInterval(loopRef.current);
-                    return;
-                  }
+                  setStopRoll(false);
+                },
+                onError: (error) => {
+                  console.log(error);
+                  setStopRoll(false);
                 },
               }
             );
+          };
+          check();
+        }, callTime);
+      } else {
+        let i = 0;
+        const _numberOfBet = numberOfBet;
+        loopRef.current = setInterval(() => {
+          if (!_numberOfBet) {
+            const check = async () => {
+              const check = await checkMaxBetAmount(
+                betAmount,
+                currentBalance?.name?.toLowerCase()
+              );
+              console.log("check", check);
+              if (!check) {
+                setStopRoll(false);
+                toast.error("Bet amount must be less than 100$");
+                return;
+              }
+              if (
+                maxBetAmount > 0 &&
+                Number(betAmountRef.current) > Number(maxBetAmount)
+              ) {
+                setStopRoll(false);
+                clearInterval(loopRef.current);
+                return;
+              }
+              create(
+                {
+                  paymentType: currentBalance?.name?.toLowerCase(),
+                  betAmount: betAmountRef.current,
+                  prediction,
+                  rollType,
+                },
+                {
+                  onSuccess: (data) => {
+                    setHistories((prev) => [
+                      ...prev,
+                      { winNumber: data.winNumber, status: data.status },
+                    ]);
+                    setResult(data.winNumber);
+                    setBetStatus(data.status);
+                    if (data.status === "lost") {
+                      // play audio
+                      winAudio.pause();
+                      loseAudio.play();
+
+                      lossAmount += Number(betAmountRef.current);
+                      console.log("lossAmount", lossAmount);
+
+                      if (!onLossIncrease) setBetAmount(initialBetAmount);
+                      if (onLossIncrease) {
+                        setBetAmount((betAmount) => {
+                          return parseFloat(
+                            Number(betAmount) +
+                              (Number(betAmount) * Number(onLossIncrease)) / 100
+                          );
+                        });
+                      }
+                    }
+
+                    if (data.status === "win") {
+                      // play audio
+                      loseAudio.pause();
+                      winAudio.play();
+
+                      winAmount += payout - Number(betAmountRef.current);
+                      // based on percentage of win amount set bet amount
+                      if (onWinReset) {
+                        setBetAmount((betAmount) => {
+                          return (
+                            Number(betAmount) +
+                            (Number(betAmount) * Number(onWinReset)) / 100
+                          );
+                        });
+                      }
+
+                      if (!onWinReset) setBetAmount(initialBetAmount);
+                    }
+
+                    if (
+                      stopToLoss &&
+                      lossAmount > winAmount &&
+                      lossAmount - winAmount >= stopToLoss
+                    ) {
+                      setStopRoll(false);
+                      clearInterval(loopRef.current);
+                      return;
+                    }
+                    if (
+                      stopToWin &&
+                      winAmount > lossAmount &&
+                      winAmount - lossAmount >= stopToWin
+                    ) {
+                      setStopRoll(false);
+                      clearInterval(loopRef.current);
+                      return;
+                    }
+                  },
+                  onError: (error) => {
+                    console.log("FAIL");
+                    setStopRoll(false);
+                    clearInterval(loopRef.current);
+                  },
+                }
+              );
+            };
+            check();
+          } else {
+            const check = async () => {
+              const check = await checkMaxBetAmount(
+                betAmount,
+                currentBalance?.name?.toLowerCase()
+              );
+              console.log("check", check);
+              if (!check) {
+                setStopRoll(false);
+                toast.error("Bet amount must be less than 100$");
+                return;
+              }
+              if (_numberOfBet > 0 && i >= _numberOfBet) {
+                setStopRoll(false);
+                clearInterval(loopRef.current);
+                return;
+              }
+              if (
+                maxBetAmount > 0 &&
+                Number(betAmountRef.current) > Number(maxBetAmount)
+              ) {
+                setStopRoll(false);
+                clearInterval(loopRef.current);
+                return;
+              }
+
+              create(
+                {
+                  paymentType: currentBalance?.name?.toLowerCase(),
+                  betAmount: betAmountRef.current,
+                  prediction,
+                  rollType,
+                },
+                {
+                  onSuccess: (data) => {
+                    setNumberOfBet((numberOfBet) => numberOfBet - 1);
+                    setHistories((prev) => [
+                      ...prev,
+                      { winNumber: data.winNumber, status: data.status },
+                    ]);
+                    setResult(data.winNumber);
+                    setBetStatus(data.status);
+                    // setReFetchHistory((reFetchHistory) => !reFetchHistory);
+                    if (data.status === "lost") {
+                      // play audio
+                      winAudio.pause();
+                      loseAudio.play();
+
+                      lossAmount += betAmountRef.current;
+
+                      if (!onLossIncrease) setBetAmount(initialBetAmount);
+                      if (onLossIncrease) {
+                        console.log(
+                          "onLossIncrease",
+                          Number(betAmount) +
+                            (Number(betAmount) * Number(onLossIncrease)) / 100
+                        );
+                        setBetAmount((betAmount) => {
+                          return (
+                            Number(betAmount) +
+                            (Number(betAmount) * Number(onLossIncrease)) / 100
+                          );
+                        });
+                      }
+                    }
+
+                    if (data.status === "win") {
+                      // play audio
+                      loseAudio.pause();
+                      winAudio.play();
+
+                      winAmount += payout - Number(betAmountRef.current);
+                      // based on percentage of win amount set bet amount
+                      if (onWinReset) {
+                        setBetAmount((betAmount) => {
+                          return (
+                            Number(betAmount) +
+                            (Number(betAmount) * Number(onWinReset)) / 100
+                          );
+                        });
+                      }
+
+                      if (!onWinReset) setBetAmount(initialBetAmount);
+                    }
+                    if (
+                      maxBetAmount > 0 &&
+                      betAmountRef.current > maxBetAmount
+                    ) {
+                      setStopRoll(false);
+                      clearInterval(loopRef.current);
+                      return;
+                    }
+
+                    console.log(stopToLoss, lossAmount >= stopToLoss);
+
+                    if (stopToLoss && lossAmount >= stopToLoss) {
+                      setStopRoll(false);
+                      clearInterval(loopRef.current);
+                      return;
+                    }
+                    console.log(stopToWin, winAmount, stopToWin);
+                    if (stopToWin && winAmount >= stopToWin) {
+                      setStopRoll(false);
+                      clearInterval(loopRef.current);
+                      return;
+                    }
+                  },
+                }
+              );
+            };
+            check();
           }
+
           i++;
         }, callTime); // Loop every 1 second
       }
