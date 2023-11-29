@@ -79,7 +79,7 @@ function DiceGame() {
   const [auto, setAuto] = useState(false);
   const [stopRoll, setStopRoll] = useState(false);
   const [playAudio, setPlayAudio] = useState(true);
-  const [callTime, setCallTime] = useState(2000);
+  const [callTime, setCallTime] = useState(3000);
   const [histories, setHistories] = useState([]);
 
   // const [reFetchHistory, setReFetchHistory] = useState(false);
@@ -88,6 +88,7 @@ function DiceGame() {
   const { account } = useCurrentUser();
   const betAmountRef = useRef(betAmount);
   const rollRef = useRef(stopRoll);
+  const payoutRef = useRef(payout);
   const { games, isLoading: isHistoryLoading } = useGamesHistory();
 
   useEffect(() => {
@@ -95,6 +96,10 @@ function DiceGame() {
       setHistories([...games].reverse());
     }
   }, [isHistoryLoading]);
+
+  useEffect(() => {
+    payoutRef.current = payout;
+  }, [payout]);
 
   useEffect(() => {
     betAmountRef.current = betAmount;
@@ -200,7 +205,6 @@ function DiceGame() {
                 betAmount,
                 currentBalance?.name?.toLowerCase()
               );
-              console.log("check", check);
               if (!check) {
                 setStopRoll(false);
                 toast.error("Bet amount must be less than 100$");
@@ -214,6 +218,33 @@ function DiceGame() {
                 clearInterval(loopRef.current);
                 return;
               }
+
+              console.log("betAmount", betAmountRef.current);
+
+              console.log("total", winAmount - lossAmount);
+              console.log("winAmount", winAmount);
+              console.log("lossAmount", lossAmount);
+
+              if (
+                stopToLoss &&
+                lossAmount > winAmount &&
+                lossAmount - winAmount >= stopToLoss
+              ) {
+                setStopRoll(false);
+                clearInterval(loopRef.current);
+                return;
+              }
+
+              if (
+                stopToWin &&
+                winAmount > lossAmount &&
+                winAmount - lossAmount >= stopToWin
+              ) {
+                setStopRoll(false);
+                clearInterval(loopRef.current);
+                return;
+              }
+
               create(
                 {
                   paymentType: currentBalance?.name?.toLowerCase(),
@@ -254,7 +285,10 @@ function DiceGame() {
                       loseAudio.pause();
                       winAudio.play();
 
-                      winAmount += payout - Number(betAmountRef.current);
+                      winAmount +=
+                        Number(payoutRef.current) -
+                        Number(betAmountRef.current);
+                      console.log("winAmount", winAmount);
                       // based on percentage of win amount set bet amount
                       if (onWinReset) {
                         setBetAmount((betAmount) => {
@@ -267,25 +301,6 @@ function DiceGame() {
 
                       if (!onWinReset)
                         setBetAmount(parseFloat(initialBetAmount).toFixed(8));
-                    }
-
-                    if (
-                      stopToLoss &&
-                      lossAmount > winAmount &&
-                      lossAmount - winAmount >= stopToLoss
-                    ) {
-                      setStopRoll(false);
-                      clearInterval(loopRef.current);
-                      return;
-                    }
-                    if (
-                      stopToWin &&
-                      winAmount > lossAmount &&
-                      winAmount - lossAmount >= stopToWin
-                    ) {
-                      setStopRoll(false);
-                      clearInterval(loopRef.current);
-                      return;
                     }
                   },
                   onError: (error) => {
@@ -322,6 +337,31 @@ function DiceGame() {
               if (
                 maxBetAmount > 0 &&
                 Number(betAmountRef.current) > Number(maxBetAmount)
+              ) {
+                setStopRoll(false);
+                clearInterval(loopRef.current);
+                return;
+              }
+
+              if (maxBetAmount > 0 && betAmountRef.current > maxBetAmount) {
+                setStopRoll(false);
+                clearInterval(loopRef.current);
+                return;
+              }
+
+              if (
+                stopToLoss &&
+                lossAmount > winAmount &&
+                lossAmount - winAmount >= stopToLoss
+              ) {
+                setStopRoll(false);
+                clearInterval(loopRef.current);
+                return;
+              }
+              if (
+                stopToWin &&
+                winAmount > lossAmount &&
+                winAmount - lossAmount >= stopToWin
               ) {
                 setStopRoll(false);
                 clearInterval(loopRef.current);
@@ -369,7 +409,9 @@ function DiceGame() {
                       loseAudio.pause();
                       winAudio.play();
 
-                      winAmount += payout - Number(betAmountRef.current);
+                      winAmount +=
+                        Number(payoutRef.current) -
+                        Number(betAmountRef.current);
                       // based on percentage of win amount set bet amount
                       if (onWinReset) {
                         setBetAmount((betAmount) => {
@@ -382,28 +424,6 @@ function DiceGame() {
 
                       if (!onWinReset)
                         setBetAmount(parseFloat(initialBetAmount).toFixed(8));
-                    }
-                    if (
-                      maxBetAmount > 0 &&
-                      betAmountRef.current > maxBetAmount
-                    ) {
-                      setStopRoll(false);
-                      clearInterval(loopRef.current);
-                      return;
-                    }
-
-                    console.log(stopToLoss, lossAmount >= stopToLoss);
-
-                    if (stopToLoss && lossAmount >= stopToLoss) {
-                      setStopRoll(false);
-                      clearInterval(loopRef.current);
-                      return;
-                    }
-                    console.log(stopToWin, winAmount, stopToWin);
-                    if (stopToWin && winAmount >= stopToWin) {
-                      setStopRoll(false);
-                      clearInterval(loopRef.current);
-                      return;
                     }
                   },
                 }
