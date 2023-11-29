@@ -37,7 +37,7 @@ function generateUniqueBet(userSeed) {
   return betID;
 }
 let randomNumbers = [];
-for (i = 0; i < 500; i++) {
+for (i = 0; i < 100; i++) {
   const random = generateRandomNumber(generateUniqueBet(i), 100);
   randomNumbers.push(random);
 }
