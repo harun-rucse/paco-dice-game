@@ -124,6 +124,14 @@ function DiceGame() {
   }, [prediction, betAmount, multiplier, rollType]);
 
   useEffect(() => {
+    if (maxBetAmount && betAmount) {
+      if (Number(maxBetAmount) < Number(betAmount)) {
+        setBetAmount(parseFloat(maxBetAmount).toFixed(8));
+      }
+    }
+  }, [betAmount]);
+
+  useEffect(() => {
     let timer;
 
     if (rollRef.current) {
@@ -210,20 +218,6 @@ function DiceGame() {
                 toast.error("Bet amount must be less than 100$");
                 return;
               }
-              if (
-                maxBetAmount > 0 &&
-                Number(betAmountRef.current) > Number(maxBetAmount)
-              ) {
-                setStopRoll(false);
-                clearInterval(loopRef.current);
-                return;
-              }
-
-              console.log("betAmount", betAmountRef.current);
-
-              console.log("total", winAmount - lossAmount);
-              console.log("winAmount", winAmount);
-              console.log("lossAmount", lossAmount);
 
               if (
                 stopToLoss &&
@@ -330,20 +324,6 @@ function DiceGame() {
                 return;
               }
               if (_numberOfBet > 0 && i >= _numberOfBet) {
-                setStopRoll(false);
-                clearInterval(loopRef.current);
-                return;
-              }
-              if (
-                maxBetAmount > 0 &&
-                Number(betAmountRef.current) > Number(maxBetAmount)
-              ) {
-                setStopRoll(false);
-                clearInterval(loopRef.current);
-                return;
-              }
-
-              if (maxBetAmount > 0 && betAmountRef.current > maxBetAmount) {
                 setStopRoll(false);
                 clearInterval(loopRef.current);
                 return;
