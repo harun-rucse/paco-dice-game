@@ -15,6 +15,16 @@ router.get(
   [auth, restrictTo("admin")],
   accountController.getAllWithdraw
 );
+router.get(
+  "/withdrawables",
+  [auth, restrictTo("admin")],
+  accountController.getAllWithdrawables
+);
+router.patch(
+  "/confirm-withdrawable/:id",
+  [auth, restrictTo("admin")],
+  accountController.confirmWithdrawableClaim
+);
 router.post("/withdraw", auth, accountController.withdraw);
 router.patch(
   "/approve-withdraw/:id",
@@ -22,5 +32,10 @@ router.patch(
   accountController.confirmWithdraw
 );
 router.get("/stats", [auth, restrictTo("admin")], accountController.getStats);
+router.get(
+  "/withdrawable-stats",
+  [auth, restrictTo("admin")],
+  accountController.getWithdrawableStats
+);
 
 module.exports = router;

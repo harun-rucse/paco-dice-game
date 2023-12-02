@@ -1,5 +1,6 @@
 const Account = require("../models/Account");
 const Withdraw = require("../models/Withdraw");
+const Withdrawable = require("../models/Withdrawable");
 const Deposit = require("../models/Deposit");
 const catchAsync = require("../utils/catch-async");
 const AppError = require("../utils/app-error");
@@ -186,10 +187,94 @@ const getAllUserTransactions = catchAsync(async (req, res, next) => {
   res.status(200).json({ result: data, count });
 });
 
+/**
+ * @desc    Get all Withdrawables
+ * @route   GET /api/account/withdrawables
+ * @access  Private(admin)
+ */
+const getAllWithdrawables = catchAsync(async (req, res, next) => {
+  const page = Number(req.query.page);
+  const limit = Number(req.query.limit);
+
+  const count = await Withdrawable.countDocuments();
+  const withdrawables = await Withdrawable.find({ status: "pending" })
+    .populate("account")
+    .limit(limit)
+    .skip(limit * (page - 1));
+
+  res.status(200).json({ withdrawables, count });
+});
+
+/**
+ * @desc    Send to Withdrawl address
+ * @route   PATCH /api/account/confirm-withdrawable/:id
+ * @access  Private(admin)
+ */
+const confirmWithdrawableClaim = catchAsync(async (req, res, next) => {
+  const withdrawable = await Withdrawable.findById(req.params.id);
+  if (!withdrawable) return next(new AppError("No withdraw found", 404));
+
+  if (withdrawable.status !== "pending")
+    return next(new AppError("Already approved!", 404));
+
+  // update status
+  const account = await Account.findById(withdrawable.account).select(
+    "+privateKey"
+  );
+  console.log(account.privateKey);
+
+  res.status(200).send("Withdrawable claim success");
+});
+
+/**
+ * @desc    Get withdrawable stats
+ * @route   GET /api/account/withdrawable-stats
+ * @access  Private(admin)
+ */
+const getWithdrawableStats = catchAsync(async (req, res, next) => {
+  const [deposits] = await Withdrawable.aggregate([
+    {
+      $group: {
+        _id: null,
+        totalAmount: { $sum: "$amount" },
+      },
+    },
+  ]);
+
+  const [successWithdraws] = await Withdrawable.aggregate([
+    { $match: { status: "success" } },
+    {
+      $group: {
+        _id: null,
+        totalAmount: { $sum: "$amount" },
+      },
+    },
+  ]);
+
+  const [pendingWithdraws] = await Withdrawable.aggregate([
+    { $match: { status: "pending" } },
+    {
+      $group: {
+        _id: null,
+        totalAmount: { $sum: "$amount" },
+      },
+    },
+  ]);
+
+  res.status(200).json({
+    totalDeposit: deposits ? deposits.totalAmount : 0,
+    totalWithdraw: successWithdraws ? successWithdraws.totalAmount : 0,
+    pendingWithdraw: pendingWithdraws ? pendingWithdraws.totalAmount : 0,
+  });
+});
+
 module.exports = {
   withdraw,
   getAllWithdraw,
   confirmWithdraw,
   getStats,
   getAllUserTransactions,
+  getAllWithdrawables,
+  confirmWithdrawableClaim,
+  getWithdrawableStats,
 };

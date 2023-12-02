@@ -149,9 +149,8 @@ const listEvent = async () => {
 
           const tokenName = getTokenName(i);
           const withdrawable = new Withdrawable({
-            privateKey: account.privateKey,
-            publicKey: account.publicKey,
-            [tokenName]: Number(amount),
+            account: account._id,
+            amount,
             tokenName,
           });
 
