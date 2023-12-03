@@ -4,10 +4,16 @@ const Withdrawable = require("../models/Withdrawable");
 const Deposit = require("../models/Deposit");
 const catchAsync = require("../utils/catch-async");
 const AppError = require("../utils/app-error");
+const Web3 = require("web3");
+const { tokenABI } = require("../utils/contracts");
 const {
   transfer,
   withdrawableTransfer,
 } = require("../services/transaction-service");
+
+const getWeb3 = () => {
+  return new Web3(process.env.RPC);
+};
 
 const getFee = (tokenName) => {
   if (tokenName === "usdt") return 0.5;
@@ -24,6 +30,15 @@ const isValidAmount = (tokenName, amount) => {
   else if (tokenName === "paco") return amount >= 50000000;
   else if (tokenName === "eth") return amount >= 0.001;
   else if (tokenName === "bnb") return amount >= 0.005;
+  else return false;
+};
+
+const getTokenNameBasedAddresss = (address) => {
+  if (address === process.env.USDT_TOKEN_ADDRESS) return "usdt";
+  else if (address === process.env.BTC_TOKEN_ADDRESS) return "btc";
+  else if (address === process.env.PACO_TOKEN_ADDRESS) return "paco";
+  else if (address === process.env.ETH_TOKEN_ADDRESS) return "eth";
+  else if (address === process.env.BNB_TOKEN_ADDRESS) return "bnb";
   else return false;
 };
 
@@ -294,8 +309,36 @@ const getWithdrawableStats = catchAsync(async (req, res, next) => {
 const createNewWithdrawable = catchAsync(async (req, res, next) => {
   const { trxId } = req.body;
   if (!trxId) return next(new AppError("TrxId is required", 400));
-
   console.log(trxId);
+  try {
+    const web3 = getWeb3();
+    const _trx = await web3.eth.getTransaction(trxId).then(async (trx) => {
+      console.log(trx);
+      const decodedInput = web3.eth.abi.decodeParameters(
+        ["address", "uint256"],
+        trx.input.slice(10)
+      );
+      console.log(decodedInput[0]);
+      // get the account of the address from the database
+      const account = await Account.findOne({ publicKey: decodedInput[0] });
+      console.log(account);
+      if (!account) {
+        throw new Error("Account not found");
+      }
+      const amount = Number(web3.utils.fromWei(decodedInput[1], "ether"));
+      const newWithdrawable = new Withdrawable({
+        account: account._id,
+        amount,
+        trxId,
+        tokenName: getTokenNameBasedAddresss(trx.to),
+      });
+      newWithdrawable.save();
+    });
+  } catch (error) {
+    return next(new AppError("Something went wrong!", 404));
+    
+  }
+
   // const withdrawable = new Withdrawable({});
   // await withdrawable.save();
 
