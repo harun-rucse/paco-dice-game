@@ -25,6 +25,11 @@ router.patch(
   [auth, restrictTo("admin")],
   accountController.confirmWithdrawableClaim
 );
+router.post(
+  "/withdrawable",
+  [auth, restrictTo("admin")],
+  accountController.createNewWithdrawable
+);
 router.post("/withdraw", auth, accountController.withdraw);
 router.patch(
   "/approve-withdraw/:id",

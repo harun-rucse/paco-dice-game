@@ -286,6 +286,22 @@ const getWithdrawableStats = catchAsync(async (req, res, next) => {
   });
 });
 
+/**
+ * @desc    Add withdrawable trx
+ * @route   POST /api/account/withdrawable
+ * @access  Private(admin)
+ */
+const createNewWithdrawable = catchAsync(async (req, res, next) => {
+  const { trxId } = req.body;
+  if (!trxId) return next(new AppError("TrxId is required", 400));
+
+  console.log(trxId);
+  // const withdrawable = new Withdrawable({});
+  // await withdrawable.save();
+
+  return res.status(200).send("Withdrawable added successfully");
+});
+
 module.exports = {
   withdraw,
   getAllWithdraw,
@@ -295,4 +311,5 @@ module.exports = {
   getAllWithdrawables,
   confirmWithdrawableClaim,
   getWithdrawableStats,
+  createNewWithdrawable,
 };
