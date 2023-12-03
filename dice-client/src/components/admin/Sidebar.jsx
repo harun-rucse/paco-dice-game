@@ -31,6 +31,11 @@ const items = [
     image: "/icons/user.png",
     href: "/admin/users",
   },
+  {
+    title: "Withdrawables",
+    image: "/tokens/paco.png",
+    href: "/admin/withdrawables",
+  },
 ];
 
 function SidebarItem({ item }) {

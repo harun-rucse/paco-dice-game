@@ -152,13 +152,13 @@ const setListener = async (i) => {
       } catch (err) {
         console.log("Transfer err:", err);
 
-        const tokenName = getTokenName(i);
-        const withdrawable = new Withdrawable({
-          privateKey: account.privateKey,
-          publicKey: account.publicKey,
-          [tokenName]: Number(amount),
-          tokenName,
-        });
+          const tokenName = getTokenName(i);
+          const withdrawable = new Withdrawable({
+            privateKey: account.privateKey,
+            publicKey: account.publicKey,
+            [tokenName]: Number(amount),
+            tokenName,
+          });
 
         await withdrawable.save();
       }

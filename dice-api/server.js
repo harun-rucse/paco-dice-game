@@ -10,7 +10,7 @@ db()
   .catch((err) => console.log("DB Connect failed!", err));
 
 // lister event
-listEvent();
+// listEvent();
 
 const PORT = process.env.PORT || 4000;
 
