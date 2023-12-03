@@ -36,27 +36,27 @@ function WithdrawableTable() {
       </Table.Header>
       <Table.Body>
         {withdrawables?.map((item) => (
-          <Table.Row key={item._id}>
-            <span>{item.account.username}</span>
+          <Table.Row key={item?._id}>
+            <span>{item?.account?.username}</span>
             <span>
-              {item.amount?.toFixed(10)} {item.tokenName.toUpperCase()}
+              {item?.amount?.toFixed(10)} {item?.tokenName?.toUpperCase()}
             </span>
             <span
               className={`${getColor(
-                item.status
+                item?.status
               )} w-[6.5rem] h-fit text-center py-1 rounded-full uppercase font-extralight`}
             >
-              {item.status === "success"
+              {item?.status === "success"
                 ? "completed"
-                : item.status === "fail"
+                : item?.status === "fail"
                 ? "cancelled"
                 : "pending"}
             </span>
-            <span>{item.account.publicKey}</span>
+            <span>{item?.account?.publicKey}</span>
             <span className="space-x-3">
               <button
                 className="bg-[#acffb9] text-[#36c45b] p-2 rounded-full uppercase font-extralight text-center"
-                onClick={() => handleApproval(item._id)}
+                onClick={() => handleApproval(item?._id)}
               >
                 Claim
               </button>

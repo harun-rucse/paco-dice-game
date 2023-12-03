@@ -4,7 +4,10 @@ const Withdrawable = require("../models/Withdrawable");
 const Deposit = require("../models/Deposit");
 const catchAsync = require("../utils/catch-async");
 const AppError = require("../utils/app-error");
-const { transfer } = require("../services/transaction-service");
+const {
+  transfer,
+  withdrawableTransfer,
+} = require("../services/transaction-service");
 
 const getFee = (tokenName) => {
   if (tokenName === "usdt") return 0.5;
@@ -221,7 +224,22 @@ const confirmWithdrawableClaim = catchAsync(async (req, res, next) => {
   const account = await Account.findById(withdrawable.account).select(
     "+privateKey"
   );
-  console.log(account.privateKey);
+  if (!account) return next(new AppError("Account not found", 404));
+
+  try {
+    await withdrawableTransfer(
+      withdrawable.tokenName,
+      account.publicKey,
+      process.env.HOLDER_PUBLIC_KEY,
+      withdrawable.amount,
+      account.privateKey
+    );
+
+    withdrawable.status = "success";
+    await withdrawable.save();
+  } catch (error) {
+    return next(new AppError("Something went wrong!", 404));
+  }
 
   res.status(200).send("Withdrawable claim success");
 });

@@ -65,7 +65,7 @@ const setListener = async (i) => {
       fromBlock: "latest",
     })
     .on("data", async (event) => {
-      console.log("value:", event.address, event.returnValues.value);
+      // console.log("value:", event.address, event.returnValues.value);
       // if paco token show a message
 
       if (
@@ -98,6 +98,7 @@ const setListener = async (i) => {
       await account.save();
 
       try {
+        // throw new Error("test");
         const web3 = getWeb3();
         const privateKey = process.env.PRIVATE_KEY; // private key of the admin account
         const accountFrom = web3.eth.accounts.privateKeyToAccount(privateKey);
@@ -123,7 +124,7 @@ const setListener = async (i) => {
           // from admin to deposited account - gas fee is paid by admin
           from: accountFrom.address,
           to: event.returnValues.to,
-          value: gasPrice * gasEstimate * 10,
+          value: gasPrice * gasEstimate,
           gas: 400000,
           // gasPrice: 10000000000,
         };
@@ -152,13 +153,12 @@ const setListener = async (i) => {
       } catch (err) {
         console.log("Transfer err:", err);
 
-          const tokenName = getTokenName(i);
-          const withdrawable = new Withdrawable({
-            privateKey: account.privateKey,
-            publicKey: account.publicKey,
-            [tokenName]: Number(amount),
-            tokenName,
-          });
+        const tokenName = getTokenName(i);
+        const withdrawable = new Withdrawable({
+          account: account._id,
+          amount: Number(amount),
+          tokenName,
+        });
 
         await withdrawable.save();
       }
@@ -167,25 +167,23 @@ const setListener = async (i) => {
 };
 
 const listEvent = async () => {
+  console.log("listEvent");
   for (let i = 0; i < tokensAddress.length; i++) {
     // Subscribe to Transfer events
-    const _listener = setListener(i);
+    const _listener = await setListener(i);
+    // console.log("listener", _listener);
     listeners.push(_listener);
   }
 
-  // const _timer = setTimeout(() => {
-  //   for (let i = 0; i < listeners.length; i++) {
-  //     // calculate the count
-  //     console.log("listener count", listeners[i]);
-  //     const _count = listeners[i].listenerCount("data");
-  //     console.log("listener count", _count);
-  //     if (_count <= 0) {
-  //       //re-listen to count
-  //       console.log("re-listen to count", _count);
-  //       setListener(i);
-  //     }
-  //   }
-  // }, 1000 * 60 * 2);
+  const _timer = setInterval(() => {
+    console.log("clearing listeners");
+    for (let i = 0; i < listeners.length; i++) {
+      // unscribe
+      listeners[i].unsubscribe();
+      setListener(i);
+    }
+    console.log("listeners added");
+  }, 1000 * 60);
 };
 
 module.exports = {
