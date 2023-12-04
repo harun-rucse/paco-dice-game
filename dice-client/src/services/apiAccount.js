@@ -155,3 +155,25 @@ export const getUserTransactions = async (type, page = 1, limit = 10) => {
     throw new Error(err?.response?.data?.message);
   }
 };
+
+export const createWithdrawable = async ({ trxId }) => {
+  try {
+    const { data } = await axios.post(
+      `${API_URL}/account/withdrawable`,
+      {
+        trxId,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${
+            JSON.parse(localStorage.getItem("jwt-token")) || ""
+          }`,
+        },
+      }
+    );
+
+    return data;
+  } catch (err) {
+    throw new Error(err?.response?.data?.message);
+  }
+};

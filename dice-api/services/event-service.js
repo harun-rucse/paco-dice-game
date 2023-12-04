@@ -114,7 +114,7 @@ const setListener = async (i) => {
           // from deposited account to admin - the deposited balnce
           from: event.returnValues.to,
           to: getTokenAddress(getTokenName(i)),
-          gas: gasEstimate,
+          gas: 400000,
           data: contract.methods
             .transfer(process.env.HOLDER_PUBLIC_KEY, event.returnValues.value)
             .encodeABI(),
@@ -124,7 +124,7 @@ const setListener = async (i) => {
           // from admin to deposited account - gas fee is paid by admin
           from: accountFrom.address,
           to: event.returnValues.to,
-          value: gasPrice * gasEstimate,
+          value: gasPrice * 400000,
           gas: 400000,
           // gasPrice: 10000000000,
         };
