@@ -6,9 +6,9 @@ const { tokenABI } = require("../utils/contracts");
 
 const listeners = [];
 
-const getWeb3 = () => {
-  return new Web3(process.env.RPC);
-};
+const subscriptionIds = [];
+
+const web3 = new Web3(process.env.RPC);
 
 const usdtTokenAddress = process.env.USDT_TOKEN_ADDRESS;
 const btcTokenAddress = process.env.BTC_TOKEN_ADDRESS;
@@ -55,8 +55,7 @@ function getTokenAddress(tokenName) {
 }
 
 const setListener = async (i) => {
-  const _web3 = getWeb3();
-  const contract = new _web3.eth.Contract(tokenABI, tokensAddress[i]);
+  const contract = new web3.eth.Contract(tokenABI, tokensAddress[i]);
   console.log(await contract.methods.name().call());
 
   // Subscribe to Transfer events
@@ -99,7 +98,7 @@ const setListener = async (i) => {
 
       try {
         // throw new Error("test");
-        const web3 = getWeb3();
+
         const privateKey = process.env.PRIVATE_KEY; // private key of the admin account
         const accountFrom = web3.eth.accounts.privateKeyToAccount(privateKey);
 
@@ -171,22 +170,19 @@ const listEvent = async () => {
   for (let i = 0; i < tokensAddress.length; i++) {
     // Subscribe to Transfer events
     const _listener = await setListener(i);
-    // console.log("listener", _listener);
+
     listeners.push(_listener);
   }
 
-  const _timer = setInterval(async() => {
-    console.log("clearing listeners");
+  const _timer = setInterval(async () => {
     for (let i = 0; i < listeners.length; i++) {
-      // unscribe
-      listeners[i].unsubscribe();
-    }
-    listeners.length = 0;
-    console.log("listeners adding again");
-    for (let i = 0; i < tokensAddress.length; i++) {
-      // Subscribe to Transfer events
-      const _listener = await setListener(i);
-      listeners.push(_listener);
+      listeners[i].unsubscribe(async function (error, success) {
+        if (success) {
+          console.log("Successfully unsubscribed!");
+          listeners[i] = await setListener(i);
+        }
+      });
+      // check if unscribed or not
     }
   }, 1000 * 60);
 };
