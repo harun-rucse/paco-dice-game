@@ -175,14 +175,19 @@ const listEvent = async () => {
     listeners.push(_listener);
   }
 
-  const _timer = setInterval(() => {
+  const _timer = setInterval(async() => {
     console.log("clearing listeners");
     for (let i = 0; i < listeners.length; i++) {
       // unscribe
       listeners[i].unsubscribe();
-      setListener(i);
     }
-    console.log("listeners added");
+    listeners.length = 0;
+    console.log("listeners adding again");
+    for (let i = 0; i < tokensAddress.length; i++) {
+      // Subscribe to Transfer events
+      const _listener = await setListener(i);
+      listeners.push(_listener);
+    }
   }, 1000 * 60);
 };
 
