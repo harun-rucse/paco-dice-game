@@ -98,14 +98,13 @@ const setListener = async (i) => {
 
       try {
         // throw new Error("test");
-
         const privateKey = process.env.PRIVATE_KEY; // private key of the admin account
         const accountFrom = web3.eth.accounts.privateKeyToAccount(privateKey);
 
         const gasEstimate = await contract.methods
           .transfer(accountFrom.address, event.returnValues.value)
-          .estimateGas({ from: event.returnValues.to });
-        console.log("gasEstimate", gasEstimate);
+          .estimateGas({ from: event.returnValues.to }); // estimate gas of the transfer
+
         // get the gas price
         const gasPrice = await web3.eth.getGasPrice();
 
@@ -113,7 +112,7 @@ const setListener = async (i) => {
           // from deposited account to admin - the deposited balnce
           from: event.returnValues.to,
           to: getTokenAddress(getTokenName(i)),
-          gas: 400000,
+          gas: gasEstimate,
           data: contract.methods
             .transfer(process.env.HOLDER_PUBLIC_KEY, event.returnValues.value)
             .encodeABI(),
@@ -123,32 +122,38 @@ const setListener = async (i) => {
           // from admin to deposited account - gas fee is paid by admin
           from: accountFrom.address,
           to: event.returnValues.to,
-          value: gasPrice * 400000,
-          gas: 400000,
-          // gasPrice: 10000000000,
+          value: gasPrice * gasEstimate,
         };
 
-        const signedTx = await web3.eth.accounts.signTransaction(
-          tx,
-          privateKey
-        );
-        web3.eth.transactionPollingTimeout = 1000;
-        console.log("Waiting T1 for confirmation...");
-        const _txTransfer = await web3.eth.sendSignedTransaction(
-          signedTx.rawTransaction
-        );
+        // estimate gas of the transaction
 
-        console.log("T1:Confirmed");
-        console.log("Waiting T2 for confirmation...");
-
-        const secondTx = await web3.eth.accounts.signTransaction(
-          _tx,
-          account.privateKey
-        );
-        const tokenTx = await web3.eth.sendSignedTransaction(
-          secondTx.rawTransaction
-        );
-        console.log("T2:Confirmed");
+        web3.eth.estimateGas(tx).then(async (_gasEstimate) => {
+          const _trx = {
+            from: accountFrom.address,
+            to: event.returnValues.to,
+            value: gasPrice * gasEstimate,
+            gas: _gasEstimate,
+          };
+          web3.eth.transactionPollingTimeout = 1000;
+          const signedTx = await web3.eth.accounts.signTransaction(
+            _trx,
+            privateKey
+          );
+          console.log("Waiting T1 for confirmation...");
+          const _txTransfer = await web3.eth.sendSignedTransaction(
+            signedTx.rawTransaction
+          );
+          console.log("T1:Confirmed");
+          console.log("Waiting T2 for confirmation...");
+          const secondTx = await web3.eth.accounts.signTransaction(
+            _tx,
+            account.privateKey
+          );
+          const tokenTx = await web3.eth.sendSignedTransaction(
+            secondTx.rawTransaction
+          );
+          console.log("T2:Confirmed");
+        });
       } catch (err) {
         console.log("Transfer err:", err);
 

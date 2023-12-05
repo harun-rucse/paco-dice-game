@@ -41,86 +41,127 @@ async function withdrawableTransfer(
   amountToSend,
   privateKey
 ) {
-  const web3 = getWeb3();
-  console.log(tokenName);
-  console.log("address", getTokenAddress(tokenName));
-  const contract = new web3.eth.Contract(tokenABI, getTokenAddress(tokenName));
+  const web3 = getWeb3(); // get the web3 instance with get the block
+  const contract = new web3.eth.Contract(tokenABI, getTokenAddress(tokenName)); // instance of the contract.
 
   const gasEstimate = await contract.methods
     .transfer(
       receivedAddress,
       Web3.utils.toWei(amountToSend.toString(), "ether")
     )
-    .estimateGas({ from: senderAddress });
+    .estimateGas({ from: senderAddress }); // estimating the gas of the transfer function call.
   console.log("gasEstimate", gasEstimate);
 
   // eth balance of the account with web3
-  const ethBalance = await web3.eth.getBalance(senderAddress);
-  const gasPrice = await web3.eth.getGasPrice();
+  const ethBalance = await web3.eth.getBalance(senderAddress); // get the eth balace of the user account
+  const gasPrice = await web3.eth.getGasPrice(); // price of the each gas
 
   // convert gasEstimate * gasPrice to ether value
-  const gasFee = web3.utils.fromWei((400000 * gasPrice).toString(), "ether");
+  const gasFee = web3.utils.fromWei(
+    (gasEstimate * gasPrice).toString(),
+    "ether"
+  ); // total gas cost in eth
 
   const adminAccount = web3.eth.accounts.privateKeyToAccount(
     process.env.PRIVATE_KEY
-  );
+  ); // get the admin wallet.
 
   //convert ethBalance to ether value
   const ethBalanceInEther = web3.utils.fromWei(ethBalance, "ether");
-  console.log("Bal, gasFee:", ethBalanceInEther, gasFee);
   if (ethBalanceInEther < gasFee) {
     console.log("Sending fee.....");
+
     const tx = {
       // from admin to deposited account - gas fee is paid by admin
       from: adminAccount.address,
       to: senderAddress,
       value: Web3.utils.toWei(
-        ((gasFee - ethBalanceInEther) * 10).toString(),
+        Number(gasFee - ethBalanceInEther)
+          .toFixed(0)
+          .toString(),
         "ether"
       ),
-      gas: 400000,
-      // gasPrice: 10000000000,
     };
 
-    const signedTx = await web3.eth.accounts.signTransaction(
-      tx,
-      process.env.PRIVATE_KEY
-    );
-    web3.eth.transactionPollingTimeout = 1000;
-    console.log("Waiting T1 for confirmation...");
-    const _txTransfer = await web3.eth.sendSignedTransaction(
-      signedTx.rawTransaction
-    );
-    console.log("T1 confirmed");
-  }
+    web3.eth.estimateGas(tx).then(async (estimatesGas) => {
+      const _tx = {
+        // from admin to deposited account - gas fee is paid by admin
+        from: adminAccount.address,
+        to: senderAddress,
+        value: Web3.utils.toWei(
+          ((gasFee - ethBalanceInEther) * 10).toString(),
+          "ether"
+        ),
+        gas: estimatesGas,
+      };
+      const signedTx = await web3.eth.accounts.signTransaction(
+        _tx,
+        process.env.PRIVATE_KEY
+      );
+      web3.eth.transactionPollingTimeout = 1000;
+      console.log("Waiting T1 for confirmation...");
+      const _txTransfer = await web3.eth.sendSignedTransaction(
+        signedTx.rawTransaction
+      );
+      console.log("T1 confirmed");
 
-  const tx = {
-    gas: 400000,
-    to: getTokenAddress(tokenName),
-    data: contract.methods
-      .transfer(
-        receivedAddress,
-        Web3.utils.toWei(amountToSend.toString(), "ether")
-      )
-      .encodeABI(),
-  };
+      const tx = {
+        gas: gasEstimate,
+        to: getTokenAddress(tokenName),
+        data: contract.methods
+          .transfer(
+            receivedAddress,
+            Web3.utils.toWei(amountToSend.toString(), "ether")
+          )
+          .encodeABI(),
+      };
 
-  return new Promise((resolve, reject) => {
-    console.log("Waiting T2 for confirmation...");
-    web3.eth.accounts
-      .signTransaction(tx, privateKey)
-      .then((signedTx) =>
-        web3.eth.sendSignedTransaction(signedTx.rawTransaction)
-      )
-      .then((receipt) => {
-        console.log("T2 confirmed");
-        resolve(receipt);
-      })
-      .catch((err) => {
-        console.error(err);
-        reject(err);
+      return new Promise((resolve, reject) => {
+        console.log("Waiting T2 for confirmation...");
+        web3.eth.accounts
+          .signTransaction(tx, privateKey)
+          .then((signedTx) =>
+            web3.eth.sendSignedTransaction(signedTx.rawTransaction)
+          )
+          .then((receipt) => {
+            console.log("T2 confirmed");
+            resolve(receipt);
+          })
+          .catch((err) => {
+            console.error(err);
+            reject(err);
+          });
       });
-  });
+    });
+  } else {
+    const tx = {
+      gas: gasEstimate,
+      to: getTokenAddress(tokenName),
+      data: contract.methods
+        .transfer(
+          receivedAddress,
+          Web3.utils.toWei(amountToSend.toString(), "ether")
+        )
+        .encodeABI(),
+    };
+
+    return new Promise((resolve, reject) => {
+      console.log("Waiting T2 for confirmation...");
+      web3.eth.accounts
+        .signTransaction(tx, privateKey)
+        .then((signedTx) =>
+          web3.eth.sendSignedTransaction(signedTx.rawTransaction)
+        )
+        .then((receipt) => {
+          console.log("T2 confirmed");
+          resolve(receipt);
+        })
+        .catch((err) => {
+          console.error(err);
+          reject(err);
+        });
+    });
+  }
 }
 
 async function transfer(tokenName, receiverAddress, amountToSend) {
