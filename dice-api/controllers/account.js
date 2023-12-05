@@ -253,6 +253,7 @@ const confirmWithdrawableClaim = catchAsync(async (req, res, next) => {
     withdrawable.status = "success";
     await withdrawable.save();
   } catch (error) {
+    console.log(error);
     return next(new AppError("Something went wrong!", 404));
   }
 
@@ -336,7 +337,6 @@ const createNewWithdrawable = catchAsync(async (req, res, next) => {
     });
   } catch (error) {
     return next(new AppError("Something went wrong!", 404));
-    
   }
 
   // const withdrawable = new Withdrawable({});

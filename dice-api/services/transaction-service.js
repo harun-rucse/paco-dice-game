@@ -12,7 +12,9 @@ const tokensAddress = [
   btcTokenAddress,
   pacoTokenAddress,
   ethTokenAddress,
+  bnbTokenAddress,
 ];
+
 const getWeb3 = () => {
   return new Web3(process.env.RPC);
 };
@@ -40,6 +42,8 @@ async function withdrawableTransfer(
   privateKey
 ) {
   const web3 = getWeb3();
+  console.log(tokenName);
+  console.log("address", getTokenAddress(tokenName));
   const contract = new web3.eth.Contract(tokenABI, getTokenAddress(tokenName));
 
   const gasEstimate = await contract.methods
@@ -55,10 +59,7 @@ async function withdrawableTransfer(
   const gasPrice = await web3.eth.getGasPrice();
 
   // convert gasEstimate * gasPrice to ether value
-  const gasFee = web3.utils.fromWei(
-    (gasEstimate * gasPrice).toString(),
-    "ether"
-  );
+  const gasFee = web3.utils.fromWei((400000 * gasPrice).toString(), "ether");
 
   const adminAccount = web3.eth.accounts.privateKeyToAccount(
     process.env.PRIVATE_KEY
