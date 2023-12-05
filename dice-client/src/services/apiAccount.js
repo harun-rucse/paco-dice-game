@@ -44,12 +44,13 @@ export const getAllWithdraws = async (page = 1, limit = 10) => {
   }
 };
 
-export const approveWithdraw = async ({ id, status }) => {
+export const approveWithdraw = async ({ id, status, manual = "no" }) => {
   try {
     const { data } = await axios.patch(
       `${API_URL}/account/approve-withdraw/${id}`,
       {
         status,
+        manual,
       },
       {
         headers: {

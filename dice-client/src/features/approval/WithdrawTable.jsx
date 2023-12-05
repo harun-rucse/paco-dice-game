@@ -23,16 +23,21 @@ function WithdrawTable() {
     approveWithdraw({ id, status });
   }
 
+  function handleManual(id, manual) {
+    approveWithdraw({ id, status: "success", manual });
+  }
+
   if (isLoading1 || isLoading2) return <Spinner />;
 
   return (
-    <Table columns="grid-cols-[0.5fr_1fr_1fr_1fr_1fr] md:grid-cols-[1fr_2fr_1fr_3fr_1fr]">
+    <Table columns="grid-cols-[0.5fr_1fr_1fr_1fr_1fr_0.5fr] md:grid-cols-[1fr_2fr_1fr_3fr_1fr_0.5fr]">
       <Table.Header>
         <span>Username</span>
         <span>Withdraw Amount</span>
         <span>Status</span>
         <span>Wallet Address</span>
         <span>Approve?</span>
+        <span>Manual?</span>
       </Table.Header>
       <Table.Body>
         {withdraws?.map((item) => (
@@ -53,20 +58,37 @@ function WithdrawTable() {
                 : "pending"}
             </span>
             <span>{item.receivedAddress}</span>
-            <span className="space-x-3">
-              <button
-                className="bg-[#acffb9] text-[#36c45b] p-2 rounded-full uppercase font-extralight text-center"
-                onClick={() => handleApproval(item._id, "success")}
-              >
-                Yes
-              </button>
-              <button
-                className="bg-[#ff8181] text-[#db1947] p-2 rounded-full uppercase font-extralight text-center"
-                onClick={() => handleApproval(item._id, "fail")}
-              >
-                No
-              </button>
-            </span>
+            {item.status == "pending" ? (
+              <>
+                <span className="space-x-3">
+                  <button
+                    className="bg-[#acffb9] text-[#36c45b] p-2 rounded-full uppercase font-extralight text-center"
+                    onClick={() => handleApproval(item._id, "success")}
+                  >
+                    Yes
+                  </button>
+                  <button
+                    className="bg-[#ff8181] text-[#db1947] p-2 rounded-full uppercase font-extralight text-center"
+                    onClick={() => handleApproval(item._id, "fail")}
+                  >
+                    No
+                  </button>
+                </span>
+                <span>
+                  <button
+                    className="bg-[#acffb9] text-[#36c45b] p-2 rounded-full uppercase font-extralight text-center"
+                    onClick={() => handleManual(item._id, "yes")}
+                  >
+                    Yes
+                  </button>
+                </span>
+              </>
+            ) : (
+              <>
+                <span className="ml-6">&mdash;</span>
+                <span className="ml-6">&mdash;</span>
+              </>
+            )}
           </Table.Row>
         ))}
         {withdraws?.length === 0 && (

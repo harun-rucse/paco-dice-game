@@ -106,7 +106,7 @@ const getAllWithdraw = catchAsync(async (req, res, next) => {
  * @access  Private(admin)
  */
 const confirmWithdraw = catchAsync(async (req, res, next) => {
-  const { status } = req.body;
+  const { status, manual } = req.body;
 
   const withdraw = await Withdraw.findById(req.params.id);
   if (!withdraw) return next(new AppError("No withdraw found", 404));
@@ -114,14 +114,22 @@ const confirmWithdraw = catchAsync(async (req, res, next) => {
   if (withdraw.status !== "pending")
     return next(new AppError("Already approved!", 404));
 
+  if (manual === "yes") {
+    withdraw.status = status;
+    await withdraw.save();
+
+    return res.status(200).send("Withdraw approval success");
+  }
+
   if (status == "success") {
-    // send amount
-    const receipt = await transfer(
+    // If success: Send amount to the user wallet address from admin wallet
+    await transfer(
       withdraw.tokenName,
       withdraw.receivedAddress,
       withdraw.amount
     );
   } else {
+    // If cancel: Back the withdraw amount to the user account balance
     const account = await Account.findById(withdraw.account);
     account[withdraw.tokenName] =
       Number(account[withdraw.tokenName]) + Number(withdraw.amount);
