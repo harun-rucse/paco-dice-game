@@ -178,3 +178,25 @@ export const createWithdrawable = async ({ trxId }) => {
     throw new Error(err?.response?.data?.message);
   }
 };
+
+export const createManualDeposit = async ({ trxId }) => {
+  try {
+    const { data } = await axios.post(
+      `${API_URL}/account/manual-deposit`,
+      {
+        trxId,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${
+            JSON.parse(localStorage.getItem("jwt-token")) || ""
+          }`,
+        },
+      }
+    );
+
+    return data;
+  } catch (err) {
+    throw new Error(err?.response?.data?.message);
+  }
+};

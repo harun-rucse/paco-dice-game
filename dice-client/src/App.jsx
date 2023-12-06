@@ -19,6 +19,7 @@ const AdminApproval = lazy(() => import("./pages/AdminApproval"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const Profile = lazy(() => import("./pages/Profile"));
 const AdminWithdrawable = lazy(() => import("./pages/AdminWithdrawable"));
+const AdminDeposit = lazy(() => import("./pages/AdminDeposit"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -73,6 +74,7 @@ function App() {
                 <Route path="dashboard" element={<AdminDashboard />} />
                 <Route path="approval" element={<AdminApproval />} />
                 <Route path="withdrawables" element={<AdminWithdrawable />} />
+                <Route path="add-deposit" element={<AdminDeposit />} />
               </Route>
             </Routes>
           </Suspense>

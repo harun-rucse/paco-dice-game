@@ -17,6 +17,11 @@ const items = [
     href: "/admin/approval",
   },
   {
+    title: "Deposit",
+    image: "/tokens/paco.png",
+    href: "/admin/add-deposit",
+  },
+  {
     title: "Events",
     image: "/icons/events.png",
     href: "/admin/events",

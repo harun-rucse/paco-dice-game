@@ -10,6 +10,12 @@ router.get(
   accountController.getAllUserTransactions
 );
 
+router.post(
+  "/manual-deposit",
+  [auth, restrictTo("admin")],
+  accountController.createManualDeposit
+);
+
 router.get(
   "/withdraws",
   [auth, restrictTo("admin")],

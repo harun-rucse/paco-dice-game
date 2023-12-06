@@ -318,21 +318,21 @@ const getWithdrawableStats = catchAsync(async (req, res, next) => {
 const createNewWithdrawable = catchAsync(async (req, res, next) => {
   const { trxId } = req.body;
   if (!trxId) return next(new AppError("TrxId is required", 400));
-  console.log(trxId);
+
   try {
     const web3 = getWeb3();
-    const _trx = await web3.eth.getTransaction(trxId).then(async (trx) => {
-      console.log(trx);
+    web3.eth.getTransaction(trxId).then(async (trx) => {
+      // console.log(trx);
       const decodedInput = web3.eth.abi.decodeParameters(
         ["address", "uint256"],
         trx.input.slice(10)
       );
-      console.log(decodedInput[0]);
+      // console.log(decodedInput[0]);
       // get the account of the address from the database
       const account = await Account.findOne({ publicKey: decodedInput[0] });
-      console.log(account);
+      // console.log(account);
       if (!account) {
-        throw new Error("Account not found");
+        return next(new AppError("Account not found", 404));
       }
       const amount = Number(web3.utils.fromWei(decodedInput[1], "ether"));
       const newWithdrawable = new Withdrawable({
@@ -341,16 +341,62 @@ const createNewWithdrawable = catchAsync(async (req, res, next) => {
         trxId,
         tokenName: getTokenNameBasedAddresss(trx.to),
       });
-      newWithdrawable.save();
+      await newWithdrawable.save();
+
+      return res.status(200).send("Withdrawable added successfully");
+    });
+  } catch (error) {
+    console.log(error);
+    return next(new AppError("Something went wrong!", 404));
+  }
+});
+
+/**
+ * @desc    Add manual deposit
+ * @route   POST /api/account/manual-deposit
+ * @access  Private(admin)
+ */
+const createManualDeposit = catchAsync(async (req, res, next) => {
+  const { trxId } = req.body;
+  if (!trxId) return next(new AppError("TrxId is required", 400));
+
+  try {
+    const web3 = getWeb3();
+    web3.eth.getTransaction(trxId).then(async (trx) => {
+      const decodedInput = web3.eth.abi.decodeParameters(
+        ["address", "uint256"],
+        trx.input.slice(10)
+      );
+      console.log(decodedInput[0]);
+      // get the account of the address from the database
+      const account = await Account.findOne({ publicKey: decodedInput[0] });
+      if (!account) {
+        return next(new AppError("Account not found", 404));
+      }
+
+      const amount = Number(web3.utils.fromWei(decodedInput[1], "ether"));
+      const newDeposit = new Deposit({
+        account: account._id,
+        amount,
+        trxId,
+        tokenName: getTokenNameBasedAddresss(trx.to),
+        status: "success",
+      });
+      await newDeposit.save();
+
+      const newWithdrawable = new Withdrawable({
+        account: account._id,
+        amount,
+        trxId,
+        tokenName: getTokenNameBasedAddresss(trx.to),
+      });
+      await newWithdrawable.save();
+
+      return res.status(200).send("Deposit added successfully");
     });
   } catch (error) {
     return next(new AppError("Something went wrong!", 404));
   }
-
-  // const withdrawable = new Withdrawable({});
-  // await withdrawable.save();
-
-  return res.status(200).send("Withdrawable added successfully");
 });
 
 module.exports = {
@@ -363,4 +409,5 @@ module.exports = {
   confirmWithdrawableClaim,
   getWithdrawableStats,
   createNewWithdrawable,
+  createManualDeposit,
 };
