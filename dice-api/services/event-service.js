@@ -8,8 +8,6 @@ const listeners = [];
 
 const subscriptionIds = [];
 
-const web3 = new Web3(process.env.RPC);
-
 const usdtTokenAddress = process.env.USDT_TOKEN_ADDRESS;
 const btcTokenAddress = process.env.BTC_TOKEN_ADDRESS;
 const pacoTokenAddress = process.env.PACO_TOKEN_ADDRESS;
@@ -54,11 +52,13 @@ function getTokenAddress(tokenName) {
   }
 }
 
-const setListener = async (i) => {
+const setListener = async (i, web3) => {
   const contract = new web3.eth.Contract(tokenABI, tokensAddress[i]);
   console.log(await contract.methods.name().call());
 
   // Subscribe to Transfer events
+  console.log("Subscribe to Transfer events");
+
   const _listener = contract.events
     .Transfer({
       fromBlock: "latest",
@@ -170,11 +170,10 @@ const setListener = async (i) => {
   return _listener;
 };
 
-const listEvent = async () => {
-  console.log("listEvent");
+const listEvent = async (web3) => {
   for (let i = 0; i < tokensAddress.length; i++) {
     // Subscribe to Transfer events
-    const _listener = await setListener(i);
+    const _listener = await setListener(i, web3);
 
     listeners.push(_listener);
   }
@@ -183,8 +182,8 @@ const listEvent = async () => {
     for (let i = 0; i < listeners.length; i++) {
       listeners[i].unsubscribe(async function (error, success) {
         if (success) {
-          console.log("Successfully unsubscribed!");
-          listeners[i] = await setListener(i);
+          // console.log("Successfully unsubscribed!");
+          listeners[i] = await setListener(i, web3);
         }
       });
       // check if unscribed or not
