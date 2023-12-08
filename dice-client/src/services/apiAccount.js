@@ -1,23 +1,12 @@
-import axios from "axios";
-const API_URL = import.meta.env.VITE_BASE_API_URL;
+import api from "./index";
 
 export const withdraw = async ({ paymentType, amount, address }) => {
   try {
-    const { data } = await axios.post(
-      `${API_URL}/account/withdraw`,
-      {
-        tokenName: paymentType,
-        amount,
-        address,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${
-            JSON.parse(localStorage.getItem("jwt-token")) || ""
-          }`,
-        },
-      }
-    );
+    const { data } = await api.post("/account/withdraw", {
+      tokenName: paymentType,
+      amount,
+      address,
+    });
 
     return data;
   } catch (err) {
@@ -27,15 +16,8 @@ export const withdraw = async ({ paymentType, amount, address }) => {
 
 export const getAllWithdraws = async (page = 1, limit = 10) => {
   try {
-    const { data } = await axios.get(
-      `${API_URL}/account/withdraws?page=${page}&limit=${limit}`,
-      {
-        headers: {
-          Authorization: `Bearer ${
-            JSON.parse(localStorage.getItem("jwt-token")) || ""
-          }`,
-        },
-      }
+    const { data } = await api.get(
+      `/account/withdraws?page=${page}&limit=${limit}`
     );
 
     return data;
@@ -46,20 +28,10 @@ export const getAllWithdraws = async (page = 1, limit = 10) => {
 
 export const approveWithdraw = async ({ id, status, manual = "no" }) => {
   try {
-    const { data } = await axios.patch(
-      `${API_URL}/account/approve-withdraw/${id}`,
-      {
-        status,
-        manual,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${
-            JSON.parse(localStorage.getItem("jwt-token")) || ""
-          }`,
-        },
-      }
-    );
+    const { data } = await api.patch(`/account/approve-withdraw/${id}`, {
+      status,
+      manual,
+    });
 
     return data;
   } catch (err) {
@@ -69,15 +41,8 @@ export const approveWithdraw = async ({ id, status, manual = "no" }) => {
 
 export const getAllWithdrawables = async (page = 1, limit = 10) => {
   try {
-    const { data } = await axios.get(
-      `${API_URL}/account/withdrawables?page=${page}&limit=${limit}`,
-      {
-        headers: {
-          Authorization: `Bearer ${
-            JSON.parse(localStorage.getItem("jwt-token")) || ""
-          }`,
-        },
-      }
+    const { data } = await api.get(
+      `/account/withdrawables?page=${page}&limit=${limit}`
     );
 
     return data;
@@ -88,17 +53,7 @@ export const getAllWithdrawables = async (page = 1, limit = 10) => {
 
 export const claimWithdrawable = async ({ id }) => {
   try {
-    const { data } = await axios.patch(
-      `${API_URL}/account/confirm-withdrawable/${id}`,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${
-            JSON.parse(localStorage.getItem("jwt-token")) || ""
-          }`,
-        },
-      }
-    );
+    const { data } = await api.patch(`/account/confirm-withdrawable/${id}`, {});
 
     return data;
   } catch (err) {
@@ -108,7 +63,7 @@ export const claimWithdrawable = async ({ id }) => {
 
 export const getStats = async () => {
   try {
-    const { data } = await axios.get(`${API_URL}/account/stats`, {
+    const { data } = await api.get("/account/stats", {
       headers: {
         Authorization: `Bearer ${
           JSON.parse(localStorage.getItem("jwt-token")) || ""
@@ -124,7 +79,7 @@ export const getStats = async () => {
 
 export const getWithdrawableStats = async () => {
   try {
-    const { data } = await axios.get(`${API_URL}/account/withdrawable-stats`, {
+    const { data } = await api.get("/account/withdrawable-stats", {
       headers: {
         Authorization: `Bearer ${
           JSON.parse(localStorage.getItem("jwt-token")) || ""
@@ -140,15 +95,8 @@ export const getWithdrawableStats = async () => {
 
 export const getUserTransactions = async (type, page = 1, limit = 10) => {
   try {
-    const { data } = await axios.get(
-      `${API_URL}/account/user-transactions/${type}?page=${page}&limit=${limit}`,
-      {
-        headers: {
-          Authorization: `Bearer ${
-            JSON.parse(localStorage.getItem("jwt-token")) || ""
-          }`,
-        },
-      }
+    const { data } = await api.get(
+      `/account/user-transactions/${type}?page=${page}&limit=${limit}`
     );
 
     return data;
@@ -159,19 +107,9 @@ export const getUserTransactions = async (type, page = 1, limit = 10) => {
 
 export const createWithdrawable = async ({ trxId }) => {
   try {
-    const { data } = await axios.post(
-      `${API_URL}/account/withdrawable`,
-      {
-        trxId,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${
-            JSON.parse(localStorage.getItem("jwt-token")) || ""
-          }`,
-        },
-      }
-    );
+    const { data } = await api.post("/account/withdrawable", {
+      trxId,
+    });
 
     return data;
   } catch (err) {
@@ -181,19 +119,9 @@ export const createWithdrawable = async ({ trxId }) => {
 
 export const createManualDeposit = async ({ trxId }) => {
   try {
-    const { data } = await axios.post(
-      `${API_URL}/account/manual-deposit`,
-      {
-        trxId,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${
-            JSON.parse(localStorage.getItem("jwt-token")) || ""
-          }`,
-        },
-      }
-    );
+    const { data } = await api.post("/account/manual-deposit", {
+      trxId,
+    });
 
     return data;
   } catch (err) {

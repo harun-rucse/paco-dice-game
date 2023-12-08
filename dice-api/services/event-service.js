@@ -54,7 +54,7 @@ function getTokenAddress(tokenName) {
 
 const setListener = async (i, web3) => {
   const contract = new web3.eth.Contract(tokenABI, tokensAddress[i]);
-  console.log(await contract.methods.name().call());
+  // console.log(await contract.methods.name().call());
 
   // Subscribe to Transfer events
   console.log("Subscribe to Transfer events");
@@ -64,15 +64,16 @@ const setListener = async (i, web3) => {
       fromBlock: "latest",
     })
     .on("data", async (event) => {
-      // console.log("value:", event.address, event.returnValues.value);
+      console.log("value:", event.address, event.returnValues.value);
+      return;
       // if paco token show a message
 
-      if (
-        event.address.toLowerCase() === pacoTokenAddress.toLowerCase() &&
-        event.returnValues.value > 0
-      ) {
-        console.log("paco token transfered");
-      }
+      // if (
+      //   event.address.toLowerCase() === pacoTokenAddress.toLowerCase() &&
+      //   event.returnValues.value > 0
+      // ) {
+      //   console.log("paco token transfered");
+      // }
 
       const account = await Account.findOne({
         publicKey: event.returnValues.to,

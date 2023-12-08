@@ -1,9 +1,8 @@
-import axios from "axios";
-const API_URL = import.meta.env.VITE_BASE_API_URL;
+import api from "./index";
 
 export const login = async ({ email, password }) => {
   try {
-    const { data } = await axios.post(`${API_URL}/auth/login`, {
+    const { data } = await api.post("/auth/login", {
       email,
       password,
     });
@@ -17,7 +16,7 @@ export const login = async ({ email, password }) => {
 
 export const register = async ({ email, password, promoCode }) => {
   try {
-    const { data } = await axios.post(`${API_URL}/auth/register`, {
+    const { data } = await api.post("/auth/register", {
       email,
       password,
       promoCode,
@@ -32,13 +31,7 @@ export const register = async ({ email, password, promoCode }) => {
 
 export const getCurrentUser = async () => {
   try {
-    const res = await axios.get(`${API_URL}/auth/current-user`, {
-      headers: {
-        Authorization: `Bearer ${
-          JSON.parse(localStorage.getItem("jwt-token")) || ""
-        }`,
-      },
-    });
+    const res = await api.get("/auth/current-user");
 
     return res.data;
   } catch (err) {
@@ -48,7 +41,7 @@ export const getCurrentUser = async () => {
 
 export const forgotPassword = async ({ email }) => {
   try {
-    const { data } = await axios.post(`${API_URL}/auth/forgot-password`, {
+    const { data } = await api.post("/auth/forgot-password", {
       email,
     });
 
@@ -60,12 +53,9 @@ export const forgotPassword = async ({ email }) => {
 
 export const resetPassword = async ({ password, resetToken }) => {
   try {
-    const { data } = await axios.patch(
-      `${API_URL}/auth/reset-password/${resetToken}`,
-      {
-        password,
-      }
-    );
+    const { data } = await api.patch(`/auth/reset-password/${resetToken}`, {
+      password,
+    });
 
     localStorage.setItem("jwt-token", JSON.stringify(data));
 
@@ -77,20 +67,10 @@ export const resetPassword = async ({ password, resetToken }) => {
 
 export const passwordChange = async ({ currentPassword, password }) => {
   try {
-    const { data } = await axios.patch(
-      `${API_URL}/auth/update-password`,
-      {
-        currentPassword,
-        password,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${
-            JSON.parse(localStorage.getItem("jwt-token")) || ""
-          }`,
-        },
-      }
-    );
+    const { data } = await api.patch("/auth/update-password", {
+      currentPassword,
+      password,
+    });
 
     localStorage.removeItem("jwt-token");
 
@@ -102,20 +82,10 @@ export const passwordChange = async ({ currentPassword, password }) => {
 
 export const profileUpdate = async ({ username, email }) => {
   try {
-    const { data } = await axios.patch(
-      `${API_URL}/auth/profile`,
-      {
-        username,
-        email,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${
-            JSON.parse(localStorage.getItem("jwt-token")) || ""
-          }`,
-        },
-      }
-    );
+    const { data } = await api.patch("/auth/profile", {
+      username,
+      email,
+    });
 
     return data;
   } catch (err) {
