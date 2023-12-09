@@ -65,7 +65,7 @@ const setListener = async (i, web3) => {
     })
     .on("data", async (event) => {
       console.log("value:", event.address, event.returnValues.value);
-      return;
+      // return;
       // if paco token show a message
 
       // if (
