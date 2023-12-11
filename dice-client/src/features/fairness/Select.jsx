@@ -1,8 +1,9 @@
 import Select from "react-select";
 
-function CustomSelect({ options, onChange, placeholder }) {
+function CustomSelect({ defaultValue, options, onChange, placeholder }) {
   return (
     <Select
+      defaultValue={defaultValue ? defaultValue : null}
       closeMenuOnSelect={true}
       isClearable={true}
       options={options}
