@@ -1,8 +1,35 @@
+import { useEffect, useState } from "react";
+import Select from "react-select";
+import useGamesHistory from "../games/useGamesHistory";
 import InputBox from "./InputBox";
+import CustomSelect from "./Select";
+
+const SERVER_SEED = import.meta.env.VITE_SERVER_SEED;
 
 function Fairness() {
+  const [randomSeed, setRandomSeed] = useState("");
+  const [hashRound, setHashRound] = useState("");
+  const [roundHistories, setRoundHistories] = useState([]);
+
+  const { isLoading, games } = useGamesHistory();
+
+  useEffect(() => {
+    if (!isLoading && games?.length > 0) {
+      const { randomSeed, hashRound } = games[0];
+      setRandomSeed(randomSeed);
+      setHashRound(hashRound);
+      setRoundHistories(games);
+    }
+  }, [games, isLoading]);
+
   function handleCheck() {
     console.log("Check!");
+  }
+
+  function handleRoundChange(option) {
+    // console.log(option.randomSeed, option.hashRound);
+    setRandomSeed(option.randomSeed);
+    setHashRound(option.hashRound);
   }
 
   return (
@@ -23,7 +50,7 @@ function Fairness() {
           type="string"
           name="hash-round"
           label="Hash round"
-          value="82487fdb1927a60cdcc16046f9e0bfa757298ff98f2ef1963162955aef34445c"
+          value={SERVER_SEED}
           onChange={() => {}}
           readOnly
         />
@@ -31,12 +58,32 @@ function Fairness() {
         <div className="space-y-4 md:space-y-6 md:pt-4">
           <h4 className="md:text-xl font-semibold">Previous rounds history</h4>
           <div className="flex items-center gap-4">
-            <select className="w-full bg-[#7226d3] p-3 rounded-lg focus:outline-none font-semibold border-r-[12px] border-r-[transparent] cursor-pointer">
-              <option value="dice">Dice</option>
-            </select>
-            <select className="w-full bg-[#7226d3] p-3 rounded-lg focus:outline-none font-semibold border-r-[12px] border-r-[transparent] cursor-pointer">
-              <option value="">11/28/23, 11:20:05pm</option>
-            </select>
+            <CustomSelect
+              options={[{ value: "dice", label: "Dice" }] ?? []}
+              placeholder="Select game"
+              onChange={() => {}}
+            />
+
+            <CustomSelect
+              options={
+                roundHistories?.map((round) => ({
+                  value: round?._id,
+                  randomSeed: round?.randomSeed,
+                  hashRound: round?.hashRound,
+                  label: new Date(round.createdAt).toLocaleString("en-US", {
+                    month: "numeric",
+                    day: "numeric",
+                    year: "2-digit",
+                    hour: "numeric",
+                    minute: "numeric",
+                    second: "numeric",
+                    hour12: true,
+                  }),
+                })) ?? []
+              }
+              placeholder="Select round"
+              onChange={handleRoundChange}
+            />
           </div>
         </div>
 
@@ -44,7 +91,7 @@ function Fairness() {
           type="string"
           name="random-seed"
           label="Random Seed"
-          value="79_cPAtbPlLVTUaYk"
+          value={randomSeed}
           onChange={() => {}}
           readOnly
         />
@@ -53,7 +100,7 @@ function Fairness() {
           type="string"
           name="hash-round"
           label="Hash round"
-          value="82487fdb1927a60cdcc16046f9e0bfa757298ff98f2ef1963162955aef34445c"
+          value={hashRound}
           onChange={() => {}}
           readOnly
         />

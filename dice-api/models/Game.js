@@ -23,6 +23,14 @@ const gameSchema = new Schema(
       type: Number,
       required: true,
     },
+    randomSeed: {
+      type: String,
+      required: true,
+    },
+    hashRound: {
+      type: String,
+      required: true,
+    },
     status: {
       type: String,
       enum: ["lost", "win"],

@@ -207,3 +207,35 @@ input:disabled {
 .footer:not(:has(*)) {
   display: none;
 }
+
+/* react-select customize */
+.react-select-container {
+  width: 100% !important;
+}
+
+.react-select__control {
+  width: 100% !important;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  background-color: #7226d3 !important;
+  border-radius: 10px !important;
+  padding: 6px;
+}
+
+.react-select__value-container .react-select__placeholder,
+.react-select__input-container {
+  color: white !important;
+  margin: 0 10px !important;
+}
+
+.react-select__single-value {
+  color: white !important;
+}
+
+.react-select__menu {
+  top: 40px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  color: #04152d !important;
+}

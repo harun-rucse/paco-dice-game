@@ -12,7 +12,7 @@ db()
   .catch((err) => console.log("DB Connect failed!", err));
 
 // lister event
-listEvent(web3);
+// listEvent(web3); //TODO: uncomment this line when deploy to mainnet
 
 web3.currentProvider.connection.addEventListener("end", () => {
   console.error("WebSocket connection closed unexpectedly");

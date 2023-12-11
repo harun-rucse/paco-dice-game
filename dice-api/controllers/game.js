@@ -111,8 +111,8 @@ const createGame = catchAsync(async (req, res, next) => {
   if (account[paymentType ? paymentType : "btc"] < betAmount)
     return next(new AppError("Insufficient Balance for play", 400));
 
-  const betId = generateUniqueBet(publicKey);
-  const winNumber = generateRandomNumber(betId, 100);
+  const seed = generateUniqueBet();
+  const { randomSeed, hashedValue, number } = generateRandomNumber(seed, 100);
   const multiplier =
     rollType === "rollUnder"
       ? (100 / Number(prediction)) * (1 - 0.02)
@@ -123,14 +123,16 @@ const createGame = catchAsync(async (req, res, next) => {
     publicKey,
     prediction,
     betAmount,
-    winNumber,
+    winNumber: number,
+    randomSeed,
+    hashRound: hashedValue,
     rewardAmount: 0,
     status:
       rollType === "rollUnder"
-        ? prediction > winNumber
+        ? prediction > number
           ? "win"
           : "lost"
-        : prediction < winNumber
+        : prediction < number
         ? "win"
         : "lost",
   });
