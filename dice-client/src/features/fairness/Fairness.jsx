@@ -1,10 +1,21 @@
 import { useEffect, useState } from "react";
-import Select from "react-select";
 import useGamesHistory from "../games/useGamesHistory";
 import InputBox from "./InputBox";
 import CustomSelect from "./Select";
 
 const SERVER_SEED = import.meta.env.VITE_SERVER_SEED;
+
+const dateFormat = (date) => {
+  return new Date(date).toLocaleString("en-US", {
+    month: "numeric",
+    day: "numeric",
+    year: "2-digit",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+    hour12: true,
+  });
+};
 
 function Fairness() {
   const [randomSeed, setRandomSeed] = useState("");
@@ -22,12 +33,7 @@ function Fairness() {
     }
   }, [games, isLoading]);
 
-  function handleCheck() {
-    console.log("Check!");
-  }
-
   function handleRoundChange(option) {
-    // console.log(option.randomSeed, option.hashRound);
     setRandomSeed(option.randomSeed);
     setHashRound(option.hashRound);
   }
@@ -57,8 +63,9 @@ function Fairness() {
 
         <div className="space-y-4 md:space-y-6 md:pt-4">
           <h4 className="md:text-xl font-semibold">Previous rounds history</h4>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-col md:flex-row items-center gap-4">
             <CustomSelect
+              defaultValue={{ value: "dice", label: "Dice" }}
               options={[{ value: "dice", label: "Dice" }] ?? []}
               placeholder="Select game"
               onChange={() => {}}
@@ -70,15 +77,7 @@ function Fairness() {
                   value: round?._id,
                   randomSeed: round?.randomSeed,
                   hashRound: round?.hashRound,
-                  label: new Date(round.createdAt).toLocaleString("en-US", {
-                    month: "numeric",
-                    day: "numeric",
-                    year: "2-digit",
-                    hour: "numeric",
-                    minute: "numeric",
-                    second: "numeric",
-                    hour12: true,
-                  }),
+                  label: dateFormat(round?.createdAt),
                 })) ?? []
               }
               placeholder="Select round"
@@ -105,12 +104,14 @@ function Fairness() {
           readOnly
         />
 
-        <button
+        <a
+          href="https://www.movable-type.co.uk/scripts/sha256.html"
+          target="_blank"
           className="self-center bg-[#34a446] border-b-[6px] border-[#214F30] px-12 py-3 rounded-lg font-semibold"
-          onClick={handleCheck}
+          rel="noreferrer"
         >
           Check
-        </button>
+        </a>
       </div>
     </div>
   );
