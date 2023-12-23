@@ -248,3 +248,12 @@ input:disabled {
   background: #694596;
   box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
 }
+
+.calculator-gradient-bg {
+  border: 1px solid #8e64c5;
+  background: linear-gradient(0deg, #522c83 75.52%, #762c83 100%);
+}
+
+.calculator-active {
+  background: #66478e;
+}
