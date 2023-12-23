@@ -12,7 +12,10 @@ function Staking() {
         </div>
         <div className="flex items-center gap-3 lg:gap-8">
           <button className="button text-sm lg:text-lg">About Staking</button>
-          <button className="button text-sm lg:text-lg">About Paco</button>
+          <button className="button text-sm lg:text-lg flex gap-1 items-center">
+            <img src="/icons/paco-icon.png" alt="" className="w-5 lg:w-7" />
+            <span>About Paco</span>
+          </button>
           <button className="button text-sm lg:text-lg !bg-[#32a45f] !border-[#316A48]">
             Calculate
           </button>
