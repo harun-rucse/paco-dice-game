@@ -1,7 +1,10 @@
 import StakingCard from "../features/staking/StakingCard";
 import StakingControls from "../features/staking/StakingControls";
+import { useCurrentUser } from "../features/authentication/useCurrentUser";
 
 function Staking() {
+  const { isAuthenticated, isLoading } = useCurrentUser();
+
   return (
     <div className="w-full h-full py-4 pb-32">
       <div className="flex flex-col lg:flex-row items-center justify-between pb-4">
@@ -11,7 +14,7 @@ function Staking() {
           </h2>
           <img src="/icons/staking-title.png" alt="" className="w-[44px]" />
         </div>
-        <StakingControls />
+        {!isLoading && isAuthenticated && <StakingControls />}
       </div>
       <StakingCard />
     </div>

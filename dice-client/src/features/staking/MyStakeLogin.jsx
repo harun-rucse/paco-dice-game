@@ -1,3 +1,6 @@
+import Modal from "../../components/Modal";
+import Authentication from "../authentication/Authentication";
+
 function MyStakeLogin() {
   return (
     <div className="md:self-stretch bg-[#3c2f61] rounded-2xl px-4 py-4 w-full lg:w-[33.33%] relative">
@@ -24,9 +27,17 @@ function MyStakeLogin() {
         <p className="uppercase text-white text-lg -mt-7">
           Login to see this page
         </p>
-        <button className="bg-[#2e2550] rounded-full px-12 py-2 uppercase text-white shadow-sm">
-          Login
-        </button>
+
+        <Modal>
+          <Modal.Open opens="authentication">
+            <button className="bg-[#2e2550] rounded-full px-12 py-2 uppercase text-white shadow-sm">
+              Login
+            </button>
+          </Modal.Open>
+          <Modal.Body name="authentication">
+            <Authentication />
+          </Modal.Body>
+        </Modal>
       </div>
     </div>
   );

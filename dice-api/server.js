@@ -7,12 +7,12 @@ const Web3 = require("web3");
 
 let web3 = new Web3(process.env.RPC);
 // database connection
-// db()
-//   .then(() => console.log("DB Connect successfull"))
-//   .catch((err) => console.log("DB Connect failed!", err));
+db()
+  .then(() => console.log("DB Connect successfull"))
+  .catch((err) => console.log("DB Connect failed!", err));
 
 // lister event
-// listEvent(web3);
+listEvent(web3);
 
 web3.currentProvider.connection.addEventListener("end", () => {
   console.error("WebSocket connection closed unexpectedly");
