@@ -9,6 +9,7 @@ import Spinner from "./components/Spinner";
 import { BalanceProvider } from "./context/BalanceContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicdRoute from "./components/PublicRoute";
+import StakingLayout from "./components/StakingLayout";
 
 const AppLayout = lazy(() => import("./components/AppLayout"));
 const AdminLayout = lazy(() => import("./components/admin/AdminLayout"));
@@ -20,6 +21,7 @@ const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const Profile = lazy(() => import("./pages/Profile"));
 const AdminWithdrawable = lazy(() => import("./pages/AdminWithdrawable"));
 const AdminDeposit = lazy(() => import("./pages/AdminDeposit"));
+const Staking = lazy(() => import("./pages/Staking"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -59,8 +61,10 @@ function App() {
                   }
                 />
 
-                <Route path="/staking" element={<ComingSoon />} />
                 <Route path="*" element={<PageNotFound />} />
+              </Route>
+              <Route path="/staking" element={<StakingLayout />}>
+                <Route index element={<Staking />} />
               </Route>
               <Route
                 path="/admin"

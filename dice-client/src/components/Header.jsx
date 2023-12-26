@@ -26,7 +26,7 @@ function Header() {
 
   return (
     <header className="p-0">
-      <div className="flex items-center justify-between bg-[#432663] px-3 shadow-md">
+      <div className="flex items-center justify-between bg-[#432663] px-3 shadow-[0px_4px_4px_0px_#00000040]">
         <div className="flex items-center gap-4">
           <Link to="/">
             <img
@@ -35,19 +35,19 @@ function Header() {
               className="hidden md:block h-10 md:h-16"
             />
           </Link>
-          <div className="hidden md:flex items-center gap-7 bg-[#2e2550] h-fit px-4 py-2 rounded-2xl shadow-[0px_4px_4px_0px_#00000040]">
+          <div className="hidden md:flex items-center gap-7 h-fit px-4 py-2 rounded-2xl ">
             <Link to="/">
-              <button className="flex items-center gap-2 text-white">
-                <img src="/icons/games.png" alt="" className="h-7" />
-                <span className="text-base font-extralight uppercase mt-1">
+              <button className="button flex gap-2 items-center !px-4 !py-2">
+                <img src="/icons/games.png" alt="" className="w-5 lg:w-6" />
+                <span className="uppercase text-sm lg:text-base font-extralight">
                   Games
                 </span>
               </button>
             </Link>
             <Link to="/staking">
-              <button className="flex items-center gap-2 text-white">
-                <img src="/icons/staking.png" alt="" className="h-7" />
-                <span className="text-base font-extralight uppercase">
+              <button className="button flex gap-2 items-center !px-4 !py-2">
+                <img src="/icons/staking.png" alt="" className="w-5 lg:w-6" />
+                <span className="uppercase text-sm lg:text-base font-extralight">
                   Staking
                 </span>
               </button>
@@ -56,9 +56,9 @@ function Header() {
               to="https://www.dexview.com/bsc/0xe1d0065c4cd16C14C539547bac404cA6F586b8ce"
               target="_blank"
             >
-              <button className="flex items-center gap-2 text-white">
-                <img src="/icons/trade.png" alt="" className="h-7" />
-                <span className="text-base font-extralight uppercase">
+              <button className="button flex gap-2 items-center !px-4 !py-2">
+                <img src="/icons/trade.png" alt="" className="w-5 lg:w-6" />
+                <span className="uppercase text-sm lg:text-base font-extralight">
                   Trade
                 </span>
               </button>
