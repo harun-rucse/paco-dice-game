@@ -12,9 +12,9 @@ db()
   .catch((err) => console.log("DB Connect failed!", err));
 
 // lister event
-listEvent(web3);
+// listEvent(web3);
 
-web3.currentProvider.connection.addEventListener("end", () => {
+web3?.currentProvider?.connection.addEventListener("end", () => {
   console.error("WebSocket connection closed unexpectedly");
   web3 = new Web3(process.env.RPC);
   listEvent(web3);

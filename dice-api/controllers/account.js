@@ -370,6 +370,14 @@ const createManualDeposit = catchAsync(async (req, res, next) => {
       console.log(decodedInput[0]);
       // get the account of the address from the database
       const account = await Account.findOne({ publicKey: decodedInput[0] });
+
+      // TODO: add to the account balance
+      account[getTokenNameBasedAddresss(trx.to)] =
+        Number(account[getTokenNameBasedAddresss(trx.to)]) +
+        Number(web3.utils.fromWei(decodedInput[1], "ether"));
+
+      await account.save();
+
       if (!account) {
         return next(new AppError("Account not found", 404));
       }
