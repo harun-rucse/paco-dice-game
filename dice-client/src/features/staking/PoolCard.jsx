@@ -6,6 +6,7 @@ function SinglePool({ icon, title, subTitle, name }) {
         <p className="text-white lg:text-xl">
           {new Intl.NumberFormat("en-US", {
             maximumFractionDigits: 8,
+            minimumIntegerDigits: 4,
           }).format(title)}
           <span className="text-[#b4b3b3] pl-3">{name}</span>
         </p>
@@ -20,36 +21,36 @@ function SinglePool({ icon, title, subTitle, name }) {
   );
 }
 
-function PoolCard() {
+function PoolCard({ btc, paco, eth, bnb, usdt }) {
   return (
     <div className="pt-6 space-y-5">
       <SinglePool
         icon="/tokens/btc.png"
-        title="1.00251975"
+        title={btc}
         subTitle="26208"
         name="BTC"
       />
       <SinglePool
         icon="/tokens/paco.png"
-        title="28486211698"
+        title={paco}
         subTitle="130011"
         name="PACO"
       />
       <SinglePool
         icon="/tokens/eth.png"
-        title="28486211698"
+        title={eth}
         subTitle="130011"
         name="ETH"
       />
       <SinglePool
         icon="/tokens/bnb.png"
-        title="28486211698"
+        title={bnb}
         subTitle="130011"
         name="BNB"
       />
       <SinglePool
         icon="/tokens/usdt.png"
-        title="1.00251975"
+        title={usdt}
         subTitle="130011"
         name="USDT"
       />
