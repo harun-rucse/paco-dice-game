@@ -7,8 +7,11 @@ export function useCreateGame() {
 
   const { isLoading, mutate: create } = useMutation({
     mutationFn: createGameApi,
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries(["user"]);
+      if (data.status === "lost") {
+        queryClient.invalidateQueries(["stake-pool"]);
+      }
     },
     onError: (error) => {
       toast.error(error.message);

@@ -14,7 +14,7 @@ const winAudio = new Audio("/audio/win.mp3");
 const loseAudio = new Audio("/audio/lose.mp3");
 
 async function checkMaxBetAmount(amount, coinName) {
-  console.log("coinName", coinName);
+  // console.log("coinName", coinName);
   if (coinName === "btc") {
     const _btcPrice = await getCoinPrice("btc");
     const _betedUsd = amount * _btcPrice;
@@ -32,7 +32,7 @@ async function checkMaxBetAmount(amount, coinName) {
   } else if (coinName === "eth") {
     const _ethPrice = await getCoinPrice("eth");
     const _betedUsd = amount * _ethPrice;
-    console.log("_betedUsd", _betedUsd);
+    // console.log("_betedUsd", _betedUsd);
     if (_betedUsd > 100) {
       console.log("false");
       return false;
@@ -260,7 +260,7 @@ function DiceGame() {
                       loseAudio.play();
 
                       lossAmount += Number(betAmountRef.current);
-                      console.log("lossAmount", lossAmount);
+                      // console.log("lossAmount", lossAmount);
 
                       if (!onLossIncrease)
                         setBetAmount(parseFloat(initialBetAmount).toFixed(8));
@@ -282,7 +282,7 @@ function DiceGame() {
                       winAmount +=
                         Number(payoutRef.current) -
                         Number(betAmountRef.current);
-                      console.log("winAmount", winAmount);
+                      // console.log("winAmount", winAmount);
                       // based on percentage of win amount set bet amount
                       if (onWinReset) {
                         setBetAmount((betAmount) => {
@@ -298,7 +298,7 @@ function DiceGame() {
                     }
                   },
                   onError: (error) => {
-                    console.log("FAIL");
+                    // console.log("FAIL");
                     setStopRoll(false);
                     clearInterval(loopRef.current);
                   },
@@ -317,7 +317,7 @@ function DiceGame() {
                 betAmount,
                 currentBalance?.name?.toLowerCase()
               );
-              console.log("check", check);
+              // console.log("check", check);
               if (!check) {
                 setStopRoll(false);
                 toast.error("Bet amount must be less than 100$");

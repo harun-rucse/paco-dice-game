@@ -22,3 +22,13 @@ export const getStakePayouts = async () => {
     throw new Error(err?.response?.data?.message);
   }
 };
+
+export const getStakePool = async () => {
+  try {
+    const { data } = await api.get("/stakes/pool");
+
+    return data;
+  } catch (err) {
+    throw new Error(err?.response?.data?.message);
+  }
+};

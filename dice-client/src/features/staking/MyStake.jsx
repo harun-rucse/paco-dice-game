@@ -71,11 +71,11 @@ function MyStake() {
       </p>
 
       <PoolCard
-        btc={payouts.btc}
-        paco={payouts.paco}
-        eth={payouts.eth}
-        bnb={payouts.bnb}
-        usdt={payouts.usdt}
+        btc={payouts?.btc || 0}
+        paco={payouts?.paco || 0}
+        eth={payouts?.eth || 0}
+        bnb={payouts?.bnb || 0}
+        usdt={payouts?.usdt || 0}
       />
 
       <button className="button self-center mt-12 !bg-[#d11f1f] !px-12 !py-2">

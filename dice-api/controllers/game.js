@@ -1,5 +1,6 @@
 const Game = require("../models/Game");
 const Account = require("../models/Account");
+const StakePool = require("../models/StakePool");
 const { generateUniqueBet, generateRandomNumber } = require("../utils");
 const catchAsync = require("../utils/catch-async");
 const AppError = require("../utils/app-error");
@@ -150,6 +151,23 @@ const createGame = catchAsync(async (req, res, next) => {
   if (game.status === "win") {
     game.rewardAmount = Number(betAmount) * multiplier;
     account[paymentType] = account[paymentType] + game.rewardAmount;
+  }
+
+  // If lost add 60% to the stake pool
+  if (game.status === "lost") {
+    const amount = Number(betAmount) * 0.6;
+
+    const stakePool = await StakePool.findOne();
+
+    if (!stakePool) {
+      const newStakePool = new StakePool();
+      newStakePool[paymentType] = newStakePool[paymentType] + amount;
+      await newStakePool.save();
+    } else {
+      stakePool[paymentType] = stakePool[paymentType] + amount;
+      await stakePool.save();
+    }
+
   }
 
   await account.save();
