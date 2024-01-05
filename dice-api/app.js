@@ -4,6 +4,7 @@ const helmet = require("helmet");
 const authRoutes = require("./routes/authRoutes");
 const gameRoutes = require("./routes/gameRoutes");
 const accountRoutes = require("./routes/accountRoutes");
+const stakeRoutes = require("./routes/stakeRoutes");
 const globalErrorHandler = require("./controllers/error");
 const AppError = require("./utils/app-error");
 
@@ -30,6 +31,7 @@ app.use(express.json({ limit: "10kb" }));
 app.use("/api/auth", authRoutes);
 app.use("/api/games", gameRoutes);
 app.use("/api/account", accountRoutes);
+app.use("/api/stakes", stakeRoutes);
 
 app.all("*", (req, res, next) => {
   next(

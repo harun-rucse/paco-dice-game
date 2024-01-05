@@ -1,18 +1,29 @@
 import PoolCard from "./PoolCard";
 import StatItem from "./StatItem";
 import { useCurrentUser } from "../authentication/useCurrentUser";
+import useGetStakePool from "./useGetStakePool";
+import Spinner from "../../components/Spinner";
 
 function Pools() {
   const { isAuthenticated, isLoading } = useCurrentUser();
+  const { isLoading: isFetching, pool } = useGetStakePool();
+
+  if (isFetching) return <Spinner />;
 
   return (
-    <div className="bg-[#3c2f61] rounded-2xl px-6 py-4">
+    <div className="bg-[#3c2f61] rounded-2xl px-6 py-6">
       <div className="flex items-center gap-8 lg:gap-16 border-b border-[#797878] w-full pb-2">
         <StatItem title="Total pool" subTitle="$27,508" />
         <StatItem title="Gaming pool" subTitle="$26,672" />
       </div>
 
-      <PoolCard />
+      <PoolCard
+        btc={pool?.btc || 0}
+        paco={pool?.paco || 0}
+        eth={pool?.eth || 0}
+        bnb={pool?.bnb || 0}
+        usdt={pool?.usdt || 0}
+      />
 
       <div className="mt-8 flex flex-col lg:flex-row items-center justify-between border-t border-[#797878] pt-4">
         <div className="flex items-center gap-4">

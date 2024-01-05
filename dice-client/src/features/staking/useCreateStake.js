@@ -1,17 +1,16 @@
 import toast from "react-hot-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createGame as createGameApi } from "../../services/apiGame";
+import { createStake as createStakeApi } from "../../services/apiStake";
 
-export function useCreateGame() {
+export function useCreateStake() {
   const queryClient = useQueryClient();
 
   const { isLoading, mutate: create } = useMutation({
-    mutationFn: createGameApi,
-    onSuccess: (data) => {
+    mutationFn: createStakeApi,
+    onSuccess: () => {
+      toast.success("Stake successful");
       queryClient.invalidateQueries(["user"]);
-      if (data.status === "lost") {
-        queryClient.invalidateQueries(["stake-pool"]);
-      }
+      queryClient.invalidateQueries(["stake-payouts"]);
     },
     onError: (error) => {
       toast.error(error.message);
