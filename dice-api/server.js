@@ -4,6 +4,7 @@ const app = require("./app");
 const db = require("./config/db");
 const { listEvent } = require("./services/event-service");
 const Web3 = require("web3");
+const scheduleStakingJob = require("./utils/scheduleStakingJob");
 
 let web3 = new Web3(process.env.RPC);
 // database connection
@@ -13,6 +14,9 @@ db()
 
 // lister event
 // listEvent(web3);
+
+// Schedule automatice transfer stake pool to stake holder
+scheduleStakingJob();
 
 web3?.currentProvider?.connection.addEventListener("end", () => {
   console.error("WebSocket connection closed unexpectedly");

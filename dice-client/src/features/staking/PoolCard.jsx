@@ -1,20 +1,16 @@
+import { numberFormat, currencyFormat } from "../../utils/format";
+
 function SinglePool({ icon, title, subTitle, name }) {
   return (
     <div className="flex gap-3 items-center">
       <img src={icon} alt="" className="w-8 lg:w-10 object-contain" />
       <div className="flex flex-col">
         <p className="text-white lg:text-xl">
-          {new Intl.NumberFormat("en-US", {
-            maximumFractionDigits: 8,
-            minimumIntegerDigits: 4,
-          }).format(title)}
+          {numberFormat(title)}
           <span className="text-[#b4b3b3] pl-3">{name}</span>
         </p>
         <span className="text-[#b4b3b3] lg:text-lg -mt-1">
-          {new Intl.NumberFormat("en-US", {
-            style: "currency",
-            currency: "USD",
-          }).format(subTitle)}
+          {currencyFormat(subTitle)}
         </span>
       </div>
     </div>

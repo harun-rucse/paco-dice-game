@@ -19,6 +19,7 @@
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^7.6.3",
+    "node-cron": "^3.0.3",
     "nodemailer": "^6.9.7",
     "unique-username-generator": "^1.2.0",
     "web3": "1.7.5"

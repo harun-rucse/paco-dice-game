@@ -4,6 +4,14 @@ const StakePool = require("../models/StakePool");
 const AppError = require("../utils/app-error");
 const catchAsync = require("../utils/catch-async");
 
+const _calcStakePercentage = (amount, totalAmount) => {
+  return (100 * amount) / totalAmount;
+};
+
+const _calcStakeReward = (amount, stakePercentage) => {
+  return amount * 0.01 * stakePercentage;
+};
+
 /**
  * @desc    Create new stake
  * @route   POST /api/stakes
@@ -46,7 +54,7 @@ const createStake = catchAsync(async (req, res, next) => {
  * @route   GET /api/stakes/payouts
  * @access  Private
  */
-const getStakePayouts = catchAsync(async (req, res, next) => {
+const getMyStakePayouts = catchAsync(async (req, res, next) => {
   const stake = await Stake.findOne({ account: req.account._id });
 
   res.status(200).json(stake);
@@ -63,8 +71,65 @@ const getStakePool = catchAsync(async (req, res, next) => {
   res.status(200).json(stakePool);
 });
 
+// Schedule of Transfer 1% of stake pool to the stake holder
+const transferPoolToStakeHolder = async () => {
+  // const stakeHolders = await Stake.find();
+  const result = await Stake.aggregate([
+    {
+      $group: {
+        _id: null,
+        totalAmount: { $sum: "$amount" },
+      },
+    },
+  ]);
+
+  const totalAmount = result?.[0]?.totalAmount;
+
+  const stakePool = await StakePool.findOne();
+  const stakeHolders = await Stake.find();
+
+  await Promise.all(
+    stakeHolders.map(async (stakeHolder) => {
+      const stakePercentage = _calcStakePercentage(
+        stakeHolder?.amount,
+        totalAmount
+      );
+
+      // Calculate paco reward from pool for this stake holder
+      const rewardPaco = _calcStakeReward(stakePool.paco, stakePercentage);
+      stakeHolder.paco += rewardPaco;
+      stakePool.paco -= rewardPaco;
+
+      // Calculate btc reward from pool for this stake holder
+      const rewardBtc = _calcStakeReward(stakePool.btc, stakePercentage);
+      stakeHolder.btc += rewardBtc;
+      stakePool.btc -= rewardBtc;
+
+      // Calculate eth reward from pool for this stake holder
+      const rewardEth = _calcStakeReward(stakePool.eth, stakePercentage);
+      stakeHolder.eth += rewardEth;
+      stakePool.eth -= rewardEth;
+
+      // Calculate bnb reward from pool for this stake holder
+      const rewardBnb = _calcStakeReward(stakePool.bnb, stakePercentage);
+      stakeHolder.bnb += rewardBnb;
+      stakePool.bnb -= rewardBnb;
+
+      // Calculate usdt reward from pool for this stake holder
+      const rewardUsdt = _calcStakeReward(stakePool.usdt, stakePercentage);
+      stakeHolder.usdt += rewardUsdt;
+      stakePool.usdt -= rewardUsdt;
+
+      await stakeHolder.save();
+    })
+  );
+
+  await stakePool.save();
+};
+
 module.exports = {
   createStake,
-  getStakePayouts,
+  getMyStakePayouts,
   getStakePool,
+  transferPoolToStakeHolder,
 };

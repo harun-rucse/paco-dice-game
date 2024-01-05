@@ -4,6 +4,7 @@ import PoolCard from "./PoolCard";
 import { useCreateStake } from "./useCreateStake";
 import Spinner from "../../components/Spinner";
 import useGetPayouts from "./useGetPayouts";
+import { numberFormat, currencyFormat } from "../../utils/format";
 
 function MyStake() {
   const [stakeAmount, setStakeAmount] = useState("");
@@ -45,8 +46,10 @@ function MyStake() {
             <p className="uppercase lg:text-xl text-[#B4B3B3]">
               MY STAKED PACO
             </p>
-            <p className="text-white lg:text-xl">26 798 101 458</p>
-            <p className="text-[#B4B3B3] lg:text-lg">$1135,12</p>
+            <p className="text-white lg:text-xl">
+              {numberFormat(payouts?.amount)}
+            </p>
+            <p className="text-[#B4B3B3] lg:text-lg">{currencyFormat(3524)}</p>
           </div>
         </div>
         <div className="flex items-center gap-4">
