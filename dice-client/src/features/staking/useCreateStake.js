@@ -11,6 +11,7 @@ export function useCreateStake() {
       toast.success("Stake successful");
       queryClient.invalidateQueries(["user"]);
       queryClient.invalidateQueries(["stake-payouts"]);
+      queryClient.invalidateQueries(["stake-pool"]);
     },
     onError: (error) => {
       toast.error(error.message);

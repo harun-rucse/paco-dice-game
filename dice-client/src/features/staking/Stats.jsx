@@ -1,9 +1,10 @@
 import Countdown from "react-countdown";
 import StatItem from "./StatItem";
+import { currencyFormat, numberFormat } from "../../utils/format";
 
 const formatNumber = (num) => (num < 10 ? `0${num}` : num);
 
-function Stats() {
+function Stats({ totalPool }) {
   // Calculate the time until the next 12:00 AM
   const now = new Date();
   const midnight = new Date();
@@ -18,8 +19,11 @@ function Stats() {
 
   return (
     <div className="bg-[#3c2f61] rounded-2xl px-6 py-4 flex flex-wrap items-center justify-between gap-4">
-      <StatItem title="Total next payout" subTitle="$275,08" />
-      <StatItem title="Next Paco burn" subTitle="2 623 144" icon={true} />
+      <StatItem
+        title="Total next payout"
+        subTitle={currencyFormat(totalPool * 0.01)}
+      />
+      <StatItem title="Next Paco burn" subTitle={numberFormat(0)} icon={true} />
       <StatItem
         title="Trigger countdown"
         subTitle={

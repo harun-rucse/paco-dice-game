@@ -67,13 +67,22 @@ const getMyStakePayouts = catchAsync(async (req, res, next) => {
  */
 const getStakePool = catchAsync(async (req, res, next) => {
   const stakePool = await StakePool.findOne();
+  const result = await Stake.aggregate([
+    {
+      $group: {
+        _id: null,
+        totalAmount: { $sum: "$amount" },
+      },
+    },
+  ]);
 
-  res.status(200).json(stakePool);
+  const totalAmount = result?.[0]?.totalAmount;
+
+  res.status(200).json({ ...stakePool._doc, totalStakePaco: totalAmount });
 });
 
 // Schedule of Transfer 1% of stake pool to the stake holder
 const transferPoolToStakeHolder = async () => {
-  // const stakeHolders = await Stake.find();
   const result = await Stake.aggregate([
     {
       $group: {
