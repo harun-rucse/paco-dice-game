@@ -1,4 +1,7 @@
+import { useEffect, useState } from "react";
 import { numberFormat, currencyFormat } from "../../utils/format";
+import { getCoinPrice } from "../../utils/tokenPrice";
+import { ImSpinner3 } from "react-icons/im";
 
 function SinglePool({ icon, title, subTitle, name }) {
   return (
@@ -17,39 +20,84 @@ function SinglePool({ icon, title, subTitle, name }) {
   );
 }
 
-function PoolCard({ btc, paco, eth, bnb, usdt }) {
+function PoolCard({ btc, paco, eth, bnb, usdt, setTotalPool = () => {} }) {
+  const [loading, setLoading] = useState(false);
+  const [usdBtc, setUsdBtc] = useState(0);
+  const [usdPaco, setUsdPaco] = useState(0);
+  const [usdEth, setUsdEth] = useState(0);
+  const [usdBnb, setUsdBnb] = useState(0);
+  const [usdUsdt, setUsdUsdt] = useState(0);
+
+  useEffect(() => {
+    const convertInUSDPrice = async () => {
+      setLoading(true);
+      const btcPrice = await getCoinPrice("btc");
+      const pacoPrice = await getCoinPrice("paco");
+      const ethPrice = await getCoinPrice("eth");
+      const bnbPrice = await getCoinPrice("bnb");
+      const usdtPrice = await getCoinPrice("usdt");
+
+      const btcUSD = Number(btcPrice * btc);
+      const pacoUSD = Number(pacoPrice * paco);
+      const ethUSD = Number(ethPrice * eth);
+      const bnbUSD = Number(bnbPrice * bnb);
+      const usdtUSD = Number(usdtPrice * usdt);
+
+      // Update total pool price in usd
+      setTotalPool(btcUSD + pacoUSD + ethUSD + bnbUSD + usdtUSD);
+
+      setUsdBtc(btcUSD);
+      setUsdPaco(pacoUSD);
+      setUsdEth(ethUSD);
+      setUsdBnb(bnbUSD);
+      setUsdUsdt(usdtUSD);
+      setLoading(false);
+    };
+
+    convertInUSDPrice();
+  }, [btc, paco, eth, bnb, usdt]);
+
   return (
     <div className="pt-6 space-y-5">
-      <SinglePool
-        icon="/tokens/btc.png"
-        title={btc}
-        subTitle="26208"
-        name="BTC"
-      />
-      <SinglePool
-        icon="/tokens/paco.png"
-        title={paco}
-        subTitle="130011"
-        name="PACO"
-      />
-      <SinglePool
-        icon="/tokens/eth.png"
-        title={eth}
-        subTitle="130011"
-        name="ETH"
-      />
-      <SinglePool
-        icon="/tokens/bnb.png"
-        title={bnb}
-        subTitle="130011"
-        name="BNB"
-      />
-      <SinglePool
-        icon="/tokens/usdt.png"
-        title={usdt}
-        subTitle="130011"
-        name="USDT"
-      />
+      {loading ? (
+        <div className="flex items-center justify-center gap-4 h-[20rem]">
+          <ImSpinner3 className="animate-spin text-4xl text-white" />
+          <span className="text-2xl text-white">Loading...</span>
+        </div>
+      ) : (
+        <>
+          <SinglePool
+            icon="/tokens/btc.png"
+            title={btc}
+            subTitle={usdBtc}
+            name="BTC"
+          />
+          <SinglePool
+            icon="/tokens/paco.png"
+            title={paco}
+            subTitle={usdPaco}
+            name="PACO"
+          />
+          <SinglePool
+            icon="/tokens/eth.png"
+            title={eth}
+            subTitle={usdEth}
+            name="ETH"
+          />
+          <SinglePool
+            icon="/tokens/bnb.png"
+            title={bnb}
+            subTitle={usdBnb}
+            name="BNB"
+          />
+          <SinglePool
+            icon="/tokens/usdt.png"
+            title={usdt}
+            subTitle={usdUsdt}
+            name="USDT"
+          />
+        </>
+      )}
     </div>
   );
 }

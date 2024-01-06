@@ -34,7 +34,7 @@ async function checkMaxBetAmount(amount, coinName) {
     const _betedUsd = amount * _ethPrice;
     // console.log("_betedUsd", _betedUsd);
     if (_betedUsd > 100) {
-      console.log("false");
+      // console.log("false");
       return false;
     } else {
       return true;
@@ -155,7 +155,7 @@ function DiceGame() {
               betAmount,
               currentBalance?.name?.toLowerCase()
             );
-            console.log("check", check);
+            // console.log("check", check);
             if (!check) {
               setStopRoll(false);
               toast.error("Bet amount must be less than 100$");

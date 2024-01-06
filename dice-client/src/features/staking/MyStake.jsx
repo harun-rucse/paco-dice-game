@@ -47,7 +47,7 @@ function MyStake() {
               MY STAKED PACO
             </p>
             <p className="text-white lg:text-xl">
-              {numberFormat(payouts?.amount)}
+              {numberFormat(payouts?.amount || 0)}
             </p>
             <p className="text-[#B4B3B3] lg:text-lg">{currencyFormat(3524)}</p>
           </div>
