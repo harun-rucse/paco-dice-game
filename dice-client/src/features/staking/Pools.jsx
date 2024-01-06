@@ -3,11 +3,9 @@ import StatItem from "./StatItem";
 import { useCurrentUser } from "../authentication/useCurrentUser";
 import useGetStakePool from "./useGetStakePool";
 import Spinner from "../../components/Spinner";
-import { useState } from "react";
 import { currencyFormat, numberFormat } from "../../utils/format";
 
-function Pools() {
-  const [totalPool, setTotalPool] = useState(0);
+function Pools({ totalPool, setTotalPool }) {
   const { isAuthenticated, isLoading } = useCurrentUser();
   const { isLoading: isFetching, pool } = useGetStakePool();
 
@@ -17,7 +15,7 @@ function Pools() {
     <div className="bg-[#3c2f61] rounded-2xl px-6 py-6">
       <div className="flex items-center gap-8 lg:gap-16 border-b border-[#797878] w-full pb-2">
         <StatItem title="Total pool" subTitle={currencyFormat(totalPool)} />
-        <StatItem title="Gaming pool" subTitle="$26,672" />
+        <StatItem title="Gaming pool" subTitle={currencyFormat(totalPool)} />
       </div>
 
       <PoolCard
