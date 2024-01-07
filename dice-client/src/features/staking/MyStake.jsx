@@ -1,30 +1,18 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useBalance } from "../../context/BalanceContext";
 import PoolCard from "./PoolCard";
 import { useCreateStake } from "./useCreateStake";
 import Spinner from "../../components/Spinner";
 import useGetPayouts from "./useGetPayouts";
 import { numberFormat, currencyFormat } from "../../utils/format";
-import { getCoinPrice } from "../../utils/tokenPrice";
+import { useGetUsdPricePaco } from "./useGetUsdPricePaco";
 
 function MyStake() {
   const [stakeAmount, setStakeAmount] = useState("");
-  const [pacoUSD, setPacoUSD] = useState(0);
   const { currentBalance } = useBalance();
   const { isLoading, create } = useCreateStake();
   const { isLoading: isFetching, payouts } = useGetPayouts();
-
-  // Get usd price for paco stake
-  useEffect(() => {
-    const convertInUSDPrice = async () => {
-      const pacoPrice = await getCoinPrice("paco");
-      const pacoUSD = Number(pacoPrice * payouts?.amount);
-
-      setPacoUSD(pacoUSD);
-    };
-
-    convertInUSDPrice();
-  }, [payouts?.amount]);
+  const { pacoUSD } = useGetUsdPricePaco(payouts?.amount);
 
   function handleChange(e) {
     const val = e.target.value;

@@ -9,7 +9,7 @@ const _calcStakePercentage = (amount, totalAmount) => {
 };
 
 const _calcStakeReward = (amount, stakePercentage) => {
-  return amount * 0.01 * stakePercentage;
+  return amount * 0.01 * (stakePercentage / 100);
 };
 
 /**
@@ -81,6 +81,50 @@ const getStakePool = catchAsync(async (req, res, next) => {
   res.status(200).json({ ...stakePool._doc, totalStakePaco: totalAmount });
 });
 
+/**
+ * @desc    Get stake calculator
+ * @route   GET /api/stakes/calculator/?paco=0
+ * @access  Private
+ */
+const getStakeCalculator = catchAsync(async (req, res, next) => {
+  const paco = Number(req.query.paco) || 0;
+  if (!paco) return next(new AppError("Paco amount is required!", 400));
+
+  const result = await Stake.aggregate([
+    {
+      $group: {
+        _id: null,
+        totalAmount: { $sum: "$amount" },
+      },
+    },
+  ]);
+
+  const totalAmount = result?.[0]?.totalAmount;
+
+  const stakePool = await StakePool.findOne();
+
+  const stakePercentage = _calcStakePercentage(paco, totalAmount + paco);
+
+  // Calculate paco reward from pool for this stake holder
+  const rewardPaco = _calcStakeReward(stakePool.paco, stakePercentage);
+
+  // Calculate btc reward from pool for this stake holder
+  const rewardBtc = _calcStakeReward(stakePool.btc, stakePercentage);
+
+  // Calculate eth reward from pool for this stake holder
+  const rewardEth = _calcStakeReward(stakePool.eth, stakePercentage);
+
+  // Calculate bnb reward from pool for this stake holder
+  const rewardBnb = _calcStakeReward(stakePool.bnb, stakePercentage);
+
+  // Calculate usdt reward from pool for this stake holder
+  const rewardUsdt = _calcStakeReward(stakePool.usdt, stakePercentage);
+
+  res
+    .status(200)
+    .json({ rewardPaco, rewardBtc, rewardEth, rewardBnb, rewardUsdt });
+});
+
 // Schedule of Transfer 1% of stake pool to the stake holder
 const transferPoolToStakeHolder = async () => {
   const result = await Stake.aggregate([
@@ -141,4 +185,5 @@ module.exports = {
   getMyStakePayouts,
   getStakePool,
   transferPoolToStakeHolder,
+  getStakeCalculator,
 };

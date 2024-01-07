@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { numberFormat, currencyFormat } from "../../utils/format";
 import { getCoinPrice } from "../../utils/tokenPrice";
-import { ImSpinner3 } from "react-icons/im";
+import LoadingSpinner from "../../components/LoadingSpinner";
+import { addition, multiply } from "../../utils/decimal";
 
 function SinglePool({ icon, title, subTitle, name }) {
   return (
@@ -22,6 +23,12 @@ function SinglePool({ icon, title, subTitle, name }) {
 
 function PoolCard({ btc, paco, eth, bnb, usdt, setTotalPool = () => {} }) {
   const [loading, setLoading] = useState(false);
+  const [btcPrice, setBtcPrice] = useState(0);
+  const [pacoPrice, setPacoPrice] = useState(0);
+  const [ethPrice, setEthPrice] = useState(0);
+  const [bnbPrice, setBnbPrice] = useState(0);
+  const [usdtPrice, setUsdtPrice] = useState(0);
+
   const [usdBtc, setUsdBtc] = useState(0);
   const [usdPaco, setUsdPaco] = useState(0);
   const [usdEth, setUsdEth] = useState(0);
@@ -31,39 +38,58 @@ function PoolCard({ btc, paco, eth, bnb, usdt, setTotalPool = () => {} }) {
   useEffect(() => {
     const convertInUSDPrice = async () => {
       setLoading(true);
+
       const btcPrice = await getCoinPrice("btc");
       const pacoPrice = await getCoinPrice("paco");
       const ethPrice = await getCoinPrice("eth");
       const bnbPrice = await getCoinPrice("bnb");
       const usdtPrice = await getCoinPrice("usdt");
 
-      const btcUSD = Number(btcPrice * btc);
-      const pacoUSD = Number(pacoPrice * paco);
-      const ethUSD = Number(ethPrice * eth);
-      const bnbUSD = Number(bnbPrice * bnb);
-      const usdtUSD = Number(usdtPrice * usdt);
+      setBtcPrice(btcPrice);
+      setPacoPrice(pacoPrice);
+      setEthPrice(ethPrice);
+      setBnbPrice(bnbPrice);
+      setUsdtPrice(usdtPrice);
 
-      // Update total pool price in usd
-      setTotalPool(btcUSD + pacoUSD + ethUSD + bnbUSD + usdtUSD);
-
-      setUsdBtc(btcUSD);
-      setUsdPaco(pacoUSD);
-      setUsdEth(ethUSD);
-      setUsdBnb(bnbUSD);
-      setUsdUsdt(usdtUSD);
       setLoading(false);
     };
 
     convertInUSDPrice();
-  }, [btc, paco, eth, bnb, usdt]);
+  }, []);
+
+  useEffect(() => {
+    const btcUSD = multiply(btcPrice, btc);
+    const pacoUSD = multiply(pacoPrice, paco);
+    const ethUSD = multiply(ethPrice, eth);
+    const bnbUSD = multiply(bnbPrice, bnb);
+    const usdtUSD = multiply(usdtPrice, usdt);
+
+    // Update total pool price in usd
+    setTotalPool(addition(btcUSD, pacoUSD, ethUSD, bnbUSD, usdtUSD));
+
+    setUsdBtc(btcUSD);
+    setUsdPaco(pacoUSD);
+    setUsdEth(ethUSD);
+    setUsdBnb(bnbUSD);
+    setUsdUsdt(usdtUSD);
+  }, [
+    btcPrice,
+    pacoPrice,
+    ethPrice,
+    bnbPrice,
+    usdtPrice,
+    btc,
+    paco,
+    eth,
+    bnb,
+    usdt,
+    setTotalPool,
+  ]);
 
   return (
     <div className="pt-6 space-y-5">
       {loading ? (
-        <div className="flex items-center justify-center gap-4 h-[20rem]">
-          <ImSpinner3 className="animate-spin text-4xl text-white" />
-          <span className="text-2xl text-white">Loading...</span>
-        </div>
+        <LoadingSpinner />
       ) : (
         <>
           <SinglePool
