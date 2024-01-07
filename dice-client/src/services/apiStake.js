@@ -32,3 +32,13 @@ export const getStakePool = async () => {
     throw new Error(err?.response?.data?.message);
   }
 };
+
+export const getStakeCalculator = async (paco) => {
+  try {
+    const { data } = await api.get(`/stakes/calculator/?paco=${paco}`);
+
+    return data;
+  } catch (err) {
+    throw new Error(err?.response?.data?.message);
+  }
+};
