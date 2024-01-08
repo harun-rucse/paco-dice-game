@@ -4,24 +4,24 @@ const { Schema, model } = mongoose;
 const stakePoolSchema = new Schema(
   {
     btc: {
-      type: Number,
-      default: 0.0,
+      type: String,
+      default: "0",
     },
     usdt: {
-      type: Number,
-      default: 0.0,
+      type: String,
+      default: "0",
     },
     paco: {
-      type: Number,
-      default: 0.0,
+      type: String,
+      default: "0",
     },
     eth: {
-      type: Number,
-      default: 0.0,
+      type: String,
+      default: "0",
     },
     bnb: {
-      type: Number,
-      default: 0.0,
+      type: String,
+      default: "0",
     },
   },
   {

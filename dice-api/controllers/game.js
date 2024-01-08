@@ -5,6 +5,7 @@ const { generateUniqueBet, generateRandomNumber } = require("../utils");
 const catchAsync = require("../utils/catch-async");
 const AppError = require("../utils/app-error");
 const getCoinPrice = require("../services/token-price-service");
+const decimal = require("../utils/decimal");
 
 /*
 
@@ -155,19 +156,21 @@ const createGame = catchAsync(async (req, res, next) => {
 
   // If lost add 60% to the stake pool
   if (game.status === "lost") {
-    const amount = Number(betAmount) * 0.6;
+    const amount = decimal.multiply(betAmount, 0.6);
 
     const stakePool = await StakePool.findOne();
 
     if (!stakePool) {
       const newStakePool = new StakePool();
-      newStakePool[paymentType] = newStakePool[paymentType] + amount;
+      newStakePool[paymentType] = decimal.addition(
+        newStakePool[paymentType],
+        amount
+      );
       await newStakePool.save();
     } else {
-      stakePool[paymentType] = stakePool[paymentType] + amount;
+      stakePool[paymentType] = decimal.addition(stakePool[paymentType], amount);
       await stakePool.save();
     }
-
   }
 
   await account.save();
