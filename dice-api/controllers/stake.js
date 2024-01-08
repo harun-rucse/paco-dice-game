@@ -4,6 +4,7 @@ const StakePool = require("../models/StakePool");
 const AppError = require("../utils/app-error");
 const catchAsync = require("../utils/catch-async");
 const decimal = require("../utils/decimal");
+const { transfer } = require("../services/transaction-service");
 
 const _calcStakePercentage = (amount, totalAmount) => {
   return decimal.divide(decimal.multiply(100, amount), totalAmount);
@@ -148,6 +149,47 @@ const getStakeCalculator = catchAsync(async (req, res, next) => {
     .json({ rewardPaco, rewardBtc, rewardEth, rewardBnb, rewardUsdt });
 });
 
+/**
+ * @desc    Claim my staking reward
+ * @route   POST /api/stakes/claim
+ * @access  Private
+ */
+const claimMyStakeReward = catchAsync(async (req, res, next) => {
+  const { receivedAddress } = req.body;
+  if (!receivedAddress)
+    return next(new AppError("Received address is required", 400));
+
+  const stake = await Stake.findOne({ account: req.account._id });
+  if (!stake) return next(new AppError("You have no stake yet", 404));
+
+  try {
+    await transfer("btc", receivedAddress, Number(stake.btc));
+    stake.btc = "0";
+  } catch (err) {}
+
+  try {
+    await transfer("paco", receivedAddress, Number(stake.paco));
+    stake.paco = "0";
+  } catch (err) {}
+
+  try {
+    await transfer("eth", receivedAddress, Number(stake.eth));
+    stake.eth = "0";
+  } catch (err) {}
+
+  try {
+    await transfer("bnb", receivedAddress, Number(stake.bnb));
+    stake.bnb = "0";
+  } catch (err) {}
+
+  try {
+    await transfer("usdt", receivedAddress, Number(stake.usdt));
+    stake.usdt = "0";
+  } catch (err) {}
+
+  res.status(200).json({ message: "Stake reward claim successful" });
+});
+
 // Schedule of Transfer 1% of stake pool to the stake holder
 const transferPoolToStakeHolder = async () => {
   const result = await Stake.aggregate([
@@ -218,4 +260,5 @@ module.exports = {
   getStakePool,
   transferPoolToStakeHolder,
   getStakeCalculator,
+  claimMyStakeReward,
 };
