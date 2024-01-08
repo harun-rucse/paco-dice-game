@@ -8,7 +8,7 @@ const stakeSchema = new Schema(
       ref: "Account",
     },
     amount: {
-      type: Number,
+      type: String,
       required: true,
     },
     tokenName: {
@@ -16,24 +16,24 @@ const stakeSchema = new Schema(
       default: "paco",
     },
     btc: {
-      type: Number,
-      default: 0.0,
+      type: String,
+      default: "0",
     },
     usdt: {
-      type: Number,
-      default: 0.0,
+      type: String,
+      default: "0",
     },
     paco: {
-      type: Number,
-      default: 0.0,
+      type: String,
+      default: "0",
     },
     eth: {
-      type: Number,
-      default: 0.0,
+      type: String,
+      default: "0",
     },
     bnb: {
-      type: Number,
-      default: 0.0,
+      type: String,
+      default: "0",
     },
   },
   {

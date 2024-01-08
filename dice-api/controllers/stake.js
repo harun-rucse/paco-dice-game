@@ -3,13 +3,18 @@ const Stake = require("../models/Stake");
 const StakePool = require("../models/StakePool");
 const AppError = require("../utils/app-error");
 const catchAsync = require("../utils/catch-async");
+const decimal = require("../utils/decimal");
+const { transfer } = require("../services/transaction-service");
 
 const _calcStakePercentage = (amount, totalAmount) => {
-  return (100 * amount) / totalAmount;
+  return decimal.divide(decimal.multiply(100, amount), totalAmount);
 };
 
 const _calcStakeReward = (amount, stakePercentage) => {
-  return amount * 0.01 * (stakePercentage / 100);
+  return decimal.multiply(
+    decimal.multiply(amount, 0.01),
+    decimal.divide(stakePercentage, 100)
+  );
 };
 
 /**
@@ -18,11 +23,11 @@ const _calcStakeReward = (amount, stakePercentage) => {
  * @access  Private
  */
 const createStake = catchAsync(async (req, res, next) => {
-  const amount = Number(req.body.amount);
+  const amount = req.body.amount;
   if (!amount) return next(new AppError("Amount is required", 400));
 
   // Check user account has enough balance for stake
-  if (req.account.paco < amount)
+  if (decimal.compare(req.account.paco, amount, "lt"))
     return next(new AppError("Insufficient balance for stake", 400));
 
   const stake = await Stake.findOne({ account: req.account._id });
@@ -32,18 +37,16 @@ const createStake = catchAsync(async (req, res, next) => {
     newStake.account = req.account._id;
     newStake.amount = amount;
     newStake.tokenName = "paco";
-    newStake.paco = amount;
 
     await newStake.save();
   } else {
-    stake.amount += amount;
-    stake.paco += amount;
+    stake.amount = decimal.addition(stake.amount, amount);
     await stake.save();
   }
 
   // Reduce paco amount from account
   const account = await Account.findById(req.account._id);
-  account.paco -= amount;
+  account.paco = decimal.subtract(account.paco, amount);
   await account.save();
 
   res.status(200).json({ message: "Stake successful" });
@@ -71,14 +74,23 @@ const getStakePool = catchAsync(async (req, res, next) => {
     {
       $group: {
         _id: null,
-        totalAmount: { $sum: "$amount" },
+        totalAmount: {
+          $sum: {
+            $convert: {
+              input: "$amount",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
       },
     },
   ]);
 
-  const totalAmount = result?.[0]?.totalAmount;
+  const totalAmount = Number(result?.[0]?.totalAmount) || 0;
 
-  res.status(200).json({ ...stakePool._doc, totalStakePaco: totalAmount });
+  res.status(200).json({ ...stakePool?._doc, totalStakePaco: totalAmount });
 });
 
 /**
@@ -87,23 +99,35 @@ const getStakePool = catchAsync(async (req, res, next) => {
  * @access  Private
  */
 const getStakeCalculator = catchAsync(async (req, res, next) => {
-  const paco = Number(req.query.paco) || 0;
+  const paco = req.query.paco;
   if (!paco) return next(new AppError("Paco amount is required!", 400));
 
   const result = await Stake.aggregate([
     {
       $group: {
         _id: null,
-        totalAmount: { $sum: "$amount" },
+        totalAmount: {
+          $sum: {
+            $convert: {
+              input: "$amount",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
       },
     },
   ]);
 
-  const totalAmount = result?.[0]?.totalAmount;
+  const totalAmount = Number(result?.[0]?.totalAmount) || 0;
 
   const stakePool = await StakePool.findOne();
 
-  const stakePercentage = _calcStakePercentage(paco, totalAmount + paco);
+  const stakePercentage = _calcStakePercentage(
+    paco,
+    decimal.addition(totalAmount, paco)
+  );
 
   // Calculate paco reward from pool for this stake holder
   const rewardPaco = _calcStakeReward(stakePool.paco, stakePercentage);
@@ -125,18 +149,68 @@ const getStakeCalculator = catchAsync(async (req, res, next) => {
     .json({ rewardPaco, rewardBtc, rewardEth, rewardBnb, rewardUsdt });
 });
 
+/**
+ * @desc    Claim my staking reward
+ * @route   POST /api/stakes/claim
+ * @access  Private
+ */
+const claimMyStakeReward = catchAsync(async (req, res, next) => {
+  const { receivedAddress } = req.body;
+  if (!receivedAddress)
+    return next(new AppError("Received address is required", 400));
+
+  const stake = await Stake.findOne({ account: req.account._id });
+  if (!stake) return next(new AppError("You have no stake yet", 404));
+
+  try {
+    await transfer("btc", receivedAddress, Number(stake.btc));
+    stake.btc = "0";
+  } catch (err) {}
+
+  try {
+    await transfer("paco", receivedAddress, Number(stake.paco));
+    stake.paco = "0";
+  } catch (err) {}
+
+  try {
+    await transfer("eth", receivedAddress, Number(stake.eth));
+    stake.eth = "0";
+  } catch (err) {}
+
+  try {
+    await transfer("bnb", receivedAddress, Number(stake.bnb));
+    stake.bnb = "0";
+  } catch (err) {}
+
+  try {
+    await transfer("usdt", receivedAddress, Number(stake.usdt));
+    stake.usdt = "0";
+  } catch (err) {}
+
+  res.status(200).json({ message: "Stake reward claim successful" });
+});
+
 // Schedule of Transfer 1% of stake pool to the stake holder
 const transferPoolToStakeHolder = async () => {
   const result = await Stake.aggregate([
     {
       $group: {
         _id: null,
-        totalAmount: { $sum: "$amount" },
+        totalAmount: {
+          $sum: {
+            $convert: {
+              input: "$amount",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
       },
     },
   ]);
 
-  const totalAmount = result?.[0]?.totalAmount;
+  const totalAmount = Number(result?.[0]?.totalAmount) || 0;
 
   const stakePool = await StakePool.findOne();
   const stakeHolders = await Stake.find();
@@ -150,28 +224,28 @@ const transferPoolToStakeHolder = async () => {
 
       // Calculate paco reward from pool for this stake holder
       const rewardPaco = _calcStakeReward(stakePool.paco, stakePercentage);
-      stakeHolder.paco += rewardPaco;
-      stakePool.paco -= rewardPaco;
+      stakeHolder.paco = decimal.addition(stakeHolder.paco, rewardPaco);
+      stakePool.paco = decimal.subtract(stakePool.paco, rewardPaco);
 
       // Calculate btc reward from pool for this stake holder
       const rewardBtc = _calcStakeReward(stakePool.btc, stakePercentage);
-      stakeHolder.btc += rewardBtc;
-      stakePool.btc -= rewardBtc;
+      stakeHolder.btc = decimal.addition(stakeHolder.btc, rewardBtc);
+      stakePool.btc = decimal.subtract(stakePool.btc, rewardBtc);
 
       // Calculate eth reward from pool for this stake holder
       const rewardEth = _calcStakeReward(stakePool.eth, stakePercentage);
-      stakeHolder.eth += rewardEth;
-      stakePool.eth -= rewardEth;
+      stakeHolder.eth = decimal.addition(stakeHolder.eth, rewardEth);
+      stakePool.eth = decimal.subtract(stakePool.eth, rewardEth);
 
       // Calculate bnb reward from pool for this stake holder
       const rewardBnb = _calcStakeReward(stakePool.bnb, stakePercentage);
-      stakeHolder.bnb += rewardBnb;
-      stakePool.bnb -= rewardBnb;
+      stakeHolder.bnb = decimal.addition(stakeHolder.bnb, rewardBnb);
+      stakePool.bnb = decimal.subtract(stakePool.bnb, rewardBnb);
 
       // Calculate usdt reward from pool for this stake holder
       const rewardUsdt = _calcStakeReward(stakePool.usdt, stakePercentage);
-      stakeHolder.usdt += rewardUsdt;
-      stakePool.usdt -= rewardUsdt;
+      stakeHolder.usdt = decimal.addition(stakeHolder.usdt, rewardUsdt);
+      stakePool.usdt = decimal.subtract(stakePool.usdt, rewardUsdt);
 
       await stakeHolder.save();
     })
@@ -186,4 +260,5 @@ module.exports = {
   getStakePool,
   transferPoolToStakeHolder,
   getStakeCalculator,
+  claimMyStakeReward,
 };

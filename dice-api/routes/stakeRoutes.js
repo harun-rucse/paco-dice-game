@@ -8,5 +8,6 @@ router.post("/", auth, stakeController.createStake);
 router.get("/payouts", auth, stakeController.getMyStakePayouts);
 router.get("/pool", auth, stakeController.getStakePool);
 router.get("/calculator", auth, stakeController.getStakeCalculator);
+router.post("/claim", auth, stakeController.claimMyStakeReward);
 
 module.exports = router;

@@ -33,7 +33,7 @@ function Pools({ totalPool, setTotalPool }) {
             TOTAL STAKED PACO
           </h4>
           <p className="text-white text-sm lg:text-xl">
-            {numberFormat(pool?.totalStakePaco)}
+            {numberFormat(pool?.totalStakePaco || 0)}
           </p>
         </div>
         {!isLoading && !isAuthenticated && (

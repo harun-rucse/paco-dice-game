@@ -140,9 +140,9 @@ function StakingCalculator() {
     {
       icon: "/tokens/usdt.png",
       daily: rewardUsdt,
-      monthly: multiply(rewardUsdt * 30),
-      perQuarter: multiply(rewardUsdt * 90),
-      perYear: multiply(rewardUsdt * 365),
+      monthly: multiply(rewardUsdt, 30),
+      perQuarter: multiply(rewardUsdt, 90),
+      perYear: multiply(rewardUsdt, 365),
     },
   ];
 
