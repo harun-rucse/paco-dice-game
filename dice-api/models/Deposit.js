@@ -8,7 +8,7 @@ const depositSchema = new Schema(
       ref: "Account",
     },
     amount: {
-      type: Number,
+      type: String,
       required: true,
     },
     trxId: {

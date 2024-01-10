@@ -28,7 +28,9 @@ function InforCard({
         const _maxBet = 100 / _price;
 
         setMaxBet(
-          currentBalance?.value > _maxBet ? _maxBet : currentBalance?.value
+          Number(currentBalance?.value) > _maxBet
+            ? _maxBet
+            : Number(currentBalance?.value)
         );
       };
       getCoinPriceData();
@@ -93,7 +95,7 @@ function InforCard({
             <div
               className="text-[#370843] uppercase cursor-pointer text-2xl flex items-center justify-center bg-[#8149b3] border border-[#120425] shadow-[0px_15px_8px_#19032461] rounded-[20px] w-[95px] h-[65px] transition hover:-translate-y-1"
               onClick={() => {
-                if (betAmount * 2 > maxBet) {
+                if (parseFloat(betAmount * 2) > maxBet) {
                   setBetAmount(parseFloat(maxBet).toFixed(8));
                 }
                 setBetAmount(parseFloat(betAmount * 2).toFixed(8));
@@ -104,7 +106,7 @@ function InforCard({
             <div
               className="text-[#370843] uppercase cursor-pointer text-2xl flex items-center justify-center bg-[#8149b3] border border-[#120425] shadow-[0px_15px_8px_#19032461] rounded-[20px] w-[95px] h-[65px] transition hover:-translate-y-1"
               onClick={() => {
-                if (betAmount / 2 < minBet) {
+                if (parseFloat(betAmount / 2) < minBet) {
                   setBetAmount(parseFloat(minBet).toFixed(8));
                 } else {
                   setBetAmount(parseFloat(betAmount / 2).toFixed(8));

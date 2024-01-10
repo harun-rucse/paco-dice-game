@@ -10,6 +10,7 @@ const {
   transfer,
   withdrawableTransfer,
 } = require("../services/transaction-service");
+const decimal = require("../utils/decimal");
 
 const getWeb3 = () => {
   return new Web3(process.env.RPC);
@@ -54,16 +55,22 @@ const withdraw = catchAsync(async (req, res, next) => {
   if (!tokenName || !amount || !address)
     return next(new AppError("TokenName, amount & address is required", 400));
 
-  if (amount <= 0) return next(new AppError("Please select valid amount", 400));
-  if (isValidAmount(tokenName, amount) === false)
+  if (Number(amount) <= 0)
+    return next(new AppError("Please select valid amount", 400));
+  if (!isValidAmount(tokenName, Number(amount)))
     return next(new AppError("Please select valid amount", 400));
   const account = await Account.findOne({ publicKey: req.account.publicKey });
   if (!account) {
     return next(new AppError("Account not found with that public key", 400));
   }
   // console.log(account[tokenName], amount, getFee(tokenName));
-  if (account[tokenName] < Number(amount) + Number(getFee(tokenName))) {
-    return next(new AppError("Insufficent balace for withdraw", 400));
+  const isInsufficientBalance = decimal.compare(
+    account[tokenName],
+    decimal.addition(amount, getFee(tokenName)),
+    "lt"
+  );
+  if (isInsufficientBalance) {
+    return next(new AppError("Insufficient balance for withdraw", 400));
   }
 
   const newWithdraw = new Withdraw({
@@ -75,11 +82,17 @@ const withdraw = catchAsync(async (req, res, next) => {
 
   await newWithdraw.save();
 
-  account[tokenName] =
-    Number(account[tokenName]) - Number(amount) - Number(getFee(tokenName));
+  // account[tokenName] =
+  //   Number(account[tokenName]) - Number(amount) - Number(getFee(tokenName));
+
+  account[tokenName] = decimal.subtract(
+    decimal.subtract(account[tokenName], amount),
+    getFee(tokenName)
+  );
+
   await account.save();
 
-  res.status(200).send("Withdraw successfull! Please wait for admin approval");
+  res.status(200).send("Withdraw successful! Please wait for admin approval");
 });
 
 /**
@@ -101,7 +114,7 @@ const getAllWithdraw = catchAsync(async (req, res, next) => {
 });
 
 /**
- * @desc    Send to Withdrawl address
+ * @desc    Send to Withdrawal address
  * @route   PATCH /api/account/approve-withdraw/:id
  * @access  Private(admin)
  */
@@ -131,8 +144,14 @@ const confirmWithdraw = catchAsync(async (req, res, next) => {
   } else {
     // If cancel: Back the withdraw amount to the user account balance
     const account = await Account.findById(withdraw.account);
-    account[withdraw.tokenName] =
-      Number(account[withdraw.tokenName]) + Number(withdraw.amount);
+    // account[withdraw.tokenName] =
+    //   Number(account[withdraw.tokenName]) + Number(withdraw.amount);
+
+    account[withdraw.tokenName] = decimal.addition(
+      account[withdraw.tokenName],
+      withdraw.amount
+    );
+
     await account.save();
   }
 
@@ -153,7 +172,16 @@ const getStats = catchAsync(async (req, res, next) => {
     {
       $group: {
         _id: null,
-        totalAmount: { $sum: "$amount" },
+        totalAmount: {
+          $sum: {
+            $convert: {
+              input: "$amount",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
       },
     },
   ]);
@@ -163,7 +191,16 @@ const getStats = catchAsync(async (req, res, next) => {
     {
       $group: {
         _id: null,
-        totalAmount: { $sum: "$amount" },
+        totalAmount: {
+          $sum: {
+            $convert: {
+              input: "$amount",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
       },
     },
   ]);
@@ -173,7 +210,16 @@ const getStats = catchAsync(async (req, res, next) => {
     {
       $group: {
         _id: null,
-        totalAmount: { $sum: "$amount" },
+        totalAmount: {
+          $sum: {
+            $convert: {
+              input: "$amount",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
       },
     },
   ]);
@@ -278,7 +324,16 @@ const getWithdrawableStats = catchAsync(async (req, res, next) => {
     {
       $group: {
         _id: null,
-        totalAmount: { $sum: "$amount" },
+        totalAmount: {
+          $sum: {
+            $convert: {
+              input: "$amount",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
       },
     },
   ]);
@@ -288,7 +343,16 @@ const getWithdrawableStats = catchAsync(async (req, res, next) => {
     {
       $group: {
         _id: null,
-        totalAmount: { $sum: "$amount" },
+        totalAmount: {
+          $sum: {
+            $convert: {
+              input: "$amount",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
       },
     },
   ]);
@@ -298,7 +362,16 @@ const getWithdrawableStats = catchAsync(async (req, res, next) => {
     {
       $group: {
         _id: null,
-        totalAmount: { $sum: "$amount" },
+        totalAmount: {
+          $sum: {
+            $convert: {
+              input: "$amount",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
       },
     },
   ]);
@@ -334,7 +407,7 @@ const createNewWithdrawable = catchAsync(async (req, res, next) => {
       if (!account) {
         return next(new AppError("Account not found", 404));
       }
-      const amount = Number(web3.utils.fromWei(decodedInput[1], "ether"));
+      const amount = web3.utils.fromWei(decodedInput[1], "ether");
       const newWithdrawable = new Withdrawable({
         account: account._id,
         amount,
@@ -371,10 +444,14 @@ const createManualDeposit = catchAsync(async (req, res, next) => {
       // get the account of the address from the database
       const account = await Account.findOne({ publicKey: decodedInput[0] });
 
-      // TODO: add to the account balance
-      account[getTokenNameBasedAddresss(trx.to)] =
-        Number(account[getTokenNameBasedAddresss(trx.to)]) +
-        Number(web3.utils.fromWei(decodedInput[1], "ether"));
+      // account[getTokenNameBasedAddresss(trx.to)] =
+      //   Number(account[getTokenNameBasedAddresss(trx.to)]) +
+      //   Number(web3.utils.fromWei(decodedInput[1], "ether"));
+
+      account[getTokenNameBasedAddresss(trx.to)] = decimal.addition(
+        account[getTokenNameBasedAddresss(trx.to)],
+        web3.utils.fromWei(decodedInput[1], "ether")
+      );
 
       await account.save();
 
@@ -382,7 +459,7 @@ const createManualDeposit = catchAsync(async (req, res, next) => {
         return next(new AppError("Account not found", 404));
       }
 
-      const amount = Number(web3.utils.fromWei(decodedInput[1], "ether"));
+      const amount = web3.utils.fromWei(decodedInput[1], "ether");
       const newDeposit = new Deposit({
         account: account._id,
         amount,

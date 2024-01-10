@@ -42,3 +42,13 @@ export const getStakeCalculator = async (paco) => {
     throw new Error(err?.response?.data?.message);
   }
 };
+
+export const claimStakeReward = async () => {
+  try {
+    const { data } = await api.post("/stakes/claim");
+
+    return data;
+  } catch (err) {
+    throw new Error(err?.response?.data?.message);
+  }
+};

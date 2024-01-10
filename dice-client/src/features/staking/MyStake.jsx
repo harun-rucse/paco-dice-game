@@ -6,6 +6,7 @@ import Spinner from "../../components/Spinner";
 import useGetPayouts from "./useGetPayouts";
 import { numberFormat, currencyFormat } from "../../utils/format";
 import { useGetUsdPricePaco } from "./useGetUsdPricePaco";
+import { useClaimReward } from "./useClaimReward";
 
 function MyStake() {
   const [stakeAmount, setStakeAmount] = useState("");
@@ -13,6 +14,7 @@ function MyStake() {
   const { isLoading, create } = useCreateStake();
   const { isLoading: isFetching, payouts } = useGetPayouts();
   const { pacoUSD } = useGetUsdPricePaco(payouts?.amount);
+  const { isLoading: isClaiming, makeClaim } = useClaimReward();
 
   function handleChange(e) {
     const val = e.target.value;
@@ -28,7 +30,11 @@ function MyStake() {
     setStakeAmount("");
   }
 
-  if (isLoading || isFetching) return <Spinner />;
+  function handleClaim() {
+    makeClaim();
+  }
+
+  if (isLoading || isFetching || isClaiming) return <Spinner />;
 
   return (
     <div className="flex flex-col md:self-stretch bg-[#3c2f61] rounded-2xl px-4 py-4 w-full lg:w-[33.33%] relative">
@@ -85,7 +91,10 @@ function MyStake() {
         usdt={payouts?.usdt || 0}
       />
 
-      <button className="button self-center mt-12 !bg-[#d11f1f] !px-12 !py-2">
+      <button
+        className="button self-center mt-12 !bg-[#d11f1f] !px-12 !py-2"
+        onClick={handleClaim}
+      >
         Claim
       </button>
     </div>

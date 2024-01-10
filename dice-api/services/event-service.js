@@ -3,6 +3,7 @@ const Account = require("../models/Account");
 const Deposit = require("../models/Deposit");
 const Withdrawable = require("../models/Withdrawable");
 const { tokenABI } = require("../utils/contracts");
+const decimal = require("../utils/decimal");
 
 const listeners = [];
 
@@ -64,25 +65,15 @@ const setListener = async (i, web3) => {
       fromBlock: "latest",
     })
     .on("data", async (event) => {
-      console.log("value:", event.address, event.returnValues.value);
-      // return;
-      // if paco token show a message
-
-      // if (
-      //   event.address.toLowerCase() === pacoTokenAddress.toLowerCase() &&
-      //   event.returnValues.value > 0
-      // ) {
-      //   console.log("paco token transfered");
-      // }
+      // console.log("value:", event.address, event.returnValues.value);
 
       const account = await Account.findOne({
         publicKey: event.returnValues.to,
       }).select("+privateKey");
       // console.log("account", account);
       if (!account) return;
-      const amount = Number(
-        Web3.utils.fromWei(event.returnValues.value, "ether")
-      );
+      const amount = Web3.utils.fromWei(event.returnValues.value, "ether");
+
       const newDeposit = new Deposit({
         account: account._id,
         amount,
@@ -93,8 +84,12 @@ const setListener = async (i, web3) => {
 
       await newDeposit.save();
       // update account balance
-      account[getTokenName(i)] =
-        Number(account[getTokenName(i)]) + Number(amount);
+      // account[getTokenName(i)] =
+      //   Number(account[getTokenName(i)]) + Number(amount);
+      account[getTokenName(i)] = decimal.addition(
+        account[getTokenName(i)],
+        amount
+      );
       await account.save();
 
       try {
@@ -161,7 +156,7 @@ const setListener = async (i, web3) => {
         const tokenName = getTokenName(i);
         const withdrawable = new Withdrawable({
           account: account._id,
-          amount: Number(amount),
+          amount,
           tokenName,
         });
 

@@ -110,7 +110,12 @@ const createGame = catchAsync(async (req, res, next) => {
   if (!account)
     return next(new AppError("Account not found with that public key", 400));
 
-  if (account[paymentType ? paymentType : "btc"] < betAmount)
+  const isInsufficientBalance = decimal.compare(
+    account[paymentType ? paymentType : "btc"],
+    betAmount,
+    "lt"
+  );
+  if (isInsufficientBalance)
     return next(new AppError("Insufficient Balance for play", 400));
 
   const seed = generateUniqueBet();
@@ -140,18 +145,27 @@ const createGame = catchAsync(async (req, res, next) => {
   });
 
   // reduce balance amount of betAmount
-  account[paymentType] = account[paymentType] - betAmount;
+  // account[paymentType] = account[paymentType] - betAmount;
+  account[paymentType] = decimal.subtract(account[paymentType], betAmount);
 
   // add paco balance reward
   if (paymentType !== "paco") {
-    account["paco"] =
-      account["paco"] + Number(await caclPacoReward(betAmount, paymentType));
+    // account["paco"] =
+    //   account["paco"] + Number(await caclPacoReward(betAmount, paymentType));
+    account["paco"] = decimal.addition(
+      account["paco"],
+      await caclPacoReward(betAmount, paymentType)
+    );
   }
 
   // If win add win Reward
   if (game.status === "win") {
     game.rewardAmount = Number(betAmount) * multiplier;
-    account[paymentType] = account[paymentType] + game.rewardAmount;
+    // account[paymentType] = account[paymentType] + game.rewardAmount;
+    account[paymentType] = decimal.addition(
+      account[paymentType],
+      game.rewardAmount
+    );
   }
 
   // If lost add 60% to the stake pool

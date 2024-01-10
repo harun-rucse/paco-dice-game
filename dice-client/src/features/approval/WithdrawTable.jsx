@@ -44,7 +44,8 @@ function WithdrawTable() {
           <Table.Row key={item._id}>
             <span>{item.account.username}</span>
             <span>
-              {item.amount?.toFixed(10)} {item.tokenName.toUpperCase()}
+              {Number(item.amount || 0)?.toFixed(10)}{" "}
+              {item.tokenName.toUpperCase()}
             </span>
             <span
               className={`${getColor(

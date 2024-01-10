@@ -19,7 +19,7 @@ function BalanceItem({ name, value, imgUrl, onSelect, onHide }) {
         </strong>
       </div>
       <strong className="text-white font-extralight text-sm md:text-base">
-        {value?.toFixed(8)}
+        {Number(value)?.toFixed(8)}
       </strong>
     </div>
   );
@@ -45,7 +45,8 @@ function Balance({ className }) {
           className="h-6 md:h-7"
         />
         <span className="uppercase font-extralight text-sm md:text-base">
-          {currentBalance.value?.toFixed(8) || account?.btc.toFixed(8)}
+          {Number(currentBalance.value)?.toFixed(8) ||
+            Number(account?.btc).toFixed(8)}
         </span>
         <MdOutlineKeyboardArrowDown />
       </button>

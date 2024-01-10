@@ -8,7 +8,7 @@ const withdrawableSchema = new Schema(
       ref: "Account",
     },
     amount: {
-      type: Number,
+      type: String,
       required: true,
     },
     tokenName: {

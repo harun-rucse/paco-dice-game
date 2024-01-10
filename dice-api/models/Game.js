@@ -8,11 +8,11 @@ const gameSchema = new Schema(
       required: true,
     },
     betAmount: {
-      type: Number,
+      type: String,
       required: true,
     },
     rewardAmount: {
-      type: Number,
+      type: String,
       required: true,
     },
     prediction: {

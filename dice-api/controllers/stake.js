@@ -155,37 +155,27 @@ const getStakeCalculator = catchAsync(async (req, res, next) => {
  * @access  Private
  */
 const claimMyStakeReward = catchAsync(async (req, res, next) => {
-  const { receivedAddress } = req.body;
-  if (!receivedAddress)
-    return next(new AppError("Received address is required", 400));
-
   const stake = await Stake.findOne({ account: req.account._id });
   if (!stake) return next(new AppError("You have no stake yet", 404));
 
-  try {
-    await transfer("btc", receivedAddress, Number(stake.btc));
-    stake.btc = "0";
-  } catch (err) {}
+  const account = await Account.findById(req.account._id);
+  if (!account) return next(new AppError("Account not found", 404));
 
-  try {
-    await transfer("paco", receivedAddress, Number(stake.paco));
-    stake.paco = "0";
-  } catch (err) {}
+  // Add stake reward to account
+  account.paco = decimal.addition(account.paco, stake.paco);
+  account.btc = decimal.addition(account.btc, stake.btc);
+  account.eth = decimal.addition(account.eth, stake.eth);
+  account.bnb = decimal.addition(account.bnb, stake.bnb);
+  account.usdt = decimal.addition(account.usdt, stake.usdt);
+  await account.save();
 
-  try {
-    await transfer("eth", receivedAddress, Number(stake.eth));
-    stake.eth = "0";
-  } catch (err) {}
-
-  try {
-    await transfer("bnb", receivedAddress, Number(stake.bnb));
-    stake.bnb = "0";
-  } catch (err) {}
-
-  try {
-    await transfer("usdt", receivedAddress, Number(stake.usdt));
-    stake.usdt = "0";
-  } catch (err) {}
+  // Reset stake reward
+  stake.paco = "0";
+  stake.btc = "0";
+  stake.eth = "0";
+  stake.bnb = "0";
+  stake.usdt = "0";
+  await stake.save();
 
   res.status(200).json({ message: "Stake reward claim successful" });
 });

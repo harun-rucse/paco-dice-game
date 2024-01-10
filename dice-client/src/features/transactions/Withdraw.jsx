@@ -92,7 +92,7 @@ function Withdraw() {
                 Balance
               </span>
               <strong className="text-white text-sm font-extralight">
-                {currentBalance.value?.toFixed(4)}
+                {Number(currentBalance.value)?.toFixed(4)}
               </strong>
             </div>
           </div>
