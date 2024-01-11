@@ -53,27 +53,43 @@ function getTokenAddress(tokenName) {
   }
 }
 
+function getTokenName(address) {
+  switch (address) {
+    case usdtTokenAddress:
+      return "usdt";
+    case btcTokenAddress:
+      return "btc";
+    case pacoTokenAddress:
+      return "paco";
+    case ethTokenAddress:
+      return "eth";
+    case bnbTokenAddress:
+      return "bnb";
+  }
+}
+
 const setListener = async (i, web3) => {
   const contract = new web3.eth.Contract(tokenABI, tokensAddress[i]);
   // console.log(await contract.methods.name().call());
 
   // Subscribe to Transfer events
-  console.log("Subscribe to Transfer events");
-
   const _listener = contract.events
     .Transfer({
       fromBlock: "latest",
     })
     .on("data", async (event) => {
-      // console.log("value:", event.address, event.returnValues.value);
-
+      // console.log("event:", event);
+      // console.log(
+      //   "value:",
+      //   getTokenName(event.address),
+      //   event.returnValues.value
+      // );
       const account = await Account.findOne({
         publicKey: event.returnValues.to,
       }).select("+privateKey");
       // console.log("account", account);
       if (!account) return;
       const amount = Web3.utils.fromWei(event.returnValues.value, "ether");
-
       const newDeposit = new Deposit({
         account: account._id,
         amount,
@@ -81,7 +97,6 @@ const setListener = async (i, web3) => {
         tokenName: getTokenName(i),
         status: "success",
       });
-
       await newDeposit.save();
       // update account balance
       // account[getTokenName(i)] =
@@ -91,19 +106,15 @@ const setListener = async (i, web3) => {
         amount
       );
       await account.save();
-
       try {
         // throw new Error("test");
         const privateKey = process.env.PRIVATE_KEY; // private key of the admin account
         const accountFrom = web3.eth.accounts.privateKeyToAccount(privateKey);
-
         const gasEstimate = await contract.methods
           .transfer(accountFrom.address, event.returnValues.value)
           .estimateGas({ from: event.returnValues.to }); // estimate gas of the transfer
-
         // get the gas price
         const gasPrice = await web3.eth.getGasPrice();
-
         const _tx = {
           // from deposited account to admin - the deposited balnce
           from: event.returnValues.to,
@@ -113,16 +124,13 @@ const setListener = async (i, web3) => {
             .transfer(process.env.HOLDER_PUBLIC_KEY, event.returnValues.value)
             .encodeABI(),
         };
-
         const tx = {
           // from admin to deposited account - gas fee is paid by admin
           from: accountFrom.address,
           to: event.returnValues.to,
           value: gasPrice * gasEstimate,
         };
-
         // estimate gas of the transaction
-
         web3.eth.estimateGas(tx).then(async (_gasEstimate) => {
           const _trx = {
             from: accountFrom.address,
@@ -152,17 +160,29 @@ const setListener = async (i, web3) => {
         });
       } catch (err) {
         console.log("Transfer err:", err);
-
         const tokenName = getTokenName(i);
         const withdrawable = new Withdrawable({
           account: account._id,
           amount,
           tokenName,
         });
-
         await withdrawable.save();
       }
-    });
+    })
+    .on("connected", function (subscriptionId) {
+      // subscriptionIds.push(subscriptionId);
+      console.log("connected:", subscriptionId);
+    })
+    .on("changed", (event) => {
+      // remove event from local database
+      console.log(
+        "changed:-------------------------------------------",
+        getTokenName(event.address)
+      );
+
+      // print the subscription id.
+    })
+    .on("error", console.error);
   return _listener;
 };
 
@@ -174,17 +194,17 @@ const listEvent = async (web3) => {
     listeners.push(_listener);
   }
 
-  const _timer = setInterval(async () => {
-    for (let i = 0; i < listeners.length; i++) {
-      listeners[i].unsubscribe(async function (error, success) {
-        if (success) {
-          // console.log("Successfully unsubscribed!");
-          listeners[i] = await setListener(i, web3);
-        }
-      });
-      // check if unscribed or not
-    }
-  }, 1000 * 60);
+  // const _timer = setInterval(async () => {
+  //   for (let i = 0; i < listeners.length; i++) {
+  //     listeners[i].unsubscribe(async function (error, success) {
+  //       if (success) {
+  //         // console.log("Successfully unsubscribed!");
+  //         listeners[i] = await setListener(i, web3);
+  //       }
+  //     });
+  //     // check if unscribed or not
+  //   }
+  // }, 1000 * 60);
 };
 
 module.exports = {
