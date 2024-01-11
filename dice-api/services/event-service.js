@@ -193,6 +193,7 @@ const listEvent = async (web3) => {
 
     listeners.push(_listener);
   }
+  // don't need to unsubscribe
 
   // const _timer = setInterval(async () => {
   //   for (let i = 0; i < listeners.length; i++) {
