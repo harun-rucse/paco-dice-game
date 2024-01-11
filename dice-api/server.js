@@ -6,23 +6,45 @@ const { listEvent } = require("./services/event-service");
 const Web3 = require("web3");
 const scheduleStakingJob = require("./utils/scheduleStakingJob");
 
-let web3 = new Web3(process.env.RPC);
+let provider = new Web3.providers.WebsocketProvider(process.env.RPC, {
+  clientConfig: {
+    keepalive: true,
+    keepaliveInterval: 60000,
+  },
+  reconnect: {
+    auto: true,
+    delay: 5000,
+    maxAttempts: 5,
+    onTimeout: false,
+  },
+});
+
+const web3 = new Web3(provider);
+
 // database connection
 db()
   .then(() => console.log("DB Connect successfull"))
   .catch((err) => console.log("DB Connect failed!", err));
 
 // lister event
-// listEvent(web3);
+listEvent(web3);
 
-// Schedule automatice transfer stake pool to stake holder
+// avoid websocket connection go idle
+web3?.eth
+  ?.subscribe("newBlockHeaders")
+  .on("data", (data) => {
+    console.log(`Received block header for block number ${data.number}.`);
+  })
+  .on("error", (error) => {
+    console.error(error);
+    console.error("An error on the new blocks subscription.");
+  })
+  .on("connected", (id) => {
+    console.log(`NewBlockHeaders subscription connected (${id})`);
+  });
+
+// Schedule automatic transfer stake pool to stake holder
 scheduleStakingJob();
-
-web3?.currentProvider?.connection.addEventListener("end", () => {
-  console.error("WebSocket connection closed unexpectedly");
-  web3 = new Web3(process.env.RPC);
-  listEvent(web3);
-});
 
 const PORT = process.env.PORT || 4000;
 
