@@ -7,6 +7,7 @@ import useGetPayouts from "./useGetPayouts";
 import { numberFormat, currencyFormat } from "../../utils/format";
 import { useGetUsdPricePaco } from "./useGetUsdPricePaco";
 import { useClaimReward } from "./useClaimReward";
+import toast from "react-hot-toast";
 
 function MyStake() {
   const [stakeAmount, setStakeAmount] = useState("");
@@ -18,13 +19,20 @@ function MyStake() {
 
   function handleChange(e) {
     const val = e.target.value;
-    if (isNaN(val) || Number(currentBalance?.value) < Number(val)) return;
+    if (isNaN(val) || Number(currentBalance?.value) < Number(val)) {
+      toast.error("Stake amount must be less than your balance");
+    }
 
     setStakeAmount(val);
   }
 
   function handleStake() {
-    if (!stakeAmount) return;
+    if (!stakeAmount) {
+      return toast.error("Please enter stake amount");
+    }
+    if (currentBalance?.name !== "PACO") {
+      return toast.error("You can only stake PACO");
+    }
 
     create({ amount: stakeAmount });
     setStakeAmount("");

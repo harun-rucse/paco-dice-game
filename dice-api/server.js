@@ -27,7 +27,7 @@ db()
   .catch((err) => console.log("DB Connect failed!", err));
 
 // lister event
-listEvent(web3);
+// listEvent(web3);
 
 // avoid websocket connection go idle
 web3?.eth
