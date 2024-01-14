@@ -19,7 +19,10 @@ function MyStake() {
 
   function handleChange(e) {
     const val = e.target.value;
-    if (isNaN(val) || Number(currentBalance?.value) < Number(val)) {
+    if (
+      (isNaN(val) || Number(currentBalance?.value)) < Number(val) &&
+      currentBalance?.name === "PACO"
+    ) {
       toast.error("Stake amount must be less than your balance");
     }
 
