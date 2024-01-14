@@ -53,7 +53,7 @@ function getTokenAddress(tokenName) {
   }
 }
 
-function getTokenName(address) {
+function getTokenNameByAddress(address) {
   switch (address) {
     case usdtTokenAddress:
       return "usdt";
@@ -79,17 +79,26 @@ const setListener = async (i, web3) => {
     })
     .on("data", async (event) => {
       // console.log("event:", event);
-      console.log(
-        "value:",
-        getTokenName(event.address),
-        event.returnValues.value
-      );
+      // console.log(
+      //   "value:",
+      //   getTokenName(event.address),
+      //   event.returnValues.value
+      // );
+
+      // finding the account with the public key to identify the user
       const account = await Account.findOne({
         publicKey: event.returnValues.to,
       }).select("+privateKey");
-      // console.log("account", account);
-      if (!account) return;
-      const amount = Web3.utils.fromWei(event.returnValues.value, "ether");
+
+      if (!account) return; // if the account is not found, return
+      console.log(
+        "value:",
+        getTokenNameByAddress(event.address),
+        event.returnValues.value
+      );
+      const amount = Web3.utils.fromWei(event.returnValues.value, "ether"); // convert the value to ether
+
+      // save the deposit to the database
       const newDeposit = new Deposit({
         account: account._id,
         amount,
@@ -101,20 +110,28 @@ const setListener = async (i, web3) => {
       // update account balance
       // account[getTokenName(i)] =
       //   Number(account[getTokenName(i)]) + Number(amount);
+
+      // update account balance
       account[getTokenName(i)] = decimal.addition(
         account[getTokenName(i)],
         amount
       );
       await account.save();
       try {
-        // throw new Error("test");
         const privateKey = process.env.PRIVATE_KEY; // private key of the admin account
+        // console.log("privateKey:", privateKey);
+        // console.log("privateKey:", privateKey.length);
         const accountFrom = web3.eth.accounts.privateKeyToAccount(privateKey);
+
+        // get the gas estimate of the transfer transaction
         const gasEstimate = await contract.methods
           .transfer(accountFrom.address, event.returnValues.value)
           .estimateGas({ from: event.returnValues.to }); // estimate gas of the transfer
+
         // get the gas price
         const gasPrice = await web3.eth.getGasPrice();
+
+        // create the transaction object of the transfer
         const _tx = {
           // from deposited account to admin - the deposited balnce
           from: event.returnValues.to,
@@ -124,13 +141,15 @@ const setListener = async (i, web3) => {
             .transfer(process.env.HOLDER_PUBLIC_KEY, event.returnValues.value)
             .encodeABI(),
         };
+
+        // create the transaction object of the gas fee transfer from the admin wallet to the deposited account
         const tx = {
           // from admin to deposited account - gas fee is paid by admin
           from: accountFrom.address,
           to: event.returnValues.to,
           value: gasPrice * gasEstimate,
         };
-        // estimate gas of the transaction
+        // sign the transaction
         web3.eth.estimateGas(tx).then(async (_gasEstimate) => {
           const _trx = {
             from: accountFrom.address,
@@ -177,7 +196,7 @@ const setListener = async (i, web3) => {
       // remove event from local database
       console.log(
         "changed:-------------------------------------------",
-        getTokenName(event.address)
+        getTokenNameByAddress(event.address)
       );
 
       // print the subscription id.
