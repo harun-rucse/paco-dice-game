@@ -166,6 +166,39 @@ const createGame = catchAsync(async (req, res, next) => {
       account[paymentType],
       game.rewardAmount
     );
+
+    const stakePool = await StakePool.findOne();
+    if (!stakePool) {
+      const newStakePool = new StakePool();
+
+      // Reduce 60% from the stake pool
+      newStakePool[paymentType] = decimal.subtract(
+        newStakePool[paymentType],
+        decimal.multiply(game.rewardAmount, 0.6)
+      );
+
+      // Reduce 2% to the burn
+      newStakePool["burn"] = decimal.subtract(
+        newStakePool["burn"],
+        decimal.multiply(betAmount, 0.02)
+      );
+
+      await newStakePool.save();
+    } else {
+      // Reduce 60% from the stake pool
+      stakePool[paymentType] = decimal.subtract(
+        stakePool[paymentType],
+        decimal.multiply(game.rewardAmount, 0.6)
+      );
+
+      // Reduce 2% from the burn
+      stakePool["burn"] = decimal.subtract(
+        stakePool["burn"],
+        decimal.multiply(game.rewardAmount, 0.02)
+      );
+
+      await stakePool.save();
+    }
   }
 
   // If lost add 60% to the stake pool
@@ -180,9 +213,22 @@ const createGame = catchAsync(async (req, res, next) => {
         newStakePool[paymentType],
         amount
       );
+
+      // Add 2% to the burn
+      newStakePool["burn"] = decimal.addition(
+        newStakePool["burn"],
+        decimal.multiply(betAmount, 0.02)
+      );
+
       await newStakePool.save();
     } else {
       stakePool[paymentType] = decimal.addition(stakePool[paymentType], amount);
+
+      // Add 2% to the burn
+      stakePool["burn"] = decimal.addition(
+        stakePool["burn"],
+        decimal.multiply(betAmount, 0.02)
+      );
       await stakePool.save();
     }
   }

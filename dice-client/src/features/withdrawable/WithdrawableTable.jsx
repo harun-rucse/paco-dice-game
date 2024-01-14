@@ -39,7 +39,8 @@ function WithdrawableTable() {
           <Table.Row key={item?._id}>
             <span>{item?.account?.username}</span>
             <span>
-              {item?.amount?.toFixed(10)} {item?.tokenName?.toUpperCase()}
+              {Number(item?.amount)?.toFixed(10)}{" "}
+              {item?.tokenName?.toUpperCase()}
             </span>
             <span
               className={`${getColor(

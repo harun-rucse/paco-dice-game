@@ -7,6 +7,7 @@ import useGetPayouts from "./useGetPayouts";
 import { numberFormat, currencyFormat } from "../../utils/format";
 import { useGetUsdPricePaco } from "./useGetUsdPricePaco";
 import { useClaimReward } from "./useClaimReward";
+import { useUnstake } from "./useUnstake";
 import toast from "react-hot-toast";
 
 function MyStake() {
@@ -16,6 +17,7 @@ function MyStake() {
   const { isLoading: isFetching, payouts } = useGetPayouts();
   const { pacoUSD } = useGetUsdPricePaco(payouts?.amount);
   const { isLoading: isClaiming, makeClaim } = useClaimReward();
+  const { isLoading: isUnstaking, unStake } = useUnstake();
 
   function handleChange(e) {
     const val = e.target.value;
@@ -41,11 +43,20 @@ function MyStake() {
     setStakeAmount("");
   }
 
+  function handleUnStake() {
+    if (!stakeAmount) {
+      return toast.error("Please enter un-stake amount");
+    }
+
+    unStake({ amount: stakeAmount });
+    setStakeAmount("");
+  }
+
   function handleClaim() {
     makeClaim();
   }
 
-  if (isLoading || isFetching || isClaiming) return <Spinner />;
+  if (isLoading || isFetching || isClaiming || isUnstaking) return <Spinner />;
 
   return (
     <div className="flex flex-col md:self-stretch bg-[#3c2f61] rounded-2xl px-4 py-4 w-full lg:w-[33.33%] relative">
@@ -68,9 +79,9 @@ function MyStake() {
             <p className="text-white lg:text-xl">
               {numberFormat(payouts?.amount || 0)}
             </p>
-            <p className="text-[#B4B3B3] lg:text-lg">
+            {/* <p className="text-[#B4B3B3] lg:text-lg">
               {currencyFormat(pacoUSD)}
-            </p>
+            </p> */}
           </div>
         </div>
         <div className="flex items-center gap-4">
@@ -81,12 +92,20 @@ function MyStake() {
             onChange={handleChange}
             className="w-full px-4 py-2 text-white rounded-md bg-[#2e2550] border border-gray-500 focus:outline-none"
           />
-          <button
-            className="button self-center !bg-[#1ca15f] !px-6 !py-2"
-            onClick={handleStake}
-          >
-            Stake
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              className="button self-center !bg-[#1ca15f] md:!px-6 md:!py-2 text-sm md:text-base"
+              onClick={handleStake}
+            >
+              Stake
+            </button>
+            <button
+              className="button self-center !bg-[#d11f1f] md:!px-6 md:!py-2 text-sm md:text-base"
+              onClick={handleUnStake}
+            >
+              Unstake
+            </button>
+          </div>
         </div>
       </div>
       <p className="flex items-center gap-2 uppercase text-[#B4B3B3] pt-4">

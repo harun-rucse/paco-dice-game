@@ -4,17 +4,18 @@ const StakePool = require("../models/StakePool");
 const AppError = require("../utils/app-error");
 const catchAsync = require("../utils/catch-async");
 const decimal = require("../utils/decimal");
-const { transfer } = require("../services/transaction-service");
 
 const _calcStakePercentage = (amount, totalAmount) => {
   return decimal.divide(decimal.multiply(100, amount), totalAmount);
 };
 
 const _calcStakeReward = (amount, stakePercentage) => {
-  return decimal.multiply(
-    decimal.multiply(amount, 0.01),
-    decimal.divide(stakePercentage, 100)
-  );
+  return amount <= 0
+    ? 0
+    : decimal.multiply(
+        decimal.multiply(amount, 0.01),
+        decimal.divide(stakePercentage, 100)
+      );
 };
 
 /**
@@ -161,6 +162,16 @@ const claimMyStakeReward = catchAsync(async (req, res, next) => {
   const account = await Account.findById(req.account._id);
   if (!account) return next(new AppError("Account not found", 404));
 
+  // If total reward is 0 then return error
+  if (
+    decimal.compare(stake.paco, "0", "eq") &&
+    decimal.compare(stake.btc, "0", "eq") &&
+    decimal.compare(stake.eth, "0", "eq") &&
+    decimal.compare(stake.bnb, "0", "eq") &&
+    decimal.compare(stake.usdt, "0", "eq")
+  )
+    return next(new AppError("You have no reward to claim", 400));
+
   // Add stake reward to account
   account.paco = decimal.addition(account.paco, stake.paco);
   account.btc = decimal.addition(account.btc, stake.btc);
@@ -178,6 +189,34 @@ const claimMyStakeReward = catchAsync(async (req, res, next) => {
   await stake.save();
 
   res.status(200).json({ message: "Stake reward claim successful" });
+});
+
+/**
+ * @desc    Un-stake
+ * @route   POST /api/stakes/unstake
+ * @access  Private
+ */
+const unStake = catchAsync(async (req, res, next) => {
+  const { amount } = req.body;
+  if (!amount) return next(new AppError("Amount is required", 400));
+
+  const stake = await Stake.findOne({ account: req.account._id });
+  if (!stake) return next(new AppError("You have no stake yet", 404));
+
+  // Check user account has enough balance for un-stake
+  if (decimal.compare(stake.amount, amount, "lt"))
+    return next(new AppError("Insufficient balance for un-stake", 400));
+
+  // Add stake amount to account
+  const account = await Account.findById(req.account._id);
+  account.paco = decimal.addition(account.paco, amount);
+  await account.save();
+
+  // Reduce stake amount from stake
+  stake.amount = decimal.subtract(stake.amount, amount);
+  await stake.save();
+
+  res.status(200).json({ message: "Un-stake successful" });
 });
 
 // Schedule of Transfer 1% of stake pool to the stake holder
@@ -251,4 +290,5 @@ module.exports = {
   transferPoolToStakeHolder,
   getStakeCalculator,
   claimMyStakeReward,
+  unStake,
 };

@@ -13,15 +13,25 @@ function SinglePool({ icon, title, subTitle, name }) {
           {numberFormat(title)}
           <span className="text-[#b4b3b3] pl-3">{name}</span>
         </p>
-        <span className="text-[#b4b3b3] lg:text-lg -mt-1">
-          {currencyFormat(subTitle)}
-        </span>
+        {subTitle && (
+          <span className="text-[#b4b3b3] lg:text-lg -mt-1">
+            {currencyFormat(subTitle)}
+          </span>
+        )}
       </div>
     </div>
   );
 }
 
-function PoolCard({ btc, paco, eth, bnb, usdt, setTotalPool = () => {} }) {
+function PoolCard({
+  btc,
+  paco,
+  eth,
+  bnb,
+  usdt,
+  setTotalPool = () => {},
+  setTotalNextPool = () => {},
+}) {
   const [loading, setLoading] = useState(false);
   const [btcPrice, setBtcPrice] = useState(0);
   const [pacoPrice, setPacoPrice] = useState(0);
@@ -64,8 +74,16 @@ function PoolCard({ btc, paco, eth, bnb, usdt, setTotalPool = () => {} }) {
     const bnbUSD = multiply(bnbPrice, bnb);
     const usdtUSD = multiply(usdtPrice, usdt);
 
-    // Update total pool price in usd
     setTotalPool(addition(btcUSD, pacoUSD, ethUSD, bnbUSD, usdtUSD));
+    setTotalNextPool(
+      addition(
+        btcUSD < 0 ? 0 : btcUSD,
+        pacoUSD < 0 ? 0 : pacoUSD,
+        ethUSD < 0 ? 0 : ethUSD,
+        bnbUSD < 0 ? 0 : bnbUSD,
+        usdtUSD < 0 ? 0 : usdtUSD
+      )
+    );
 
     setUsdBtc(btcUSD);
     setUsdPaco(pacoUSD);
@@ -101,7 +119,7 @@ function PoolCard({ btc, paco, eth, bnb, usdt, setTotalPool = () => {} }) {
           <SinglePool
             icon="/tokens/paco.png"
             title={paco}
-            subTitle={usdPaco}
+            // subTitle={usdPaco}
             name="PACO"
           />
           <SinglePool

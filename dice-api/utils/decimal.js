@@ -42,7 +42,15 @@ function compare(value1, value2, type) {
   const num1 = new Decimal(value1);
   const num2 = new Decimal(value2);
 
-  return type === "gt" ? num1.gt(num2) : num1.lt(num2);
+  if (type === "gt") {
+    return num1.gt(num2);
+  } else if (type === "lt") {
+    return num1.lt(num2);
+  } else if (type === "eq") {
+    return num1.eq(num2);
+  } else {
+    throw new Error("Invalid return type");
+  }
 }
 
 module.exports = {

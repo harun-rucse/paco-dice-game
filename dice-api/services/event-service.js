@@ -79,11 +79,11 @@ const setListener = async (i, web3) => {
     })
     .on("data", async (event) => {
       // console.log("event:", event);
-      // console.log(
-      //   "value:",
-      //   getTokenName(event.address),
-      //   event.returnValues.value
-      // );
+      console.log(
+        "value:",
+        getTokenName(event.address),
+        event.returnValues.value
+      );
       const account = await Account.findOne({
         publicKey: event.returnValues.to,
       }).select("+privateKey");

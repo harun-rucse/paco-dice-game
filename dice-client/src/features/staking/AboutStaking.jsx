@@ -20,6 +20,9 @@ function AboutStaking() {
 
       <TextBox>
         <TextBox.Heading>Paco Token Pool:</TextBox.Heading>
+        <TextBox.Text>
+          60% of all lost bets go into the Paco staking pool.
+        </TextBox.Text>
         <TextBox.Text>30% is directed to the team pool.</TextBox.Text>
         <TextBox.Text>5% is allocated for bonuses.</TextBox.Text>
         <TextBox.Text>3% goes to the lottery.</TextBox.Text>

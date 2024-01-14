@@ -4,7 +4,7 @@ import { currencyFormat, numberFormat } from "../../utils/format";
 
 const formatNumber = (num) => (num < 10 ? `0${num}` : num);
 
-function Stats({ totalPool }) {
+function Stats({ totalNextPool, totalBurn }) {
   // Calculate the time until the next 12:00 AM
   const now = new Date();
   const midnight = new Date();
@@ -21,9 +21,13 @@ function Stats({ totalPool }) {
     <div className="bg-[#3c2f61] rounded-2xl px-6 py-4 flex flex-wrap items-center justify-between gap-4">
       <StatItem
         title="Total next payout"
-        subTitle={currencyFormat(totalPool * 0.01)}
+        subTitle={currencyFormat(totalNextPool * 0.01)}
       />
-      <StatItem title="Next Paco burn" subTitle={numberFormat(0)} icon={true} />
+      <StatItem
+        title="Next Paco burn"
+        subTitle={numberFormat(totalBurn)}
+        icon={true}
+      />
       <StatItem
         title="Trigger countdown"
         subTitle={

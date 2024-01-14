@@ -1,4 +1,5 @@
 function CardItem({ item }) {
+  console.log(item);
   return (
     <div className="bg-[#24292d] px-8 py-6 rounded-lg">
       <div className="flex items-start gap-4">
@@ -6,7 +7,7 @@ function CardItem({ item }) {
         <div className="flex flex-col gap-3">
           <strong>{item.label}</strong>
           <strong className="font-extralight text-lg">
-            ${item.amount.toFixed(2)}
+            ${isNaN(item.amount) ? "0.00" : Number(item.amount).toFixed(2)}
           </strong>
         </div>
       </div>

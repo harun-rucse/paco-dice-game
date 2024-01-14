@@ -23,6 +23,10 @@ const stakePoolSchema = new Schema(
       type: String,
       default: "0",
     },
+    burn: {
+      type: String,
+      default: "0",
+    },
   },
   {
     timestamps: true,

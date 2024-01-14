@@ -1,15 +1,10 @@
 import PoolCard from "./PoolCard";
 import StatItem from "./StatItem";
 import { useCurrentUser } from "../authentication/useCurrentUser";
-import useGetStakePool from "./useGetStakePool";
-import Spinner from "../../components/Spinner";
 import { currencyFormat, numberFormat } from "../../utils/format";
 
-function Pools({ totalPool, setTotalPool }) {
+function Pools({ totalPool, setTotalPool, setTotalNextPool, pool }) {
   const { isAuthenticated, isLoading } = useCurrentUser();
-  const { isLoading: isFetching, pool } = useGetStakePool();
-
-  if (isFetching) return <Spinner />;
 
   return (
     <div className="bg-[#3c2f61] rounded-2xl px-6 py-6">
@@ -25,6 +20,7 @@ function Pools({ totalPool, setTotalPool }) {
         bnb={pool?.bnb || 0}
         usdt={pool?.usdt || 0}
         setTotalPool={setTotalPool}
+        setTotalNextPool={setTotalNextPool}
       />
 
       <div className="mt-8 flex flex-col lg:flex-row items-center justify-between border-t border-[#797878] pt-4">

@@ -52,3 +52,13 @@ export const claimStakeReward = async () => {
     throw new Error(err?.response?.data?.message);
   }
 };
+
+export const unStake = async ({ amount }) => {
+  try {
+    const { data } = await api.post("/stakes/unstake", { amount });
+
+    return data;
+  } catch (err) {
+    throw new Error(err?.response?.data?.message);
+  }
+};
