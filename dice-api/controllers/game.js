@@ -109,7 +109,7 @@ const createGame = catchAsync(async (req, res, next) => {
   const account = await Account.findOne({ publicKey });
   if (!account)
     return next(new AppError("Account not found with that public key", 400));
-
+  // console.log("account", account);
   const isInsufficientBalance = decimal.compare(
     account[paymentType ? paymentType : "btc"],
     betAmount,
@@ -144,6 +144,8 @@ const createGame = catchAsync(async (req, res, next) => {
         : "lost",
   });
 
+  console.log("game", game);
+
   // reduce balance amount of betAmount
   // account[paymentType] = account[paymentType] - betAmount;
   account[paymentType] = decimal.subtract(account[paymentType], betAmount);
@@ -174,13 +176,13 @@ const createGame = catchAsync(async (req, res, next) => {
       // Reduce 60% from the stake pool
       newStakePool[paymentType] = decimal.subtract(
         newStakePool[paymentType],
-        decimal.multiply(game.rewardAmount, 0.6)
+        decimal.multiply(decimal.subtract(game.rewardAmount, betAmount), 0.6)
       );
 
       // Reduce 2% to the burn
       newStakePool["burn"] = decimal.subtract(
         newStakePool["burn"],
-        decimal.multiply(betAmount, 0.02)
+        decimal.multiply(decimal.subtract(game.rewardAmount, betAmount), 0.02)
       );
 
       await newStakePool.save();
@@ -188,13 +190,13 @@ const createGame = catchAsync(async (req, res, next) => {
       // Reduce 60% from the stake pool
       stakePool[paymentType] = decimal.subtract(
         stakePool[paymentType],
-        decimal.multiply(game.rewardAmount, 0.6)
+        decimal.multiply(decimal.subtract(game.rewardAmount, betAmount), 0.6)
       );
 
       // Reduce 2% from the burn
       stakePool["burn"] = decimal.subtract(
         stakePool["burn"],
-        decimal.multiply(game.rewardAmount, 0.02)
+        decimal.multiply(decimal.subtract(game.rewardAmount, betAmount), 0.02)
       );
 
       await stakePool.save();
