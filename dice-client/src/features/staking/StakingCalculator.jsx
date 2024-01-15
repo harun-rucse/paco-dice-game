@@ -8,6 +8,7 @@ import LoadingSpinner from "../../components/LoadingSpinner";
 import { useCurrentUser } from "../../features/authentication/useCurrentUser";
 import { addition, multiply } from "../../utils/decimal";
 import { cn } from "../../utils";
+import useGetPayouts from "./useGetPayouts";
 
 function SelectButton({ handleOnClick, children, activeTab }) {
   return (
@@ -41,6 +42,7 @@ function StakingCalculator() {
   const { isLoading: isFetching, calculator } = useGetStakeCalculator(paco);
   const { pacoUSD } = useGetUsdPricePaco(paco);
   const { user: account } = useCurrentUser();
+  const { isLoading: isFetching2, payouts } = useGetPayouts();
   const {
     rewardPaco = 0,
     rewardBtc = 0,
@@ -188,7 +190,7 @@ function StakingCalculator() {
           10B
         </SelectButton>
         <SelectButton
-          handleOnClick={() => handleSelectBtn(account?.paco, "My Balance")}
+          handleOnClick={() => handleSelectBtn(payouts?.amount, "My Balance")}
           activeTab={activeTab === "My Balance"}
         >
           My Balance
@@ -210,7 +212,7 @@ function StakingCalculator() {
         </div>
       </div>
 
-      {isFetching || loading ? (
+      {isFetching || loading || isFetching2 ? (
         <LoadingSpinner className="h-[25rem]" />
       ) : (
         <Table columns="grid-cols-[1fr_1fr_1fr_1fr]">

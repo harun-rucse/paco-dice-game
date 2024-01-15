@@ -219,6 +219,23 @@ const unStake = catchAsync(async (req, res, next) => {
   res.status(200).json({ message: "Un-stake successful" });
 });
 
+/**
+ * @desc    Un-stake
+ * @route   POST /api/stakes/reset-burn
+ * @access  Private(admin)
+ */
+const resetBurn = catchAsync(async (req, res, next) => {
+  const stakePool = await StakePool.findOne();
+  // Send already burned if burn is 0
+  if (decimal.compare(stakePool.burn, "0", "eq"))
+    return next(new AppError("Already burned", 400));
+
+  stakePool.burn = "0";
+  await stakePool.save();
+
+  res.status(200).json({ message: "Reset burn successful" });
+});
+
 // Schedule of Transfer 1% of stake pool to the stake holder
 const transferPoolToStakeHolder = async () => {
   const result = await Stake.aggregate([
@@ -291,4 +308,5 @@ module.exports = {
   getStakeCalculator,
   claimMyStakeReward,
   unStake,
+  resetBurn,
 };

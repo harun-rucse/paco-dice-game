@@ -13,8 +13,13 @@ function StakingControls() {
           <AboutStaking />
         </Modal.Body>
       </Modal>
-
-      <button className="button text-sm lg:text-lg flex gap-1 items-center">
+      {/* onClick open a link */}
+      <button
+        className="button text-sm lg:text-lg flex gap-1 items-center"
+        onClick={() => {
+          window.open("https://pacodellama.org", "_blank");
+        }}
+      >
         <img src="/icons/paco-icon.png" alt="" className="w-5 lg:w-7" />
         <span>About Paco</span>
       </button>

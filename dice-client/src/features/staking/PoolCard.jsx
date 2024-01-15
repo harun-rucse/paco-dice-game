@@ -14,8 +14,19 @@ function SinglePool({ icon, title, subTitle, name }) {
           <span className="text-[#b4b3b3] pl-3">{name}</span>
         </p>
         {subTitle && (
-          <span className="text-[#b4b3b3] lg:text-lg -mt-1">
-            {currencyFormat(subTitle)}
+          <span
+            className={`text-[#b4b3b3] lg:text-lg -mt-1 cursor-pointer`}
+            onClick={
+              isNaN(subTitle)
+                ? () =>
+                    window.open(
+                      `https://www.dexview.com/bsc/0xe1d0065c4cd16C14C539547bac404cA6F586b8ce`,
+                      "_blank"
+                    )
+                : ""
+            }
+          >
+            {isNaN(subTitle) ? subTitle : currencyFormat(subTitle)}
           </span>
         )}
       </div>
@@ -119,7 +130,7 @@ function PoolCard({
           <SinglePool
             icon="/tokens/paco.png"
             title={paco}
-            // subTitle={usdPaco}
+            subTitle={"$paco"}
             name="PACO"
           />
           <SinglePool
@@ -132,7 +143,7 @@ function PoolCard({
             icon="/tokens/bnb.png"
             title={bnb}
             subTitle={usdBnb}
-            name="BNB"
+            name="WBNB"
           />
           <SinglePool
             icon="/tokens/usdt.png"

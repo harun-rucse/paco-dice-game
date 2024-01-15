@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useBalance } from "../../context/BalanceContext";
 import PoolCard from "./PoolCard";
 import { useCreateStake } from "./useCreateStake";
@@ -9,6 +9,7 @@ import { useGetUsdPricePaco } from "./useGetUsdPricePaco";
 import { useClaimReward } from "./useClaimReward";
 import { useUnstake } from "./useUnstake";
 import toast from "react-hot-toast";
+import { addition } from "../../utils/decimal";
 
 function MyStake() {
   const [stakeAmount, setStakeAmount] = useState("");
@@ -18,6 +19,22 @@ function MyStake() {
   const { pacoUSD } = useGetUsdPricePaco(payouts?.amount);
   const { isLoading: isClaiming, makeClaim } = useClaimReward();
   const { isLoading: isUnstaking, unStake } = useUnstake();
+  const [totalReward, setTotalReward] = useState(0);
+
+  useEffect(() => {
+    if (payouts) {
+      // get total with addition
+      const total = addition(
+        payouts?.btc,
+        payouts?.paco,
+        payouts?.eth,
+        payouts?.bnb,
+        payouts?.usdt
+      );
+
+      setTotalReward(total);
+    }
+  }, [payouts]);
 
   function handleChange(e) {
     const val = e.target.value;
@@ -122,8 +139,11 @@ function MyStake() {
       />
 
       <button
-        className="button self-center mt-12 !bg-[#d11f1f] !px-12 !py-2"
+        className={`button self-center mt-12 !bg-${
+          totalReward == 0 ? "[#737373]" : "[#1ca15f]"
+        } !px-12 !py-2`}
         onClick={handleClaim}
+        disabled={totalReward == 0}
       >
         Claim
       </button>

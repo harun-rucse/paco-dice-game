@@ -62,3 +62,13 @@ export const unStake = async ({ amount }) => {
     throw new Error(err?.response?.data?.message);
   }
 };
+
+export const resetBurn = async () => {
+  try {
+    const { data } = await api.post("/stakes/reset-burn");
+
+    return data;
+  } catch (err) {
+    throw new Error(err?.response?.data?.message);
+  }
+};
