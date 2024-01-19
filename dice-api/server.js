@@ -34,7 +34,7 @@ app.listen(PORT, () => {
 
   const web3 = new Web3(provider);
   // lister event
-  listEvent(web3);
+  // listEvent(web3); TODO: uncomment in production
 
   // avoid websocket connection go idle
   web3?.eth

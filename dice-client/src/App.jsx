@@ -23,6 +23,7 @@ const AdminWithdrawable = lazy(() => import("./pages/AdminWithdrawable"));
 const AdminDeposit = lazy(() => import("./pages/AdminDeposit"));
 const Staking = lazy(() => import("./pages/Staking"));
 const AdminBurn = lazy(() => import("./pages/AdminBurn"));
+const Lottery = lazy(() => import("./pages/Lottery"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -66,6 +67,9 @@ function App() {
               </Route>
               <Route path="/staking" element={<StakingLayout />}>
                 <Route index element={<Staking />} />
+              </Route>
+              <Route path="/lottery" element={<StakingLayout />}>
+                <Route index element={<Lottery />} />
               </Route>
               <Route
                 path="/admin"
