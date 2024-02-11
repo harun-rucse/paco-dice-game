@@ -64,7 +64,9 @@ function Header() {
               </button>
             </Link>
           </div>
-          <img src="/icons/ticket.png" alt="" className="h-12 mr-6 md:mr-0" />
+          <Link to="/lottery">
+            <img src="/icons/ticket.png" alt="" className="h-12 mr-6 md:mr-0" />
+          </Link>
         </div>
         <div className="flex items-center justify-end gap-2 w-full md:w-fit">
           {/* Balance button */}
