@@ -29,6 +29,7 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 0,
+      retry: 1,
     },
   },
 });
@@ -68,7 +69,14 @@ function App() {
               <Route path="/staking" element={<StakingLayout />}>
                 <Route index element={<Staking />} />
               </Route>
-              <Route path="/lottery" element={<StakingLayout />}>
+              <Route
+                path="/lottery"
+                element={
+                  <ProtectedRoute roles={["admin"]}>
+                    <StakingLayout />
+                  </ProtectedRoute>
+                }
+              >
                 <Route index element={<Lottery />} />
               </Route>
               <Route
