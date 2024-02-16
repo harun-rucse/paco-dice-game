@@ -1,8 +1,11 @@
 import Pagination from "../../../components/Pagination";
 import Table from "../Table";
 import TopBar from "../TopBar";
+import useGetMyTickets from "../useGetMyTickets";
 
 function MyTickets() {
+  const { isLoading, tickets, count } = useGetMyTickets();
+
   return (
     <div className="text-white">
       {/* TopBar */}
@@ -24,17 +27,17 @@ function MyTickets() {
           <span>Ticket Type</span>
         </Table.Header>
         <Table.Body>
-          {Array.from({ length: 10 }).map((_, i) => (
+          {tickets?.map((ticket, i) => (
             <Table.Row key={i}>
-              <span>mightybeast951</span>
-              <span>Round 2</span>
-              <span>Waiting Results</span>
-              <span>Mega</span>
+              <span>{ticket.username}</span>
+              <span>{ticket.round}</span>
+              <span>{ticket.status}</span>
+              <span>{ticket.type}</span>
             </Table.Row>
           ))}
         </Table.Body>
         <Table.Footer>
-          <Pagination count={20} />
+          <Pagination count={count} />
         </Table.Footer>
       </Table>
     </div>

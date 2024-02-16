@@ -4,19 +4,20 @@ const { auth, restrictTo } = require("../middlewares/auth");
 
 const router = express.Router();
 
-router.get("/my-tickets", auth, ticketController.getMyTickets);
+router.use(auth);
+router.get("/my-tickets", ticketController.getMyTickets);
 
 router
   .route("/")
-  .get([auth, restrictTo("admin")], ticketController.getAllTickets)
-  .post(auth, ticketController.createTicket);
+  .get(restrictTo("admin"), ticketController.getAllTickets)
+  .post(ticketController.createTicket);
 
-router.use([auth, restrictTo("admin")]);
 router
   .route("/setting")
-  .post(ticketController.createTicketSetting)
+  .post(restrictTo("admin"), ticketController.createTicketSetting)
   .get(ticketController.getTicketSetting);
 
+router.use(restrictTo("admin"));
 router
   .route("/tier")
   .post(ticketController.createTicketTier)

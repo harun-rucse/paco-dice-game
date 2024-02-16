@@ -45,7 +45,7 @@ const createTicketSetting = catchAsync(async (req, res, next) => {
 /**
  * @desc    Get ticket setting
  * @route   GET /api/tickets/setting
- * @access  Private(admin)
+ * @access  Private
  */
 const getTicketSetting = catchAsync(async (req, res, next) => {
   const ticketSetting = await TicketSettings.findOne();
@@ -107,7 +107,8 @@ const getTicketTier = catchAsync(async (req, res, next) => {
  * @access  Private
  */
 const createTicket = catchAsync(async (req, res, next) => {
-  const { type, amount } = req.body;
+  const type = req.body.type;
+  const amount = Number(req.body.amount);
   if (!type || !amount)
     return next(new AppError("Ticket type & amount is required", 400));
 
@@ -211,12 +212,13 @@ const getAllTickets = catchAsync(async (req, res, next) => {
   const page = Number(req.query.page || 1);
   const limit = Number(req.query.limit || 10);
 
+  const count = await Ticket.countDocuments({ account: req.account._id });
   const tickets = await Ticket.find()
     .select("+reward")
     .limit(limit)
     .skip(limit * (page - 1));
 
-  res.status(200).json(tickets);
+  res.status(200).json({ tickets, count });
 });
 
 /**
@@ -235,6 +237,11 @@ const getMyTickets = catchAsync(async (req, res, next) => {
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
   tomorrow.setHours(3, 0, 0, 0);
+
+  const count = await Ticket.countDocuments({
+    account: req.account._id,
+    round,
+  });
 
   const tickets = await Ticket.aggregate([
     {
@@ -280,14 +287,14 @@ const getMyTickets = catchAsync(async (req, res, next) => {
       },
     },
     {
-      $limit: limit,
+      $skip: limit * (page - 1),
     },
     {
-      $skip: limit * (page - 1),
+      $limit: limit,
     },
   ]);
 
-  res.status(200).json(tickets);
+  res.status(200).json({ tickets, count });
 });
 
 module.exports = {

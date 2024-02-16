@@ -1,16 +1,28 @@
+import LoadingSpinner from "../../../components/LoadingSpinner";
+import useGetTicketSetting from "../useGetTicketSetting";
 import InputBox from "./InputBox";
 
 function LobbyCard() {
+  const { isLoading, ticketSetting } = useGetTicketSetting();
+
+  if (isLoading) return <LoadingSpinner className="h-[6rem]" />;
+
   return (
     <div>
       <div className="flex flex-col md:flex-row items-center gap-6 md:gap-32">
         <InputBox
           label="Standard ticket"
-          price={500}
+          type="STANDARD"
+          price={ticketSetting?.["STANDARD"]}
           total="20k"
           icon="/icons/minor-jackpot.png"
         />
-        <InputBox label="Mega ticket" price={1000} icon="/icons/ticket.png" />
+        <InputBox
+          label="Mega ticket"
+          type="MEGA"
+          price={ticketSetting?.["MEGA"]}
+          icon="/icons/ticket.png"
+        />
       </div>
 
       <div className="lottery-divider mt-6 mb-2" />
