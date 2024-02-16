@@ -238,6 +238,10 @@ const getMyTickets = catchAsync(async (req, res, next) => {
   tomorrow.setDate(tomorrow.getDate() + 1);
   tomorrow.setHours(3, 0, 0, 0);
 
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  yesterday.setHours(3, 0, 0, 0);
+
   const count = await Ticket.countDocuments({
     account: req.account._id,
     round,
@@ -266,9 +270,19 @@ const getMyTickets = catchAsync(async (req, res, next) => {
         status: {
           $cond: [
             {
-              $and: [
-                { $gte: ["$buyAt", today] },
-                { $lt: ["$buyAt", tomorrow] },
+              $or: [
+                {
+                  $and: [
+                    { $gte: ["$buyAt", yesterday] },
+                    { $lt: ["$buyAt", today] },
+                  ],
+                },
+                {
+                  $and: [
+                    { $gte: ["$buyAt", today] },
+                    { $lt: ["$buyAt", tomorrow] },
+                  ],
+                },
               ],
             },
             "Waiting Results",
@@ -284,6 +298,7 @@ const getMyTickets = catchAsync(async (req, res, next) => {
         status: 1,
         type: "$type",
         round: { $concat: ["Round ", { $toString: "$round" }] },
+        buyAt: 1,
       },
     },
     {
