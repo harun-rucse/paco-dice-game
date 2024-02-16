@@ -1,4 +1,17 @@
-function InputBox({ price, label, total, icon, handleOnClick }) {
+import { useState } from "react";
+import { useBuyTicket } from "../useBuyTicket";
+
+function InputBox({ price, label, type, total, icon }) {
+  const [amount, setAmount] = useState("");
+  const { isLoading, buyTicket } = useBuyTicket();
+
+  function handleBuyTicket() {
+    if (!amount || !type) return;
+
+    buyTicket({ type, amount });
+    setAmount("");
+  }
+
   return (
     <div className="flex justify-between items-center gap-2 md:gap-8">
       <div className="space-y-1">
@@ -20,7 +33,9 @@ function InputBox({ price, label, total, icon, handleOnClick }) {
         <div className="flex items-center gap-3 bg-[#1e132d] border border-[#743da1] rounded-xl px-3 py-0">
           <img src={icon} alt="" className="w-12" />
           <input
-            type="text"
+            type="number"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
             placeholder="Input amount of tickets"
             className="md:w-[20rem] bg-transparent text-white focus:outline-none placeholder:text-[#534b5c]"
           />
@@ -28,9 +43,10 @@ function InputBox({ price, label, total, icon, handleOnClick }) {
       </div>
       <button
         className="self-end button !bg-[#d11f1f] px-2 md:!px-8"
-        onClick={handleOnClick}
+        onClick={handleBuyTicket}
+        disabled={isLoading}
       >
-        Buy
+        {isLoading ? "Buying..." : "Buy"}
       </button>
     </div>
   );

@@ -18,12 +18,16 @@ const ticketSchema = new Schema(
     },
     tier: {
       type: String,
+      enum: ["ONE", "TWO", "THREE", "FOUR", "FIVE"],
       required: true,
     },
     reward: {
       type: Number,
       required: true,
       select: false,
+    },
+    round: {
+      type: Number,
     },
     buyAt: {
       type: Date,
