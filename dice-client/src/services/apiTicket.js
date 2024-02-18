@@ -44,3 +44,15 @@ export const getLastRound = async () => {
     throw new Error(err?.response?.data?.message);
   }
 };
+
+export const getMyHistories = async (page = 1, limit = 10, round = 1) => {
+  try {
+    const { data } = await api.get(
+      `/tickets/my-histories?page=${page}&limit=${limit}&round=${round}`
+    );
+
+    return data;
+  } catch (err) {
+    throw new Error(err?.response?.data?.message);
+  }
+};

@@ -1,14 +1,21 @@
-import Pagination from "../../../components/Pagination";
 import Table from "../Table";
 import TopBar from "../TopBar";
 import RoundCard from "../RoundCard";
+import useGetMyHistories from "../useGetMyHistories";
+import LoadingSpinner from "../../../components/LoadingSpinner";
+import Pagination from "../../../components/Pagination";
+import { numberFormat } from "../../../utils/format";
 
 function MyHistory() {
+  const { isLoading, histories, count } = useGetMyHistories();
+
+  if (isLoading) return <LoadingSpinner className="h-[36rem]" />;
+
   return (
     <div className="text-white">
       {/* TopBar */}
       <TopBar title="My Winnings">
-        <RoundCard />
+        <RoundCard prevDayRound={true} />
 
         <div className="flex items-center gap-2 mt-4 md:mt-0">
           <button className="bg-[#6a446b] text-white text-sm md:text-base px-3 md:px-6 py-1 md:py-2 rounded-xl shadow-xl border border-[#8e758f]">
@@ -39,19 +46,19 @@ function MyHistory() {
           <span />
         </Table.Header>
         <Table.Body>
-          {Array.from({ length: 10 }).map((_, i) => (
+          {histories?.map((ticket, i) => (
             <Table.Row key={i}>
-              <span>mightybeast951</span>
-              <span>Mega</span>
-              <span>Round 2</span>
-              <span>Minor Jackpot</span>
-              <span>1,058,515,990</span>
+              <span>{ticket.username}</span>
+              <span>{ticket.type}</span>
+              <span>{ticket.round}</span>
+              <span>{ticket.winningTier}</span>
+              <span>{numberFormat(ticket.reward)}</span>
               <img src="/tokens/paco.png" alt="" className="w-6" />
             </Table.Row>
           ))}
         </Table.Body>
         <Table.Footer>
-          <Pagination count={20} />
+          <Pagination count={count} />
         </Table.Footer>
       </Table>
     </div>

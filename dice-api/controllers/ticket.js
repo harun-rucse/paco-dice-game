@@ -244,17 +244,12 @@ const getMyTickets = catchAsync(async (req, res, next) => {
   yesterday.setDate(yesterday.getDate() - 1);
   yesterday.setHours(3, 0, 0, 0);
 
-  const count = await Ticket.countDocuments({
-    account: req.account._id,
-    round,
-  });
+  const query = { account: req.account._id, round };
+  const count = await Ticket.countDocuments(query);
 
   const tickets = await Ticket.aggregate([
     {
-      $match: {
-        account: req.account._id,
-        round,
-      },
+      $match: query,
     },
     {
       $lookup: {
@@ -328,6 +323,66 @@ const getLastRound = catchAsync(async (req, res, next) => {
   res.status(200).json(ticket.round);
 });
 
+/**
+ * @desc    Get My Histories
+ * @route   GET /api/tickets/my-histories?page=1&limit=10
+ * @access  Private
+ */
+const getMyHistories = catchAsync(async (req, res, next) => {
+  const page = Number(req.query.page || 1);
+  const limit = Number(req.query.limit || 10);
+  const round = Number(req.query.round || 1);
+
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  yesterday.setHours(3, 0, 0, 0);
+
+  const query = { account: req.account._id, round, buyAt: { $lt: yesterday } };
+  const count = await Ticket.countDocuments(query);
+
+  const tickets = await Ticket.aggregate([
+    {
+      $match: query,
+    },
+    {
+      $lookup: {
+        from: "accounts",
+        localField: "account",
+        foreignField: "_id",
+        as: "account",
+      },
+    },
+    {
+      $unwind: "$account",
+    },
+    {
+      $addFields: {
+        winningTier: "TEST",
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        username: "$account.username",
+        type: "$type",
+        round: { $concat: ["Round ", { $toString: "$round" }] },
+        winningTier: 1,
+        buyAt: 1,
+        prize: "$reward",
+        reward: 1,
+      },
+    },
+    {
+      $skip: limit * (page - 1),
+    },
+    {
+      $limit: limit,
+    },
+  ]);
+
+  res.status(200).json({ histories: tickets, count });
+});
+
 module.exports = {
   createTicketSetting,
   getTicketSetting,
@@ -337,4 +392,5 @@ module.exports = {
   getAllTickets,
   getMyTickets,
   getLastRound,
+  getMyHistories,
 };

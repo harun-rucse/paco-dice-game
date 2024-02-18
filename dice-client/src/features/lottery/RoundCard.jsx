@@ -5,14 +5,14 @@ import { padNumber } from "../../utils/format";
 import useGetLastRound from "./useGetLastRound";
 import LoadingSpinner from "../../components/LoadingSpinner";
 
-function RoundCard() {
+function RoundCard({ prevDayRound = false }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const roundParams = Number(searchParams.get("round") || 1);
   const { isLoading, round } = useGetLastRound();
 
   useEffect(() => {
     if (round) {
-      searchParams.set("round", round);
+      searchParams.set("round", prevDayRound ? round - 1 : round);
       setSearchParams(searchParams);
     }
   }, [round]);
@@ -45,7 +45,7 @@ function RoundCard() {
         <button
           className="shadow-xl cursor-pointer"
           onClick={() => handleChangeRound("right")}
-          disabled={roundParams === round}
+          disabled={roundParams === (prevDayRound ? round - 1 : round)}
         >
           <FaChevronRight size={26} color="#9760b1" />
         </button>
