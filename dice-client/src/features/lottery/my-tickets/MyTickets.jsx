@@ -1,18 +1,20 @@
+import LoadingSpinner from "../../../components/LoadingSpinner";
 import Pagination from "../../../components/Pagination";
 import Table from "../Table";
 import TopBar from "../TopBar";
 import useGetMyTickets from "../useGetMyTickets";
+import RoundCard from "../RoundCard";
 
 function MyTickets() {
   const { isLoading, tickets, count } = useGetMyTickets();
+
+  if (isLoading) return <LoadingSpinner className="h-[36rem]" />;
 
   return (
     <div className="text-white">
       {/* TopBar */}
       <TopBar title="My Tickets">
-        <div className="bg-[#7c4b7d] text-sm md:text-base px-4 md:px-6 py-2 rounded-lg shadow-lg">
-          Round: 2
-        </div>
+        <RoundCard />
         <div className="hidden md:block" />
       </TopBar>
 

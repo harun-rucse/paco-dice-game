@@ -1,37 +1,14 @@
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 import Pagination from "../../../components/Pagination";
 import Table from "../Table";
 import TopBar from "../TopBar";
+import RoundCard from "../RoundCard";
 
 function AllBets() {
-  function handleChangeRound(direction) {
-    console.log(direction);
-  }
-
   return (
     <div className="text-white">
       {/* TopBar */}
       <TopBar title="My Winnings">
-        <div className="text-center space-y-1">
-          <span className="text-lg">Round</span>
-          <div className="flex items-center gap-1">
-            <FaChevronLeft
-              size={26}
-              color="#9760b1"
-              className="shadow-xl cursor-pointer"
-              onClick={() => handleChangeRound("left")}
-            />
-            <div className="bg-[#7c4b7d] text-sm md:text-base px-4 py-2 rounded-lg shadow-lg">
-              #000000001
-            </div>
-            <FaChevronRight
-              size={26}
-              color="#9760b1"
-              className="shadow-xl cursor-pointer"
-              onClick={() => handleChangeRound("right")}
-            />
-          </div>
-        </div>
+        <RoundCard />
 
         <div className="flex items-center gap-2 mt-4 md:mt-0">
           <button className="bg-[#6a446b] text-white text-sm md:text-base px-3 md:px-6 py-1 md:py-2 rounded-xl shadow-xl border border-[#8e758f]">

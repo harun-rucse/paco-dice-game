@@ -5,10 +5,11 @@ import InfoCard from "./InfoCard";
 const formatNumber = (num) => (num < 10 ? `0${num}` : num);
 
 function PacoLottery() {
-  // Calculate the time until the next 12:00 AM
+  // Calculate the time until the next 3:00 AM
   const now = new Date();
   const midnight = new Date();
-  midnight.setHours(24, 0, 0, 0);
+  midnight.setDate(midnight.getDate() + 1);
+  midnight.setHours(3, 0, 0, 0);
   const timeUntilMidnight = midnight - now;
 
   const renderer = ({ hours, minutes, seconds }) => {

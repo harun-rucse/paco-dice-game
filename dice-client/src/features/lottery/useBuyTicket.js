@@ -10,6 +10,7 @@ export function useBuyTicket() {
     onSuccess: () => {
       toast.success("Ticket buy successful");
       queryClient.invalidateQueries(["tickets"]);
+      queryClient.invalidateQueries(["user"]);
     },
     onError: (error) => {
       toast.error(error.message);

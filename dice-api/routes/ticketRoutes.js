@@ -6,6 +6,7 @@ const router = express.Router();
 
 router.use(auth);
 router.get("/my-tickets", ticketController.getMyTickets);
+router.get("/last-round", ticketController.getLastRound);
 
 router
   .route("/")

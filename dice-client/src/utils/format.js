@@ -11,3 +11,7 @@ export const currencyFormat = (val) => {
     currency: "USD",
   }).format(val);
 };
+
+export const padNumber = (number, digit) => {
+  return String(number).padStart(digit, "0");
+};

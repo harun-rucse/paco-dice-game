@@ -130,9 +130,11 @@ const createTicket = catchAsync(async (req, res, next) => {
   if (decimal.compare(account.paco, requiredPaco, "lt"))
     return next(new AppError("Insufficient balance for buy ticket", 400));
 
-  // Get the previous date ticket round number
-  const prevDayTicket = await Ticket.findOne({ buyAt: { $lt: new Date() } });
-  const round = prevDayTicket ? prevDayTicket.round + 1 : 1;
+  // Get the previous ticket round number of the user
+  const prevTicket = await Ticket.findOne({ account: req.account._id }).sort(
+    "-buyAt"
+  );
+  const round = prevTicket ? prevTicket.round + 1 : 1;
 
   let rewardAmount = 0;
   let poolAmount = 0;
@@ -312,6 +314,20 @@ const getMyTickets = catchAsync(async (req, res, next) => {
   res.status(200).json({ tickets, count });
 });
 
+/**
+ * @desc    Get Last ticket round
+ * @route   GET /api/tickets/last-round
+ * @access  Private
+ */
+const getLastRound = catchAsync(async (req, res, next) => {
+  const ticket = await Ticket.findOne({ account: req.account._id }).sort(
+    "-buyAt"
+  );
+  if (!ticket) return next(new AppError("No ticket found", 400));
+
+  res.status(200).json(ticket.round);
+});
+
 module.exports = {
   createTicketSetting,
   getTicketSetting,
@@ -320,4 +336,5 @@ module.exports = {
   createTicket,
   getAllTickets,
   getMyTickets,
+  getLastRound,
 };
