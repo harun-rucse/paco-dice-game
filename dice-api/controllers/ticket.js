@@ -130,9 +130,11 @@ const createTicket = catchAsync(async (req, res, next) => {
   if (decimal.compare(account.paco, requiredPaco, "lt"))
     return next(new AppError("Insufficient balance for buy ticket", 400));
 
-  // Get the previous date ticket round number
-  const prevDayTicket = await Ticket.findOne({ buyAt: { $lt: new Date() } });
-  const round = prevDayTicket ? prevDayTicket.round + 1 : 1;
+  // Get the previous ticket round number of the user
+  const prevTicket = await Ticket.findOne({ account: req.account._id }).sort(
+    "-buyAt"
+  );
+  const round = prevTicket ? prevTicket.round + 1 : 1;
 
   let rewardAmount = 0;
   let poolAmount = 0;
@@ -242,17 +244,12 @@ const getMyTickets = catchAsync(async (req, res, next) => {
   yesterday.setDate(yesterday.getDate() - 1);
   yesterday.setHours(3, 0, 0, 0);
 
-  const count = await Ticket.countDocuments({
-    account: req.account._id,
-    round,
-  });
+  const query = { account: req.account._id, round };
+  const count = await Ticket.countDocuments(query);
 
   const tickets = await Ticket.aggregate([
     {
-      $match: {
-        account: req.account._id,
-        round,
-      },
+      $match: query,
     },
     {
       $lookup: {
@@ -312,6 +309,80 @@ const getMyTickets = catchAsync(async (req, res, next) => {
   res.status(200).json({ tickets, count });
 });
 
+/**
+ * @desc    Get Last ticket round
+ * @route   GET /api/tickets/last-round
+ * @access  Private
+ */
+const getLastRound = catchAsync(async (req, res, next) => {
+  const ticket = await Ticket.findOne({ account: req.account._id }).sort(
+    "-buyAt"
+  );
+  if (!ticket) return next(new AppError("No ticket found", 400));
+
+  res.status(200).json(ticket.round);
+});
+
+/**
+ * @desc    Get My Histories
+ * @route   GET /api/tickets/my-histories?page=1&limit=10
+ * @access  Private
+ */
+const getMyHistories = catchAsync(async (req, res, next) => {
+  const page = Number(req.query.page || 1);
+  const limit = Number(req.query.limit || 10);
+  const round = Number(req.query.round || 1);
+
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  yesterday.setHours(3, 0, 0, 0);
+
+  const query = { account: req.account._id, round, buyAt: { $lt: yesterday } };
+  const count = await Ticket.countDocuments(query);
+
+  const tickets = await Ticket.aggregate([
+    {
+      $match: query,
+    },
+    {
+      $lookup: {
+        from: "accounts",
+        localField: "account",
+        foreignField: "_id",
+        as: "account",
+      },
+    },
+    {
+      $unwind: "$account",
+    },
+    {
+      $addFields: {
+        winningTier: "TEST",
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        username: "$account.username",
+        type: "$type",
+        round: { $concat: ["Round ", { $toString: "$round" }] },
+        winningTier: 1,
+        buyAt: 1,
+        prize: "$reward",
+        reward: 1,
+      },
+    },
+    {
+      $skip: limit * (page - 1),
+    },
+    {
+      $limit: limit,
+    },
+  ]);
+
+  res.status(200).json({ histories: tickets, count });
+});
+
 module.exports = {
   createTicketSetting,
   getTicketSetting,
@@ -320,4 +391,6 @@ module.exports = {
   createTicket,
   getAllTickets,
   getMyTickets,
+  getLastRound,
+  getMyHistories,
 };

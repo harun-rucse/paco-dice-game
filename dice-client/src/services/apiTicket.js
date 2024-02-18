@@ -34,3 +34,25 @@ export const getMyTickets = async (page = 1, limit = 10, round = 1) => {
     throw new Error(err?.response?.data?.message);
   }
 };
+
+export const getLastRound = async () => {
+  try {
+    const { data } = await api.get("/tickets/last-round");
+
+    return data;
+  } catch (err) {
+    throw new Error(err?.response?.data?.message);
+  }
+};
+
+export const getMyHistories = async (page = 1, limit = 10, round = 1) => {
+  try {
+    const { data } = await api.get(
+      `/tickets/my-histories?page=${page}&limit=${limit}&round=${round}`
+    );
+
+    return data;
+  } catch (err) {
+    throw new Error(err?.response?.data?.message);
+  }
+};
