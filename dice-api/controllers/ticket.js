@@ -430,6 +430,77 @@ const getMyHistories = catchAsync(async (req, res, next) => {
   res.status(200).json({ histories: tickets, count });
 });
 
+/**
+ * @desc    Get All bets
+ * @route   GET /api/tickets/all-bets?page=1&limit=10&type=all
+ * @query   page number
+ * @query   limit number
+ * @query   round number
+ * @query   type = all, losing, winning
+ * @access  Private
+ */
+const getAllBets = catchAsync(async (req, res, next) => {
+  const page = Number(req.query.page || 1);
+  const limit = Number(req.query.limit || 10);
+  const round = Number(req.query.round || 1);
+  const type = req.query.type;
+
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  yesterday.setHours(3, 0, 0, 0);
+
+  let query = { round, buyAt: { $lt: yesterday } };
+  if (type === "winning") {
+    query = { ...query, tier: { $ne: "ZERO" } };
+  } else if (type === "losing") {
+    query = { ...query, tier: { $eq: "ZERO" } };
+  }
+
+  const count = await Ticket.countDocuments(query);
+
+  let tickets = await Ticket.aggregate([
+    {
+      $match: query,
+    },
+    {
+      $lookup: {
+        from: "accounts",
+        localField: "account",
+        foreignField: "_id",
+        as: "account",
+      },
+    },
+    {
+      $unwind: "$account",
+    },
+    {
+      $project: {
+        _id: 1,
+        username: "$account.username",
+        type: "$type",
+        round: { $concat: ["Round ", { $toString: "$round" }] },
+        tier: "$tier",
+        buyAt: 1,
+        prize: "$reward",
+        reward: 1,
+      },
+    },
+    {
+      $skip: limit * (page - 1),
+    },
+    {
+      $limit: limit,
+    },
+  ]);
+
+  tickets = tickets.map((ticket) => ({
+    ...ticket,
+    winningTier: getWinningTierName(ticket.tier),
+  }));
+
+  res.status(200).json({ allBets: tickets, count });
+});
+
 module.exports = {
   createTicketSetting,
   getTicketSetting,
@@ -440,4 +511,5 @@ module.exports = {
   getMyTickets,
   getLastRound,
   getMyHistories,
+  getAllBets,
 };

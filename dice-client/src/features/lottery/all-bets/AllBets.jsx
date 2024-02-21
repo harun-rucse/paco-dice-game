@@ -1,23 +1,51 @@
-import Pagination from "../../../components/Pagination";
+import { useState } from "react";
 import Table from "../Table";
 import TopBar from "../TopBar";
 import RoundCard from "../RoundCard";
+import LoadingSpinner from "../../../components/LoadingSpinner";
+import Pagination from "../../../components/Pagination";
+import { numberFormat } from "../../../utils/format";
+import useGetAllBets from "../useGetAllBets";
+import { cn } from "../../../utils";
 
 function AllBets() {
+  const [type, setType] = useState("all");
+  const { isLoading, allBets, count } = useGetAllBets(type);
+
+  if (isLoading) return <LoadingSpinner className="h-[36rem]" />;
+
   return (
     <div className="text-white">
       {/* TopBar */}
-      <TopBar title="My Winnings">
-        <RoundCard />
+      <TopBar title="All Bets">
+        <RoundCard prevDayRound={true} />
 
         <div className="flex items-center gap-2 mt-4 md:mt-0">
-          <button className="bg-[#6a446b] text-white text-sm md:text-base px-3 md:px-6 py-1 md:py-2 rounded-xl shadow-xl border border-[#8e758f]">
+          <button
+            className={cn(
+              "text-white text-sm md:text-base px-3 md:px-6 py-1 md:py-2 rounded-xl shadow-xl border border-[#8e758f]",
+              type === "all" ? "bg-[#915093]" : "bg-[#6a446b]"
+            )}
+            onClick={() => setType("all")}
+          >
             All
           </button>
-          <button className="bg-[#6a446b] text-white text-sm md:text-base px-3 md:px-6 py-1 md:py-2 rounded-xl shadow-xl border border-[#8e758f]">
+          <button
+            className={cn(
+              "text-white text-sm md:text-base px-3 md:px-6 py-1 md:py-2 rounded-xl shadow-xl border border-[#8e758f]",
+              type === "losing" ? "bg-[#915093]" : "bg-[#6a446b]"
+            )}
+            onClick={() => setType("losing")}
+          >
             Losing Bets
           </button>
-          <button className="bg-[#915093] text-white text-sm md:text-base px-3 md:px-6 py-1 md:py-2 rounded-xl shadow-xl border border-[#8e758f]">
+          <button
+            className={cn(
+              "text-white text-sm md:text-base px-3 md:px-6 py-1 md:py-2 rounded-xl shadow-xl border border-[#8e758f]",
+              type === "winning" ? "bg-[#915093]" : "bg-[#6a446b]"
+            )}
+            onClick={() => setType("winning")}
+          >
             Winning Bets
           </button>
         </div>
@@ -27,29 +55,31 @@ function AllBets() {
 
       {/* My winnings Table */}
       <Table
-        columns="grid-cols-[0.5fr_0.5fr_0.5fr_0.5fr_0.1fr] md:grid-cols-[1fr_1fr_1fr_0.5fr_0.1fr]"
+        columns="grid-cols-[0.5fr_0.5fr_0.5fr_0.5fr_0.5fr_0.1fr] md:grid-cols-[1fr_1fr_1fr_1fr_0.5fr_0.1fr]"
         className="min-w-[40rem]"
       >
         <Table.Header>
           <span>Username</span>
-          <span>Ticket Type</span>
+          <span>Ticket</span>
+          <span>Round</span>
           <span>Winning Tier</span>
           <span>Prize</span>
           <span />
         </Table.Header>
         <Table.Body>
-          {Array.from({ length: 10 }).map((_, i) => (
+          {allBets?.map((ticket, i) => (
             <Table.Row key={i}>
-              <span>mightybeast951</span>
-              <span>Mega</span>
-              <span>Minor Jackpot</span>
-              <span>1,058,515,990</span>
+              <span>{ticket.username}</span>
+              <span>{ticket.type}</span>
+              <span>{ticket.round}</span>
+              <span>{ticket.winningTier}</span>
+              <span>{ticket.reward ? numberFormat(ticket.reward) : "-"}</span>
               <img src="/tokens/paco.png" alt="" className="w-6" />
             </Table.Row>
           ))}
         </Table.Body>
         <Table.Footer>
-          <Pagination count={20} />
+          <Pagination count={count} />
         </Table.Footer>
       </Table>
     </div>

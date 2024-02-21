@@ -73,7 +73,7 @@ function MyHistory() {
               <span>{ticket.type}</span>
               <span>{ticket.round}</span>
               <span>{ticket.winningTier}</span>
-              <span>{numberFormat(ticket.reward)}</span>
+              <span>{ticket.reward ? numberFormat(ticket.reward) : "-"}</span>
               <img src="/tokens/paco.png" alt="" className="w-6" />
             </Table.Row>
           ))}

@@ -61,3 +61,20 @@ export const getMyHistories = async (
     throw new Error(err?.response?.data?.message);
   }
 };
+
+export const getAllBets = async (
+  page = 1,
+  limit = 10,
+  round = 1,
+  type = "all"
+) => {
+  try {
+    const { data } = await api.get(
+      `/tickets/all-bets?page=${page}&limit=${limit}&round=${round}&type=${type}`
+    );
+
+    return data;
+  } catch (err) {
+    throw new Error(err?.response?.data?.message);
+  }
+};

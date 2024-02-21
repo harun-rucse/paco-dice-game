@@ -8,6 +8,7 @@ router.use(auth);
 router.get("/last-round", ticketController.getLastRound);
 router.get("/my-tickets", ticketController.getMyTickets);
 router.get("/my-histories", ticketController.getMyHistories);
+router.get("/all-bets", ticketController.getAllBets);
 
 router
   .route("/")
