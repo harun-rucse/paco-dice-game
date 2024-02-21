@@ -45,10 +45,15 @@ export const getLastRound = async () => {
   }
 };
 
-export const getMyHistories = async (page = 1, limit = 10, round = 1) => {
+export const getMyHistories = async (
+  page = 1,
+  limit = 10,
+  round = 1,
+  type = "all"
+) => {
   try {
     const { data } = await api.get(
-      `/tickets/my-histories?page=${page}&limit=${limit}&round=${round}`
+      `/tickets/my-histories?page=${page}&limit=${limit}&round=${round}&type=${type}`
     );
 
     return data;

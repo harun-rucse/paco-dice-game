@@ -361,19 +361,30 @@ const getLastRound = catchAsync(async (req, res, next) => {
 
 /**
  * @desc    Get My Histories
- * @route   GET /api/tickets/my-histories?page=1&limit=10
+ * @route   GET /api/tickets/my-histories?page=1&limit=10&type=all
+ * @query   page number
+ * @query   limit number
+ * @query   round number
+ * @query   type = all, losing, winning
  * @access  Private
  */
 const getMyHistories = catchAsync(async (req, res, next) => {
   const page = Number(req.query.page || 1);
   const limit = Number(req.query.limit || 10);
   const round = Number(req.query.round || 1);
+  const type = req.query.type;
 
   const yesterday = new Date();
   yesterday.setDate(yesterday.getDate() - 1);
   yesterday.setHours(3, 0, 0, 0);
 
-  const query = { account: req.account._id, round, buyAt: { $lt: yesterday } };
+  let query = { account: req.account._id, round, buyAt: { $lt: yesterday } };
+  if (type === "winning") {
+    query = { ...query, tier: { $ne: "ZERO" } };
+  } else if (type === "losing") {
+    query = { ...query, tier: { $eq: "ZERO" } };
+  }
+
   const count = await Ticket.countDocuments(query);
 
   let tickets = await Ticket.aggregate([

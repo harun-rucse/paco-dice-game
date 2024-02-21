@@ -3,7 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import { getMyHistories } from "../../services/apiTicket";
 import { PAGE_SIZE } from "../../utils/constant";
 
-export default function useGetMyHistories() {
+export default function useGetMyHistories(type) {
   const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
   const page = !searchParams.get("page") ? 1 : Number(searchParams.get("page"));
@@ -13,23 +13,23 @@ export default function useGetMyHistories() {
   const limit = PAGE_SIZE;
 
   const { isLoading, data: { histories, count } = {} } = useQuery({
-    queryKey: ["my-histories", page, limit, round],
-    queryFn: () => getMyHistories(page, limit, round),
+    queryKey: ["my-histories", page, limit, round, type],
+    queryFn: () => getMyHistories(page, limit, round, type),
   });
 
   // Pre-fetching
   const pageCount = Math.ceil(count / PAGE_SIZE);
   if (page < pageCount) {
     queryClient.prefetchQuery({
-      queryKey: ["my-histories", page + 1, limit, round],
-      queryFn: () => getMyHistories(page + 1, limit, round),
+      queryKey: ["my-histories", page + 1, limit, round, type],
+      queryFn: () => getMyHistories(page + 1, limit, round, type),
     });
   }
 
   if (page > 1) {
     queryClient.prefetchQuery({
-      queryKey: ["my-histories", page - 1, limit, round],
-      queryFn: () => getMyHistories(page - 1, limit, round),
+      queryKey: ["my-histories", page - 1, limit, round, type],
+      queryFn: () => getMyHistories(page - 1, limit, round, type),
     });
   }
 
