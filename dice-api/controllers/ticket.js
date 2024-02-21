@@ -8,9 +8,33 @@ const catchAsync = require("../utils/catch-async");
 const decimal = require("../utils/decimal");
 
 function getRandomString(min, max) {
-  var strings = ["ONE", "TWO", "THREE", "FOUR", "FIVE"];
-  var randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+  const strings = [
+    "ZERO",
+    "ONE",
+    "TWO",
+    "THREE",
+    "FOUR",
+    "FIVE",
+    "MINOR_JACKPOT",
+    "MEGA_JACKPOT",
+  ];
+  const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
   return strings[randomNumber - 1];
+}
+
+function getWinningTierName(tier) {
+  const tierMapping = {
+    ZERO: "-",
+    ONE: "Tier 1",
+    TWO: "Tier 2",
+    THREE: "Tier 3",
+    FOUR: "Tier 4",
+    FIVE: "Tier 5",
+    MINOR_JACKPOT: "Minor Jackpot",
+    MEGA_JACKPOT: "Mega jackpot",
+  };
+
+  return tierMapping[tier];
 }
 
 /**
@@ -60,8 +84,16 @@ const getTicketSetting = catchAsync(async (req, res, next) => {
  * @access  Private(admin)
  */
 const createTicketTier = catchAsync(async (req, res, next) => {
-  const { ONE, TWO, THREE, FOUR, FIVE } = req.body;
-  if (!ONE || !TWO || !THREE || !FOUR || !FIVE)
+  const { ONE, TWO, THREE, FOUR, FIVE, MINOR_JACKPOT, MEGA_JACKPOT } = req.body;
+  if (
+    !ONE ||
+    !TWO ||
+    !THREE ||
+    !FOUR ||
+    !FIVE ||
+    !MINOR_JACKPOT ||
+    !MEGA_JACKPOT
+  )
     return next(new AppError("All fields are required", 400));
 
   const ticketTier = await TicketTier.findOne();
@@ -74,6 +106,8 @@ const createTicketTier = catchAsync(async (req, res, next) => {
     newTicketTier.THREE = THREE;
     newTicketTier.FOUR = FOUR;
     newTicketTier.FIVE = FIVE;
+    newTicketTier.MINOR_JACKPOT = MINOR_JACKPOT;
+    newTicketTier.MEGA_JACKPOT = MEGA_JACKPOT;
 
     response = await newTicketTier.save();
   } else {
@@ -82,6 +116,8 @@ const createTicketTier = catchAsync(async (req, res, next) => {
     ticketTier.THREE = THREE;
     ticketTier.FOUR = FOUR;
     ticketTier.FIVE = FIVE;
+    ticketTier.MINOR_JACKPOT = MINOR_JACKPOT;
+    ticketTier.MEGA_JACKPOT = MEGA_JACKPOT;
 
     response = await ticketTier.save();
   }
@@ -144,7 +180,7 @@ const createTicket = catchAsync(async (req, res, next) => {
       .fill()
       .map(async () => {
         // Generate random tier for each ticket
-        const tier = getRandomString(1, 5);
+        const tier = getRandomString(1, 7);
 
         const newTicket = new Ticket({
           account: accountId,
@@ -340,7 +376,7 @@ const getMyHistories = catchAsync(async (req, res, next) => {
   const query = { account: req.account._id, round, buyAt: { $lt: yesterday } };
   const count = await Ticket.countDocuments(query);
 
-  const tickets = await Ticket.aggregate([
+  let tickets = await Ticket.aggregate([
     {
       $match: query,
     },
@@ -356,17 +392,12 @@ const getMyHistories = catchAsync(async (req, res, next) => {
       $unwind: "$account",
     },
     {
-      $addFields: {
-        winningTier: "TEST",
-      },
-    },
-    {
       $project: {
         _id: 1,
         username: "$account.username",
         type: "$type",
         round: { $concat: ["Round ", { $toString: "$round" }] },
-        winningTier: 1,
+        tier: "$tier",
         buyAt: 1,
         prize: "$reward",
         reward: 1,
@@ -379,6 +410,11 @@ const getMyHistories = catchAsync(async (req, res, next) => {
       $limit: limit,
     },
   ]);
+
+  tickets = tickets.map((ticket) => ({
+    ...ticket,
+    winningTier: getWinningTierName(ticket.tier),
+  }));
 
   res.status(200).json({ histories: tickets, count });
 });

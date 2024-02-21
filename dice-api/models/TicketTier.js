@@ -3,6 +3,10 @@ const { Schema, model } = mongoose;
 
 const tickerTierSchema = new Schema(
   {
+    ZERO: {
+      type: Number,
+      default: 0,
+    },
     ONE: {
       type: Number,
       required: true,
@@ -20,6 +24,14 @@ const tickerTierSchema = new Schema(
       required: true,
     },
     FIVE: {
+      type: Number,
+      required: true,
+    },
+    MINOR_JACKPOT: {
+      type: Number,
+      required: true,
+    },
+    MEGA_JACKPOT: {
       type: Number,
       required: true,
     },
