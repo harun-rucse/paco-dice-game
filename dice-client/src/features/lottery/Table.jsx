@@ -24,6 +24,9 @@ function TableBody({ children, className }) {
   return (
     <div className={cn("space-y-2 py-2 bg-[#794079]", className)}>
       {children}
+      {children?.length === 0 && (
+        <span className="block text-center text-sm py-2">No data found!</span>
+      )}
     </div>
   );
 }

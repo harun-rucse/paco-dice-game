@@ -8,9 +8,33 @@ const catchAsync = require("../utils/catch-async");
 const decimal = require("../utils/decimal");
 
 function getRandomString(min, max) {
-  var strings = ["ONE", "TWO", "THREE", "FOUR", "FIVE"];
-  var randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+  const strings = [
+    "ZERO",
+    "ONE",
+    "TWO",
+    "THREE",
+    "FOUR",
+    "FIVE",
+    "MINOR_JACKPOT",
+    "MEGA_JACKPOT",
+  ];
+  const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
   return strings[randomNumber - 1];
+}
+
+function getWinningTierName(tier) {
+  const tierMapping = {
+    ZERO: "-",
+    ONE: "Tier 1",
+    TWO: "Tier 2",
+    THREE: "Tier 3",
+    FOUR: "Tier 4",
+    FIVE: "Tier 5",
+    MINOR_JACKPOT: "Minor Jackpot",
+    MEGA_JACKPOT: "Mega jackpot",
+  };
+
+  return tierMapping[tier];
 }
 
 /**
@@ -60,8 +84,16 @@ const getTicketSetting = catchAsync(async (req, res, next) => {
  * @access  Private(admin)
  */
 const createTicketTier = catchAsync(async (req, res, next) => {
-  const { ONE, TWO, THREE, FOUR, FIVE } = req.body;
-  if (!ONE || !TWO || !THREE || !FOUR || !FIVE)
+  const { ONE, TWO, THREE, FOUR, FIVE, MINOR_JACKPOT, MEGA_JACKPOT } = req.body;
+  if (
+    !ONE ||
+    !TWO ||
+    !THREE ||
+    !FOUR ||
+    !FIVE ||
+    !MINOR_JACKPOT ||
+    !MEGA_JACKPOT
+  )
     return next(new AppError("All fields are required", 400));
 
   const ticketTier = await TicketTier.findOne();
@@ -74,6 +106,8 @@ const createTicketTier = catchAsync(async (req, res, next) => {
     newTicketTier.THREE = THREE;
     newTicketTier.FOUR = FOUR;
     newTicketTier.FIVE = FIVE;
+    newTicketTier.MINOR_JACKPOT = MINOR_JACKPOT;
+    newTicketTier.MEGA_JACKPOT = MEGA_JACKPOT;
 
     response = await newTicketTier.save();
   } else {
@@ -82,6 +116,8 @@ const createTicketTier = catchAsync(async (req, res, next) => {
     ticketTier.THREE = THREE;
     ticketTier.FOUR = FOUR;
     ticketTier.FIVE = FIVE;
+    ticketTier.MINOR_JACKPOT = MINOR_JACKPOT;
+    ticketTier.MEGA_JACKPOT = MEGA_JACKPOT;
 
     response = await ticketTier.save();
   }
@@ -144,7 +180,7 @@ const createTicket = catchAsync(async (req, res, next) => {
       .fill()
       .map(async () => {
         // Generate random tier for each ticket
-        const tier = getRandomString(1, 5);
+        const tier = getRandomString(1, 7);
 
         const newTicket = new Ticket({
           account: accountId,
@@ -325,22 +361,33 @@ const getLastRound = catchAsync(async (req, res, next) => {
 
 /**
  * @desc    Get My Histories
- * @route   GET /api/tickets/my-histories?page=1&limit=10
+ * @route   GET /api/tickets/my-histories?page=1&limit=10&type=all
+ * @query   page number
+ * @query   limit number
+ * @query   round number
+ * @query   type = all, losing, winning
  * @access  Private
  */
 const getMyHistories = catchAsync(async (req, res, next) => {
   const page = Number(req.query.page || 1);
   const limit = Number(req.query.limit || 10);
   const round = Number(req.query.round || 1);
+  const type = req.query.type;
 
   const yesterday = new Date();
   yesterday.setDate(yesterday.getDate() - 1);
   yesterday.setHours(3, 0, 0, 0);
 
-  const query = { account: req.account._id, round, buyAt: { $lt: yesterday } };
+  let query = { account: req.account._id, round, buyAt: { $lt: yesterday } };
+  if (type === "winning") {
+    query = { ...query, tier: { $ne: "ZERO" } };
+  } else if (type === "losing") {
+    query = { ...query, tier: { $eq: "ZERO" } };
+  }
+
   const count = await Ticket.countDocuments(query);
 
-  const tickets = await Ticket.aggregate([
+  let tickets = await Ticket.aggregate([
     {
       $match: query,
     },
@@ -356,17 +403,12 @@ const getMyHistories = catchAsync(async (req, res, next) => {
       $unwind: "$account",
     },
     {
-      $addFields: {
-        winningTier: "TEST",
-      },
-    },
-    {
       $project: {
         _id: 1,
         username: "$account.username",
         type: "$type",
         round: { $concat: ["Round ", { $toString: "$round" }] },
-        winningTier: 1,
+        tier: "$tier",
         buyAt: 1,
         prize: "$reward",
         reward: 1,
@@ -380,7 +422,83 @@ const getMyHistories = catchAsync(async (req, res, next) => {
     },
   ]);
 
+  tickets = tickets.map((ticket) => ({
+    ...ticket,
+    winningTier: getWinningTierName(ticket.tier),
+  }));
+
   res.status(200).json({ histories: tickets, count });
+});
+
+/**
+ * @desc    Get All bets
+ * @route   GET /api/tickets/all-bets?page=1&limit=10&type=all
+ * @query   page number
+ * @query   limit number
+ * @query   round number
+ * @query   type = all, losing, winning
+ * @access  Private
+ */
+const getAllBets = catchAsync(async (req, res, next) => {
+  const page = Number(req.query.page || 1);
+  const limit = Number(req.query.limit || 10);
+  const round = Number(req.query.round || 1);
+  const type = req.query.type;
+
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  yesterday.setHours(3, 0, 0, 0);
+
+  let query = { round, buyAt: { $lt: yesterday } };
+  if (type === "winning") {
+    query = { ...query, tier: { $ne: "ZERO" } };
+  } else if (type === "losing") {
+    query = { ...query, tier: { $eq: "ZERO" } };
+  }
+
+  const count = await Ticket.countDocuments(query);
+
+  let tickets = await Ticket.aggregate([
+    {
+      $match: query,
+    },
+    {
+      $lookup: {
+        from: "accounts",
+        localField: "account",
+        foreignField: "_id",
+        as: "account",
+      },
+    },
+    {
+      $unwind: "$account",
+    },
+    {
+      $project: {
+        _id: 1,
+        username: "$account.username",
+        type: "$type",
+        round: { $concat: ["Round ", { $toString: "$round" }] },
+        tier: "$tier",
+        buyAt: 1,
+        prize: "$reward",
+        reward: 1,
+      },
+    },
+    {
+      $skip: limit * (page - 1),
+    },
+    {
+      $limit: limit,
+    },
+  ]);
+
+  tickets = tickets.map((ticket) => ({
+    ...ticket,
+    winningTier: getWinningTierName(ticket.tier),
+  }));
+
+  res.status(200).json({ allBets: tickets, count });
 });
 
 module.exports = {
@@ -393,4 +511,5 @@ module.exports = {
   getMyTickets,
   getLastRound,
   getMyHistories,
+  getAllBets,
 };

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Table from "../Table";
 import TopBar from "../TopBar";
 import RoundCard from "../RoundCard";
@@ -5,9 +6,11 @@ import useGetMyHistories from "../useGetMyHistories";
 import LoadingSpinner from "../../../components/LoadingSpinner";
 import Pagination from "../../../components/Pagination";
 import { numberFormat } from "../../../utils/format";
+import { cn } from "../../../utils";
 
 function MyHistory() {
-  const { isLoading, histories, count } = useGetMyHistories();
+  const [type, setType] = useState("all");
+  const { isLoading, histories, count } = useGetMyHistories(type);
 
   if (isLoading) return <LoadingSpinner className="h-[36rem]" />;
 
@@ -18,13 +21,31 @@ function MyHistory() {
         <RoundCard prevDayRound={true} />
 
         <div className="flex items-center gap-2 mt-4 md:mt-0">
-          <button className="bg-[#6a446b] text-white text-sm md:text-base px-3 md:px-6 py-1 md:py-2 rounded-xl shadow-xl border border-[#8e758f]">
+          <button
+            className={cn(
+              "text-white text-sm md:text-base px-3 md:px-6 py-1 md:py-2 rounded-xl shadow-xl border border-[#8e758f]",
+              type === "all" ? "bg-[#915093]" : "bg-[#6a446b]"
+            )}
+            onClick={() => setType("all")}
+          >
             All
           </button>
-          <button className="bg-[#6a446b] text-white text-sm md:text-base px-3 md:px-6 py-1 md:py-2 rounded-xl shadow-xl border border-[#8e758f]">
+          <button
+            className={cn(
+              "text-white text-sm md:text-base px-3 md:px-6 py-1 md:py-2 rounded-xl shadow-xl border border-[#8e758f]",
+              type === "losing" ? "bg-[#915093]" : "bg-[#6a446b]"
+            )}
+            onClick={() => setType("losing")}
+          >
             Losing Bets
           </button>
-          <button className="bg-[#915093] text-white text-sm md:text-base px-3 md:px-6 py-1 md:py-2 rounded-xl shadow-xl border border-[#8e758f]">
+          <button
+            className={cn(
+              "text-white text-sm md:text-base px-3 md:px-6 py-1 md:py-2 rounded-xl shadow-xl border border-[#8e758f]",
+              type === "winning" ? "bg-[#915093]" : "bg-[#6a446b]"
+            )}
+            onClick={() => setType("winning")}
+          >
             Winning Bets
           </button>
         </div>
@@ -52,7 +73,7 @@ function MyHistory() {
               <span>{ticket.type}</span>
               <span>{ticket.round}</span>
               <span>{ticket.winningTier}</span>
-              <span>{numberFormat(ticket.reward)}</span>
+              <span>{ticket.reward ? numberFormat(ticket.reward) : "-"}</span>
               <img src="/tokens/paco.png" alt="" className="w-6" />
             </Table.Row>
           ))}

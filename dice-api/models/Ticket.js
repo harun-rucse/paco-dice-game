@@ -18,7 +18,16 @@ const ticketSchema = new Schema(
     },
     tier: {
       type: String,
-      enum: ["ONE", "TWO", "THREE", "FOUR", "FIVE"],
+      enum: [
+        "ZERO",
+        "ONE",
+        "TWO",
+        "THREE",
+        "FOUR",
+        "FIVE",
+        "MINOR_JACKPOT",
+        "MEGA_JACKPOT",
+      ],
       required: true,
     },
     reward: {
