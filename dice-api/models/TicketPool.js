@@ -11,7 +11,23 @@ const ticketPoolSchema = new Schema(
       type: String,
       default: "0",
     },
+    RESERVE: {
+      type: String,
+      default: "0",
+    },
+    BONUS: {
+      type: String,
+      default: "0",
+    },
+    TEAM: {
+      type: String,
+      default: "0",
+    },
     PACO_BURNT: {
+      type: String,
+      default: "0",
+    },
+    FEE: {
       type: String,
       default: "0",
     },

@@ -1,10 +1,14 @@
 import Countdown from "react-countdown";
 import { numberFormat } from "../../utils/format";
 import InfoCard from "./InfoCard";
+import useGetTicketStatistics from "./useGetTicketStatistics";
+import LoadingSpinner from "../../components/LoadingSpinner";
 
 const formatNumber = (num) => (num < 10 ? `0${num}` : num);
 
 function PacoLottery() {
+  const { isLoading, ticketStatistics } = useGetTicketStatistics();
+
   // Calculate the time until the next 3:00 AM
   const now = new Date();
   const midnight = new Date();
@@ -17,6 +21,8 @@ function PacoLottery() {
       seconds
     )}`;
   };
+
+  if (isLoading) return <LoadingSpinner className="h-[4rem]" />;
 
   return (
     <div className="flex flex-col gap-6">
@@ -32,21 +38,21 @@ function PacoLottery() {
       <div className="text-white gradient-lottery-info rounded-2xl px-6 py-3 flex items-center justify-between gap-4 flex-wrap">
         <InfoCard
           title="Minor Jackpot"
-          subTitle={numberFormat(323144988)}
+          subTitle={numberFormat(ticketStatistics.minorJackpot)}
           titleIcon="/icons/minor-jackpot.png"
           subTitleIcon="/tokens/paco.png"
           className="bg-[#1e132d] border border-[#8556e9] rounded-full px-4"
         />
         <InfoCard
           title="Paco Mega Jackpot"
-          subTitle={numberFormat(2623144988)}
+          subTitle={numberFormat(ticketStatistics.megaJackpot)}
           titleIcon="/icons/ticket.png"
           subTitleIcon="/tokens/paco.png"
           className="bg-[#1e132d] border border-[#bd4dd1] rounded-full px-4"
         />
         <InfoCard
           title="Paco Burnt from lottery"
-          subTitle={numberFormat(2623144)}
+          subTitle={numberFormat(ticketStatistics.pacoBurnt)}
           titleIcon="/icons/fire.png"
           subTitleIcon="/tokens/paco.png"
           className="bg-[#1e132d] border border-[#ff9c47] rounded-full px-4"
@@ -60,7 +66,10 @@ function PacoLottery() {
             />
           }
         />
-        <InfoCard title="Tickets In Play" subTitle={numberFormat(104052985)} />
+        <InfoCard
+          title="Tickets In Play"
+          subTitle={numberFormat(ticketStatistics.ticketsInPlay)}
+        />
       </div>
     </div>
   );

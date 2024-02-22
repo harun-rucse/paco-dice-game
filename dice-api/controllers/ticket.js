@@ -1,8 +1,10 @@
 const TicketSettings = require("../models/TicketSettings");
 const TicketTier = require("../models/TicketTier");
 const Ticket = require("../models/Ticket");
+const TicketPool = require("../models/TicketPool");
 const Account = require("../models/Account");
 const DailyTicket = require("../models/DailyTicket");
+const StakePool = require("../models/StakePool");
 const AppError = require("../utils/app-error");
 const catchAsync = require("../utils/catch-async");
 const decimal = require("../utils/decimal");
@@ -172,8 +174,15 @@ const createTicket = catchAsync(async (req, res, next) => {
   );
   const round = prevTicket ? prevTicket.round + 1 : 1;
 
-  let rewardAmount = 0;
-  let poolAmount = 0;
+  let rewardAmount = "0";
+  let poolAmount = "0";
+  let megaJackpotAmount = "0";
+  let minorJackpotAmount = "0";
+  let reserveAmount = "0";
+  let bonusAmount = "0";
+  let teamAmount = "0";
+  let pacoBurntAmount = "0";
+  let feeAmount = "0";
 
   await Promise.all(
     Array(amount)
@@ -194,11 +203,40 @@ const createTicket = catchAsync(async (req, res, next) => {
         await newTicket.save();
 
         // Calculate pool amount
-        rewardAmount += newTicket.reward;
-        poolAmount +=
-          newTicket.reward < newTicket.price
-            ? newTicket.price - newTicket.reward
-            : 0;
+        if (tier !== "ZERO") {
+          rewardAmount = decimal.addition(rewardAmount, newTicket.reward);
+        }
+
+        if (tier === "ZERO") {
+          // 60% goes to the revenue-sharing pool
+          poolAmount = decimal.addition(poolAmount, newTicket.price * 0.6);
+          // 15% goes to the mega jackpot
+          megaJackpotAmount = decimal.addition(
+            megaJackpotAmount,
+            newTicket.price * 0.15
+          );
+          // 5% goes to the minor jackpot
+          minorJackpotAmount = decimal.addition(
+            minorJackpotAmount,
+            newTicket.price * 0.05
+          );
+          // 1% goes to the reserve
+          reserveAmount = decimal.addition(
+            reserveAmount,
+            newTicket.price * 0.01
+          );
+          // 1% goes to bonuses
+          bonusAmount = decimal.addition(bonusAmount, newTicket.price * 0.01);
+          // 17% Team
+          teamAmount = decimal.addition(teamAmount, newTicket.price * 0.01);
+          // 0.5% burn
+          pacoBurntAmount = decimal.addition(
+            pacoBurntAmount,
+            newTicket.price * 0.005
+          );
+          // 0.5 % fee
+          feeAmount = decimal.addition(feeAmount, newTicket.price * 0.005);
+        }
       })
   );
 
@@ -222,14 +260,31 @@ const createTicket = catchAsync(async (req, res, next) => {
   if (!dailyTicket) {
     const newDailyTicket = new DailyTicket({
       account: accountId,
-      rewardAmount,
-      poolAmount,
+      REWARD: rewardAmount,
+      REVENUE_SHARING_POOL: poolAmount,
+      MINOR_JACKPOT: minorJackpotAmount,
+      MEGA_JACKPOT: megaJackpotAmount,
+      RESERVE: reserveAmount,
+      BONUS: bonusAmount,
+      TEAM: teamAmount,
+      PACO_BURNT: pacoBurntAmount,
+      FEE: feeAmount,
     });
 
     await newDailyTicket.save();
   } else {
-    dailyTicket.rewardAmount = rewardAmount;
-    dailyTicket.poolAmount = poolAmount;
+    dailyTicket.REWARD = decimal.addition(dailyTicket.REWARD, rewardAmount);
+    dailyTicket.REVENUE_SHARING_POOL = decimal.addition(
+      dailyTicket.REVENUE_SHARING_POOL,
+      poolAmount
+    );
+    dailyTicket.MINOR_JACKPOT = minorJackpotAmount;
+    dailyTicket.MEGA_JACKPOT = megaJackpotAmount;
+    dailyTicket.RESERVE = reserveAmount;
+    dailyTicket.BONUS = bonusAmount;
+    dailyTicket.TEAM = teamAmount;
+    dailyTicket.BURNT = burntAmount;
+    dailyTicket.FEE = feeAmount;
 
     await dailyTicket.save();
   }
@@ -501,6 +556,186 @@ const getAllBets = catchAsync(async (req, res, next) => {
   res.status(200).json({ allBets: tickets, count });
 });
 
+/**
+ * @desc    Get Ticket statistics
+ * @route   GET /api/tickets/statistics
+ * @access  Private
+ */
+const getTicketStatistics = catchAsync(async (req, res, next) => {
+  const ticketPool = await TicketPool.findOne();
+
+  const minorJackpot = ticketPool ? ticketPool.MINOR_JACKPOT : 0;
+  const megaJackpot = ticketPool ? ticketPool.MEGA_JACKPOT : 0;
+  const pacoBurnt = ticketPool ? ticketPool.PACO_BURNT : 0;
+
+  // Calculate ticketsInPlay
+  const today = new Date();
+  today.setHours(3, 0, 0, 0);
+
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  tomorrow.setHours(3, 0, 0, 0);
+
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  yesterday.setHours(3, 0, 0, 0);
+
+  const ticketsInPlay = await Ticket.countDocuments({
+    $expr: {
+      $or: [
+        {
+          $and: [{ $gte: ["$buyAt", yesterday] }, { $lt: ["$buyAt", today] }],
+        },
+        {
+          $and: [{ $gte: ["$buyAt", today] }, { $lt: ["$buyAt", tomorrow] }],
+        },
+      ],
+    },
+  });
+
+  return res
+    .status(200)
+    .json({ minorJackpot, megaJackpot, pacoBurnt, ticketsInPlay });
+});
+
+// Schedule of Transfer ticket reward & other calculated data to ticket pool and Staking pool
+const transferDailyTicketToTicketPool = async () => {
+  const todayStart = new Date();
+  todayStart.setHours(3, 0, 0, 0);
+
+  const tomorrowStart = new Date();
+  tomorrowStart.setDate(tomorrowStart.getDate() + 1);
+  tomorrowStart.setHours(3, 0, 0, 0);
+
+  // Get daily tickets
+  const dailyTickets = await DailyTicket.find({
+    date: {
+      $gte: todayStart,
+      $lt: tomorrowStart,
+    },
+  });
+  if (!dailyTickets.length) return;
+
+  await Promise.all(
+    dailyTickets.map(async (dailyTicket) => {
+      // Transfer ticket reward to the account
+      const account = await Account.findById(dailyTicket.account);
+      account.paco = decimal.addition(account.paco, dailyTicket.REWARD);
+      await account.save();
+
+      // Transfer pool amount to the paco burnt pool
+      const ticketPool = await TicketPool.findOne();
+      if (!ticketPool) {
+        const newTicketPool = new TicketPool();
+
+        // Transfer REVENUE_SHARING_POOL to Staking pool
+        const stakePool = await StakePool.findOne();
+        if (!stakePool) {
+          const newStakePool = new StakePool();
+          newStakePool.paco = decimal.addition(
+            newStakePool.paco,
+            dailyTicket.REVENUE_SHARING_POOL
+          );
+
+          await newStakePool.save();
+        } else {
+          stakePool.paco = decimal.addition(
+            stakePool.paco,
+            dailyTicket.REVENUE_SHARING_POOL
+          );
+
+          await stakePool.save();
+        }
+
+        // Transfer MINOR_JACKPOT
+        newTicketPool.MINOR_JACKPOT = decimal.addition(
+          newTicketPool.MINOR_JACKPOT,
+          dailyTicket.MINOR_JACKPOT
+        );
+
+        // Transfer MEGA_JACKPOT
+        newTicketPool.MEGA_JACKPOT = decimal.addition(
+          newTicketPool.MEGA_JACKPOT,
+          dailyTicket.MEGA_JACKPOT
+        );
+
+        // Transfer RESERVE
+        newTicketPool.RESERVE = decimal.addition(
+          newTicketPool.RESERVE,
+          dailyTicket.RESERVE
+        );
+
+        // Transfer BONUS
+        newTicketPool.BONUS = decimal.addition(
+          newTicketPool.BONUS,
+          dailyTicket.BONUS
+        );
+
+        // Transfer TEAM
+        newTicketPool.TEAM = decimal.addition(
+          newTicketPool.TEAM,
+          dailyTicket.TEAM
+        );
+
+        // Transfer PACO_BURNT
+        newTicketPool.PACO_BURNT = decimal.addition(
+          newTicketPool.PACO_BURNT,
+          dailyTicket.PACO_BURNT
+        );
+
+        // Transfer FEE
+        newTicketPool.FEE = decimal.addition(
+          newTicketPool.FEE,
+          dailyTicket.FEE
+        );
+
+        await newTicketPool.save();
+      } else {
+        // Transfer MINOR_JACKPOT
+        ticketPool.MINOR_JACKPOT = decimal.addition(
+          ticketPool.MINOR_JACKPOT,
+          dailyTicket.MINOR_JACKPOT
+        );
+
+        // Transfer MEGA_JACKPOT
+        ticketPool.MEGA_JACKPOT = decimal.addition(
+          ticketPool.MEGA_JACKPOT,
+          dailyTicket.MEGA_JACKPOT
+        );
+
+        // Transfer RESERVE
+        ticketPool.RESERVE = decimal.addition(
+          ticketPool.RESERVE,
+          dailyTicket.RESERVE
+        );
+
+        // Transfer BONUS
+        ticketPool.BONUS = decimal.addition(
+          ticketPool.BONUS,
+          dailyTicket.BONUS
+        );
+
+        // Transfer TEAM
+        ticketPool.TEAM = decimal.addition(ticketPool.TEAM, dailyTicket.TEAM);
+
+        // Transfer PACO_BURNT
+        ticketPool.PACO_BURNT = decimal.addition(
+          ticketPool.PACO_BURNT,
+          dailyTicket.PACO_BURNT
+        );
+
+        // Transfer FEE
+        ticketPool.FEE = decimal.addition(ticketPool.FEE, dailyTicket.FEE);
+
+        await ticketPool.save();
+      }
+
+      // Delete daily ticket document from db
+      await DailyTicket.findByIdAndDelete(dailyTicket._id);
+    })
+  );
+};
+
 module.exports = {
   createTicketSetting,
   getTicketSetting,
@@ -512,4 +747,6 @@ module.exports = {
   getLastRound,
   getMyHistories,
   getAllBets,
+  getTicketStatistics,
+  transferDailyTicketToTicketPool,
 };

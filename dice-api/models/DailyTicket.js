@@ -7,13 +7,41 @@ const dailyTicketSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "Account",
     },
-    rewardAmount: {
-      type: Number,
-      required: true,
+    REWARD: {
+      type: String,
+      default: "0",
     },
-    poolAmount: {
-      type: Number,
-      required: true,
+    REVENUE_SHARING_POOL: {
+      type: String,
+      default: "0",
+    },
+    MINOR_JACKPOT: {
+      type: String,
+      default: "0",
+    },
+    MEGA_JACKPOT: {
+      type: String,
+      default: "0",
+    },
+    RESERVE: {
+      type: String,
+      default: "0",
+    },
+    BONUS: {
+      type: String,
+      default: "0",
+    },
+    TEAM: {
+      type: String,
+      default: "0",
+    },
+    PACO_BURNT: {
+      type: String,
+      default: "0",
+    },
+    FEE: {
+      type: String,
+      default: "0",
     },
     date: {
       type: Date,

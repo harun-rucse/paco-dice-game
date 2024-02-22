@@ -78,3 +78,13 @@ export const getAllBets = async (
     throw new Error(err?.response?.data?.message);
   }
 };
+
+export const getTicketStatistics = async () => {
+  try {
+    const { data } = await api.get("/tickets/statistics");
+
+    return data;
+  } catch (err) {
+    throw new Error(err?.response?.data?.message);
+  }
+};
