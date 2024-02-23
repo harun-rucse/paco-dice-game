@@ -4,8 +4,9 @@ const { auth, restrictTo } = require("../middlewares/auth");
 
 const router = express.Router();
 
-router.use(auth);
 router.get("/last-round", ticketController.getLastRound);
+
+router.use(auth);
 router.get("/my-tickets", ticketController.getMyTickets);
 router.get("/my-histories", ticketController.getMyHistories);
 router.get("/all-bets", ticketController.getAllBets);

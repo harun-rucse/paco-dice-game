@@ -8,6 +8,7 @@ const StakePool = require("../models/StakePool");
 const AppError = require("../utils/app-error");
 const catchAsync = require("../utils/catch-async");
 const decimal = require("../utils/decimal");
+const { date } = require("../utils/date");
 
 function getRandomString(min, max) {
   const strings = [
@@ -240,20 +241,11 @@ const createTicket = catchAsync(async (req, res, next) => {
       })
   );
 
-  // Find daily ticket document for this account
-  const todayStart = new Date();
-  todayStart.setHours(3, 0, 0, 0);
-
-  const tomorrowStart = new Date();
-  tomorrowStart.setDate(tomorrowStart.getDate() + 1);
-  tomorrowStart.setHours(3, 0, 0, 0);
-
   // Create daily ticket document for same account in a day [3AM - 3AM]
   const dailyTicket = await DailyTicket.findOne({
     account: accountId,
     date: {
-      $gte: todayStart,
-      $lt: tomorrowStart,
+      $gte: date.currentDateAt3AM,
     },
   });
 
@@ -324,17 +316,6 @@ const getMyTickets = catchAsync(async (req, res, next) => {
   const limit = Number(req.query.limit || 10);
   const round = Number(req.query.round || 1);
 
-  const today = new Date();
-  today.setHours(3, 0, 0, 0);
-
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  tomorrow.setHours(3, 0, 0, 0);
-
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  yesterday.setHours(3, 0, 0, 0);
-
   const query = { account: req.account._id, round };
   const count = await Ticket.countDocuments(query);
 
@@ -357,24 +338,9 @@ const getMyTickets = catchAsync(async (req, res, next) => {
       $addFields: {
         status: {
           $cond: [
-            {
-              $or: [
-                {
-                  $and: [
-                    { $gte: ["$buyAt", yesterday] },
-                    { $lt: ["$buyAt", today] },
-                  ],
-                },
-                {
-                  $and: [
-                    { $gte: ["$buyAt", today] },
-                    { $lt: ["$buyAt", tomorrow] },
-                  ],
-                },
-              ],
-            },
-            "Waiting Results",
+            { $lt: ["$buyAt", date.currentDateAt3AM] },
             "Drawn",
+            "Waiting Results",
           ],
         },
       },
@@ -403,12 +369,10 @@ const getMyTickets = catchAsync(async (req, res, next) => {
 /**
  * @desc    Get Last ticket round
  * @route   GET /api/tickets/last-round
- * @access  Private
+ * @access  Public
  */
 const getLastRound = catchAsync(async (req, res, next) => {
-  const ticket = await Ticket.findOne({ account: req.account._id }).sort(
-    "-buyAt"
-  );
+  const ticket = await Ticket.findOne().sort("-buyAt");
   if (!ticket) return next(new AppError("No ticket found", 400));
 
   res.status(200).json(ticket.round);
@@ -429,11 +393,11 @@ const getMyHistories = catchAsync(async (req, res, next) => {
   const round = Number(req.query.round || 1);
   const type = req.query.type;
 
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  yesterday.setHours(3, 0, 0, 0);
-
-  let query = { account: req.account._id, round, buyAt: { $lt: yesterday } };
+  let query = {
+    account: req.account._id,
+    round,
+    buyAt: { $lt: date.currentDateAt3AM },
+  };
   if (type === "winning") {
     query = { ...query, tier: { $ne: "ZERO" } };
   } else if (type === "losing") {
@@ -500,11 +464,7 @@ const getAllBets = catchAsync(async (req, res, next) => {
   const round = Number(req.query.round || 1);
   const type = req.query.type;
 
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  yesterday.setHours(3, 0, 0, 0);
-
-  let query = { round, buyAt: { $lt: yesterday } };
+  let query = { round, buyAt: { $lt: date.currentDateAt3AM } };
   if (type === "winning") {
     query = { ...query, tier: { $ne: "ZERO" } };
   } else if (type === "losing") {
@@ -569,28 +529,8 @@ const getTicketStatistics = catchAsync(async (req, res, next) => {
   const pacoBurnt = ticketPool ? ticketPool.PACO_BURNT : 0;
 
   // Calculate ticketsInPlay
-  const today = new Date();
-  today.setHours(3, 0, 0, 0);
-
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  tomorrow.setHours(3, 0, 0, 0);
-
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  yesterday.setHours(3, 0, 0, 0);
-
   const ticketsInPlay = await Ticket.countDocuments({
-    $expr: {
-      $or: [
-        {
-          $and: [{ $gte: ["$buyAt", yesterday] }, { $lt: ["$buyAt", today] }],
-        },
-        {
-          $and: [{ $gte: ["$buyAt", today] }, { $lt: ["$buyAt", tomorrow] }],
-        },
-      ],
-    },
+    buyAt: { $gt: date.currentDateAt3AM },
   });
 
   return res
@@ -600,18 +540,11 @@ const getTicketStatistics = catchAsync(async (req, res, next) => {
 
 // Schedule of Transfer ticket reward & other calculated data to ticket pool and Staking pool
 const transferDailyTicketToTicketPool = async () => {
-  const todayStart = new Date();
-  todayStart.setHours(3, 0, 0, 0);
-
-  const tomorrowStart = new Date();
-  tomorrowStart.setDate(tomorrowStart.getDate() + 1);
-  tomorrowStart.setHours(3, 0, 0, 0);
-
   // Get daily tickets
   const dailyTickets = await DailyTicket.find({
     date: {
-      $gte: todayStart,
-      $lt: tomorrowStart,
+      $gte: date.previousDateAt3AM,
+      $lt: date.currentDateAt3AM,
     },
   });
   if (!dailyTickets.length) return;
