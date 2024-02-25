@@ -11,6 +11,7 @@ export function useBuyTicket() {
       toast.success("Ticket buy successful");
       queryClient.invalidateQueries(["tickets"]);
       queryClient.invalidateQueries(["ticket-statistics"]);
+      queryClient.invalidateQueries(["my-ticket-count"]);
       queryClient.invalidateQueries(["user"]);
     },
     onError: (error) => {

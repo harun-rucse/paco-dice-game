@@ -1,20 +1,36 @@
+import { useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import LoadingSpinner from "../../../components/LoadingSpinner";
 import Pagination from "../../../components/Pagination";
 import Table from "../Table";
 import TopBar from "../TopBar";
-import useGetMyTickets from "../useGetMyTickets";
 import RoundCard from "../RoundCard";
+import useGetMyTickets from "../useGetMyTickets";
+import useGetLastRound from "../useGetLastRound";
 
 function MyTickets() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const { isLoading, tickets, count } = useGetMyTickets();
+  const { isLoading: isRoundLoading, round } = useGetLastRound();
 
-  if (isLoading) return <LoadingSpinner className="h-[36rem]" />;
+  // Set todays round and reset page
+  useEffect(() => {
+    if (round) {
+      searchParams.set("round", round);
+      searchParams.set("page", 1);
+
+      setSearchParams(searchParams);
+    }
+  }, [round]);
+
+  if (isLoading || isRoundLoading)
+    return <LoadingSpinner className="h-[36rem]" />;
 
   return (
     <div className="text-white">
       {/* TopBar */}
       <TopBar title="My Tickets">
-        <RoundCard />
+        <RoundCard round={round} />
         <div className="hidden md:block" />
       </TopBar>
 

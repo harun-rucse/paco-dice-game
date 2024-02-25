@@ -10,7 +10,7 @@ const catchAsync = require("../utils/catch-async");
 const decimal = require("../utils/decimal");
 const { date } = require("../utils/date");
 
-function getRandomString(min, max) {
+function _getRandomString(min, max) {
   const strings = [
     "ZERO",
     "ONE",
@@ -25,6 +25,46 @@ function getRandomString(min, max) {
   return strings[randomNumber - 1];
 }
 
+function weightedRandomNumber() {
+  const strings = [
+    "ZERO",
+    "ONE",
+    "TWO",
+    "THREE",
+    "FOUR",
+    "FIVE",
+    "SIX",
+    "SEVEN",
+    "EIGHT",
+    "NINE",
+    "TEN",
+    "MINOR_JACKPOT",
+    "MEGA_JACKPOT",
+  ];
+
+  // Define the numbers and their corresponding weights
+  var numbers = [...Array(13).keys()]; // Numbers from 0 to 13
+  var weights = [
+    18.95164755, 50, 17, 9, 4, 0.95, 0.09, 0.0085, 0.00075, 0.000002, 0.000001,
+    0.0000005, 0.0000002,
+  ]; // Example weights (adjust as needed)
+
+  // Calculate the total weight
+  var totalWeight = weights.reduce((a, b) => a + b, 0);
+
+  // Generate a random number between 0 and the total weight
+  var randomNumber = Math.random() * totalWeight;
+
+  // Loop through the weights to find the corresponding number
+  var cumulativeWeight = 0;
+  for (var i = 0; i < numbers.length; i++) {
+    cumulativeWeight += weights[i];
+    if (randomNumber < cumulativeWeight) {
+      return strings[numbers[i]];
+    }
+  }
+}
+
 function getWinningTierName(tier) {
   const tierMapping = {
     ZERO: "-",
@@ -33,6 +73,11 @@ function getWinningTierName(tier) {
     THREE: "Tier 3",
     FOUR: "Tier 4",
     FIVE: "Tier 5",
+    SIX: "Tier 6",
+    SEVEN: "Tier 7",
+    EIGHT: "Tier 8",
+    NINE: "Tier 9",
+    TEN: "Tier 10",
     MINOR_JACKPOT: "Minor Jackpot",
     MEGA_JACKPOT: "Mega jackpot",
   };
@@ -190,7 +235,7 @@ const createTicket = catchAsync(async (req, res, next) => {
       .fill()
       .map(async () => {
         // Generate random tier for each ticket
-        const tier = getRandomString(1, 7);
+        const tier = weightedRandomNumber();
 
         const newTicket = new Ticket({
           account: accountId,
@@ -241,11 +286,12 @@ const createTicket = catchAsync(async (req, res, next) => {
       })
   );
 
-  // Create daily ticket document for same account in a day [3AM - 3AM]
+  // Create daily ticket document for same account in a day [12AM - 12AM]
   const dailyTicket = await DailyTicket.findOne({
     account: accountId,
     date: {
-      $gte: date.currentDateAt3AM,
+      $gt: date.previousDateAt1159PM,
+      $lte: date.currentDateAt1159PM,
     },
   });
 
@@ -275,7 +321,7 @@ const createTicket = catchAsync(async (req, res, next) => {
     dailyTicket.RESERVE = reserveAmount;
     dailyTicket.BONUS = bonusAmount;
     dailyTicket.TEAM = teamAmount;
-    dailyTicket.BURNT = burntAmount;
+    dailyTicket.PACO_BURNT = pacoBurntAmount;
     dailyTicket.FEE = feeAmount;
 
     await dailyTicket.save();
@@ -338,9 +384,9 @@ const getMyTickets = catchAsync(async (req, res, next) => {
       $addFields: {
         status: {
           $cond: [
-            { $lt: ["$buyAt", date.currentDateAt3AM] },
-            "Drawn",
+            { $gt: ["$buyAt", date.previousDateAt1159PM] },
             "Waiting Results",
+            "Drawn",
           ],
         },
       },
@@ -363,7 +409,31 @@ const getMyTickets = catchAsync(async (req, res, next) => {
     },
   ]);
 
-  res.status(200).json({ tickets, count });
+  res.status(200).json({
+    tickets,
+    count,
+  });
+});
+
+/**
+ * @desc    Get My total tickets count
+ * @route   GET /api/tickets/my-tickets-count
+ * @access  Private
+ */
+const getMyTicketsCount = catchAsync(async (req, res, next) => {
+  const myTotalStandardTicket = await Ticket.countDocuments({
+    account: req.account._id,
+    type: "STANDARD",
+  });
+  const myTotalMegaTicket = await Ticket.countDocuments({
+    account: req.account._id,
+    type: "MEGA",
+  });
+
+  res.status(200).json({
+    totalStandardToken: myTotalStandardTicket,
+    totalMegaToken: myTotalMegaTicket,
+  });
 });
 
 /**
@@ -396,7 +466,7 @@ const getMyHistories = catchAsync(async (req, res, next) => {
   let query = {
     account: req.account._id,
     round,
-    buyAt: { $lt: date.currentDateAt3AM },
+    buyAt: { $lte: date.currentDateAt1159PM },
   };
   if (type === "winning") {
     query = { ...query, tier: { $ne: "ZERO" } };
@@ -464,7 +534,7 @@ const getAllBets = catchAsync(async (req, res, next) => {
   const round = Number(req.query.round || 1);
   const type = req.query.type;
 
-  let query = { round, buyAt: { $lt: date.currentDateAt3AM } };
+  let query = { round, buyAt: { $lte: date.currentDateAt1159PM } };
   if (type === "winning") {
     query = { ...query, tier: { $ne: "ZERO" } };
   } else if (type === "losing") {
@@ -530,7 +600,10 @@ const getTicketStatistics = catchAsync(async (req, res, next) => {
 
   // Calculate ticketsInPlay
   const ticketsInPlay = await Ticket.countDocuments({
-    buyAt: { $gt: date.currentDateAt3AM },
+    buyAt: {
+      $gt: date.previousDateAt1159PM,
+      $lte: date.currentDateAt1159PM,
+    },
   });
 
   return res
@@ -543,8 +616,8 @@ const transferDailyTicketToTicketPool = async () => {
   // Get daily tickets
   const dailyTickets = await DailyTicket.find({
     date: {
-      $gte: date.previousDateAt3AM,
-      $lt: date.currentDateAt3AM,
+      $gt: date.previousDateAt1159PM,
+      $lte: date.currentDateAt1159PM,
     },
   });
   if (!dailyTickets.length) return;
@@ -682,4 +755,5 @@ module.exports = {
   getAllBets,
   getTicketStatistics,
   transferDailyTicketToTicketPool,
+  getMyTicketsCount,
 };

@@ -1,9 +1,20 @@
+import { useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import LoadingSpinner from "../../../components/LoadingSpinner";
 import useGetTicketSetting from "../useGetTicketSetting";
 import InputBox from "./InputBox";
 
 function LobbyCard() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const { isLoading, ticketSetting } = useGetTicketSetting();
+
+  // delete round and page params from useSearchParams hook
+  useEffect(() => {
+    searchParams.delete("round");
+    searchParams.delete("page");
+
+    setSearchParams(searchParams);
+  }, []);
 
   if (isLoading) return <LoadingSpinner className="h-[6rem]" />;
 
@@ -14,7 +25,7 @@ function LobbyCard() {
           label="Standard ticket"
           type="STANDARD"
           price={ticketSetting?.["STANDARD"]}
-          total="20k"
+          total={true}
           icon="/icons/minor-jackpot.png"
         />
         <InputBox

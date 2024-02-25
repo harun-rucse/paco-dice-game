@@ -4,9 +4,14 @@ import MyTickets from "./my-tickets/MyTickets";
 import MyHistory from "./my-history/MyHistory";
 import AllBets from "./all-bets/AllBets";
 import { cn } from "../../utils";
+import useGetMyTicketCount from "./useGetMyTicketsCount";
+import LoadingSpinner from "../../components/LoadingSpinner";
 
 function LotteryCard() {
   const [tab, setTab] = useState("lobby");
+  const { isLoading, ticketCount } = useGetMyTicketCount();
+
+  if (isLoading) return <LoadingSpinner className="h-[8rem]" />;
 
   return (
     <div>
@@ -53,8 +58,8 @@ function LotteryCard() {
           <div className="flex flex-col md:flex-row items-center gap-4">
             {tab === "my-tickets" && (
               <div className="my-lottery-bg text-sm md:text-base text-white px-6 md:px-8 py-2 rounded-3xl md:rounded-full">
-                <p>My Standard Tickets: 48412</p>
-                <p>My Mega Tickets: 2335</p>
+                <p>My Standard Tickets: {ticketCount?.totalStandardToken}</p>
+                <p>My Mega Tickets: {ticketCount?.totalMegaToken}</p>
               </div>
             )}
             <button className="button !bg-[#3e5eaf] text-sm md:text-base">
