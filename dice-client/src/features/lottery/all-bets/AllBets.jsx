@@ -1,24 +1,47 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import Table from "../Table";
 import TopBar from "../TopBar";
 import RoundCard from "../RoundCard";
 import LoadingSpinner from "../../../components/LoadingSpinner";
 import Pagination from "../../../components/Pagination";
 import { numberFormat } from "../../../utils/format";
-import useGetAllBets from "../useGetAllBets";
 import { cn } from "../../../utils";
+import useGetAllBets from "../useGetAllBets";
+import useGetLastRound from "../useGetLastRound";
 
 function AllBets() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [type, setType] = useState("all");
   const { isLoading, allBets, count } = useGetAllBets(type);
+  const { isLoading: isRoundLoading, round } = useGetLastRound();
 
-  if (isLoading) return <LoadingSpinner className="h-[36rem]" />;
+  // Set todays round and reset page
+  useEffect(() => {
+    if (round) {
+      searchParams.set("round", round - 1);
+      searchParams.set("page", 1);
+
+      setSearchParams(searchParams);
+    }
+  }, [round]);
+
+  // Reset page to 1
+  useEffect(() => {
+    if (type) {
+      searchParams.set("page", 1);
+      setSearchParams(searchParams);
+    }
+  }, [type]);
+
+  if (isLoading || isRoundLoading)
+    return <LoadingSpinner className="h-[36rem]" />;
 
   return (
     <div className="text-white">
       {/* TopBar */}
       <TopBar title="All Bets">
-        <RoundCard prevDayRound={true} />
+        <RoundCard round={round - 1} />
 
         <div className="flex items-center gap-2 mt-4 md:mt-0">
           <button

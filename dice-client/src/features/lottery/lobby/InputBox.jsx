@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useBuyTicket } from "../useBuyTicket";
+import { abbreviateNumber } from "../../../utils/format";
 
 function InputBox({ price, label, type, total, icon }) {
   const [amount, setAmount] = useState("");
@@ -26,7 +27,8 @@ function InputBox({ price, label, type, total, icon }) {
           </div>
           {total && (
             <p className="text-white">
-              Total: <span>{total}</span> PACO
+              Total:{" "}
+              <span>{amount ? abbreviateNumber(amount * price) : 0}</span> PACO
             </p>
           )}
         </div>

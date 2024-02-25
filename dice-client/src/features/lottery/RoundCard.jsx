@@ -1,21 +1,10 @@
-import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 import { padNumber } from "../../utils/format";
-import useGetLastRound from "./useGetLastRound";
-import LoadingSpinner from "../../components/LoadingSpinner";
 
-function RoundCard({ prevDayRound = false }) {
+function RoundCard({ round }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const roundParams = Number(searchParams.get("round") || 1);
-  const { isLoading, round } = useGetLastRound();
-
-  useEffect(() => {
-    if (round) {
-      searchParams.set("round", prevDayRound ? round - 1 : round);
-      setSearchParams(searchParams);
-    }
-  }, [round]);
 
   function handleChangeRound(direction) {
     const newRound = direction === "left" ? roundParams - 1 : roundParams + 1;
@@ -25,8 +14,6 @@ function RoundCard({ prevDayRound = false }) {
 
     setSearchParams(searchParams);
   }
-
-  if (isLoading) return <LoadingSpinner className="h-[4rem]" />;
 
   return (
     <div className="text-center space-y-1">
@@ -45,7 +32,7 @@ function RoundCard({ prevDayRound = false }) {
         <button
           className="shadow-xl cursor-pointer"
           onClick={() => handleChangeRound("right")}
-          disabled={roundParams === (prevDayRound ? round - 1 : round)}
+          disabled={roundParams === round}
         >
           <FaChevronRight size={26} color="#9760b1" />
         </button>

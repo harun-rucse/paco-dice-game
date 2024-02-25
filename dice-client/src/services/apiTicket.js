@@ -88,3 +88,13 @@ export const getTicketStatistics = async () => {
     throw new Error(err?.response?.data?.message);
   }
 };
+
+export const getMyTicketsCount = async () => {
+  try {
+    const { data } = await api.get("/tickets/my-tickets-count");
+
+    return data;
+  } catch (err) {
+    throw new Error(err?.response?.data?.message);
+  }
+};
