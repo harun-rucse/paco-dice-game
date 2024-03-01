@@ -4,36 +4,64 @@ const { Schema, model } = mongoose;
 const tickerTierSchema = new Schema(
   {
     ZERO: {
-      type: Number,
-      default: 0,
+      type: String,
+      default: "0",
     },
     ONE: {
-      type: Number,
+      type: String,
       required: true,
     },
     TWO: {
-      type: Number,
+      type: String,
       required: true,
     },
     THREE: {
-      type: Number,
+      type: String,
       required: true,
     },
     FOUR: {
-      type: Number,
+      type: String,
       required: true,
     },
     FIVE: {
-      type: Number,
+      type: String,
       required: true,
     },
-    MINOR_JACKPOT: {
-      type: Number,
+    SIX: {
+      type: String,
       required: true,
     },
-    MEGA_JACKPOT: {
-      type: Number,
+    SEVEN: {
+      type: String,
       required: true,
+    },
+    EIGHT: {
+      type: String,
+      required: true,
+    },
+    NINE: {
+      type: String,
+      required: true,
+    },
+    TEN: {
+      type: String,
+      required: true,
+    },
+    ELEVEN: {
+      type: String,
+      default: "0",
+    },
+    TWELVE: {
+      type: String,
+      default: "0",
+    },
+    THIRTEEN: {
+      type: String,
+      default: "0",
+    },
+    FOURTEEN: {
+      type: String,
+      default: "0",
     },
   },
   {
