@@ -10,21 +10,6 @@ const catchAsync = require("../utils/catch-async");
 const decimal = require("../utils/decimal");
 const { date } = require("../utils/date");
 
-function _getRandomString(min, max) {
-  const strings = [
-    "ZERO",
-    "ONE",
-    "TWO",
-    "THREE",
-    "FOUR",
-    "FIVE",
-    "MINOR_JACKPOT",
-    "MEGA_JACKPOT",
-  ];
-  const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
-  return strings[randomNumber - 1];
-}
-
 function weightedRandomNumber() {
   const strings = [
     "ZERO",
@@ -38,26 +23,28 @@ function weightedRandomNumber() {
     "EIGHT",
     "NINE",
     "TEN",
-    "MINOR_JACKPOT",
-    "MEGA_JACKPOT",
+    "ELEVEN",
+    "TWELVE",
+    "THIRTEEN",
+    "FOURTEEN",
   ];
 
   // Define the numbers and their corresponding weights
-  var numbers = [...Array(13).keys()]; // Numbers from 0 to 13
-  var weights = [
-    18.95164755, 50, 17, 9, 4, 0.95, 0.09, 0.0085, 0.00075, 0.000002, 0.000001,
-    0.0000005, 0.0000002,
-  ]; // Example weights (adjust as needed)
+  const numbers = [...Array(14).keys()]; // Numbers from 0 to 14
+  const weights = [
+    71.70538592505, 25, 3, 0.25, 0.035, 0.005, 0.00395, 0.000595, 0.0000645,
+    0.00000395, 0.000000435, 0.0000001, 0.00000005, 0.000000025, 0.00000001495,
+  ];
 
   // Calculate the total weight
-  var totalWeight = weights.reduce((a, b) => a + b, 0);
+  const totalWeight = weights.reduce((a, b) => a + b, 0);
 
   // Generate a random number between 0 and the total weight
-  var randomNumber = Math.random() * totalWeight;
+  const randomNumber = Math.random() * totalWeight;
 
   // Loop through the weights to find the corresponding number
-  var cumulativeWeight = 0;
-  for (var i = 0; i < numbers.length; i++) {
+  let cumulativeWeight = 0;
+  for (let i = 0; i < numbers.length; i++) {
     cumulativeWeight += weights[i];
     if (randomNumber < cumulativeWeight) {
       return strings[numbers[i]];
@@ -78,12 +65,21 @@ function getWinningTierName(tier) {
     EIGHT: "Tier 8",
     NINE: "Tier 9",
     TEN: "Tier 10",
-    MINOR_JACKPOT: "Minor Jackpot",
-    MEGA_JACKPOT: "Mega jackpot",
+    ELEVEN: "Tier 11",
+    TWELVE: "Tier 12",
+    THIRTEEN: "Tier 13",
+    FOURTEEN: "Tier 14",
   };
 
   return tierMapping[tier];
 }
+
+const dateQuery = (field) => ({
+  [field]: {
+    $gt: date.todaysDate,
+    $lte: date.nextDate,
+  },
+});
 
 /**
  * @desc    Create new ticket setting
@@ -132,15 +128,37 @@ const getTicketSetting = catchAsync(async (req, res, next) => {
  * @access  Private(admin)
  */
 const createTicketTier = catchAsync(async (req, res, next) => {
-  const { ONE, TWO, THREE, FOUR, FIVE, MINOR_JACKPOT, MEGA_JACKPOT } = req.body;
+  const {
+    ONE,
+    TWO,
+    THREE,
+    FOUR,
+    FIVE,
+    SIX,
+    SEVEN,
+    EIGHT,
+    NINE,
+    TEN,
+    ELEVEN,
+    TWELVE,
+    THIRTEEN,
+    FOURTEEN,
+  } = req.body;
   if (
     !ONE ||
     !TWO ||
     !THREE ||
     !FOUR ||
     !FIVE ||
-    !MINOR_JACKPOT ||
-    !MEGA_JACKPOT
+    !SIX ||
+    !SEVEN ||
+    !EIGHT ||
+    !NINE ||
+    !TEN ||
+    !ELEVEN ||
+    !TWELVE ||
+    !THIRTEEN ||
+    !FOURTEEN
   )
     return next(new AppError("All fields are required", 400));
 
@@ -154,8 +172,15 @@ const createTicketTier = catchAsync(async (req, res, next) => {
     newTicketTier.THREE = THREE;
     newTicketTier.FOUR = FOUR;
     newTicketTier.FIVE = FIVE;
-    newTicketTier.MINOR_JACKPOT = MINOR_JACKPOT;
-    newTicketTier.MEGA_JACKPOT = MEGA_JACKPOT;
+    newTicketTier.SIX = SIX;
+    newTicketTier.SEVEN = SEVEN;
+    newTicketTier.EIGHT = EIGHT;
+    newTicketTier.NINE = NINE;
+    newTicketTier.TEN = TEN;
+    newTicketTier.ELEVEN = ELEVEN;
+    newTicketTier.TWELVE = TWELVE;
+    newTicketTier.THIRTEEN = THIRTEEN;
+    newTicketTier.FOURTEEN = FOURTEEN;
 
     response = await newTicketTier.save();
   } else {
@@ -164,8 +189,15 @@ const createTicketTier = catchAsync(async (req, res, next) => {
     ticketTier.THREE = THREE;
     ticketTier.FOUR = FOUR;
     ticketTier.FIVE = FIVE;
-    ticketTier.MINOR_JACKPOT = MINOR_JACKPOT;
-    ticketTier.MEGA_JACKPOT = MEGA_JACKPOT;
+    ticketTier.SIX = SIX;
+    ticketTier.SEVEN = SEVEN;
+    ticketTier.EIGHT = EIGHT;
+    ticketTier.NINE = NINE;
+    ticketTier.TEN = TEN;
+    ticketTier.ELEVEN = ELEVEN;
+    ticketTier.TWELVE = TWELVE;
+    ticketTier.THIRTEEN = THIRTEEN;
+    ticketTier.FOURTEEN = FOURTEEN;
 
     response = await ticketTier.save();
   }
@@ -205,6 +237,10 @@ const createTicket = catchAsync(async (req, res, next) => {
   const ticketTier = await TicketTier.findOne();
   if (!ticketTier) return next(new AppError("Ticket tier not found", 404));
 
+  // Get mega and minor jackpot amount from ticket pool
+  const ticketPool = await TicketPool.findOne();
+  if (!ticketPool) return next(new AppError("Ticket pool not found", 404));
+
   const accountId = req.account._id;
   const price = ticketSetting[type];
   const requiredPaco = amount * price;
@@ -214,16 +250,18 @@ const createTicket = catchAsync(async (req, res, next) => {
   if (decimal.compare(account.paco, requiredPaco, "lt"))
     return next(new AppError("Insufficient balance for buy ticket", 400));
 
-  // Get the previous ticket round number of the user
-  const prevTicket = await Ticket.findOne({ account: req.account._id }).sort(
-    "-buyAt"
-  );
+  // Get the previous ticket round number
+  const prevTicket = await Ticket.findOne({
+    buyAt: { $lte: date.todaysDate },
+  }).sort("-buyAt");
   const round = prevTicket ? prevTicket.round + 1 : 1;
 
   let rewardAmount = "0";
   let poolAmount = "0";
-  let megaJackpotAmount = "0";
   let minorJackpotAmount = "0";
+  let megaJackpotAmount = "0";
+  let minorJackpotReduceAmount = "0";
+  let megaJackpotReduceAmount = "0";
   let reserveAmount = "0";
   let bonusAmount = "0";
   let teamAmount = "0";
@@ -237,12 +275,47 @@ const createTicket = catchAsync(async (req, res, next) => {
         // Generate random tier for each ticket
         const tier = weightedRandomNumber();
 
+        // Calculate reward for mega and minor jackpot
+        let reward;
+
+        if (tier === "ELEVEN") {
+          // 50% of the minor jackpot
+          reward = decimal.multiply(ticketPool["MINOR_JACKPOT"], 0.5);
+          minorJackpotReduceAmount = decimal.addition(
+            minorJackpotReduceAmount,
+            reward
+          );
+        } else if (tier === "TWELVE") {
+          // 80% of the minor jackpot
+          reward = decimal.multiply(ticketPool["MINOR_JACKPOT"], 0.8);
+          minorJackpotReduceAmount = decimal.addition(
+            minorJackpotReduceAmount,
+            reward
+          );
+        } else if (tier === "THIRTEEN") {
+          // 50% of the mega  jackpot
+          reward = decimal.multiply(ticketPool["MEGA_JACKPOT"], 0.5);
+          minorJackpotReduceAmount = decimal.addition(
+            megaJackpotReduceAmount,
+            reward
+          );
+        } else if (tier === "FOURTEEN") {
+          // 80% of the mega  jackpot
+          reward = decimal.multiply(ticketPool["MEGA_JACKPOT"], 0.8);
+          minorJackpotReduceAmount = decimal.addition(
+            megaJackpotReduceAmount,
+            reward
+          );
+        } else {
+          reward = ticketTier[tier];
+        }
+
         const newTicket = new Ticket({
           account: accountId,
           type,
           price,
           tier,
-          reward: ticketTier[tier],
+          reward,
           round,
         });
 
@@ -286,13 +359,10 @@ const createTicket = catchAsync(async (req, res, next) => {
       })
   );
 
-  // Create daily ticket document for same account in a day [12AM - 12AM]
+  // Create daily ticket document for same account in a day [3AM - 3AM]
   const dailyTicket = await DailyTicket.findOne({
     account: accountId,
-    date: {
-      $gt: date.previousDateAt1159PM,
-      $lte: date.currentDateAt1159PM,
-    },
+    ...dateQuery("date"),
   });
 
   if (!dailyTicket) {
@@ -302,6 +372,8 @@ const createTicket = catchAsync(async (req, res, next) => {
       REVENUE_SHARING_POOL: poolAmount,
       MINOR_JACKPOT: minorJackpotAmount,
       MEGA_JACKPOT: megaJackpotAmount,
+      MINOR_JACKPOT_REDUCE: minorJackpotReduceAmount,
+      MEGA_JACKPOT_REDUCE: megaJackpotReduceAmount,
       RESERVE: reserveAmount,
       BONUS: bonusAmount,
       TEAM: teamAmount,
@@ -316,13 +388,30 @@ const createTicket = catchAsync(async (req, res, next) => {
       dailyTicket.REVENUE_SHARING_POOL,
       poolAmount
     );
-    dailyTicket.MINOR_JACKPOT = minorJackpotAmount;
-    dailyTicket.MEGA_JACKPOT = megaJackpotAmount;
-    dailyTicket.RESERVE = reserveAmount;
-    dailyTicket.BONUS = bonusAmount;
-    dailyTicket.TEAM = teamAmount;
-    dailyTicket.PACO_BURNT = pacoBurntAmount;
-    dailyTicket.FEE = feeAmount;
+    dailyTicket.MINOR_JACKPOT = decimal.addition(
+      dailyTicket.MINOR_JACKPOT,
+      minorJackpotAmount
+    );
+    dailyTicket.MEGA_JACKPOT = decimal.addition(
+      dailyTicket.MEGA_JACKPOT,
+      megaJackpotAmount
+    );
+    dailyTicket.MINOR_JACKPOT_REDUCE = decimal.addition(
+      dailyTicket.MINOR_JACKPOT_REDUCE,
+      minorJackpotReduceAmount
+    );
+    dailyTicket.MEGA_JACKPOT_REDUCE = decimal.addition(
+      dailyTicket.MEGA_JACKPOT_REDUCE,
+      megaJackpotReduceAmount
+    );
+    dailyTicket.RESERVE = decimal.addition(dailyTicket.RESERVE, reserveAmount);
+    dailyTicket.BONUS = decimal.addition(dailyTicket.BONUS, bonusAmount);
+    dailyTicket.TEAM = decimal.addition(dailyTicket.TEAM, teamAmount);
+    dailyTicket.PACO_BURNT = decimal.addition(
+      dailyTicket.PACO_BURNT,
+      pacoBurntAmount
+    );
+    dailyTicket.FEE = decimal.addition(dailyTicket.FEE, feeAmount);
 
     await dailyTicket.save();
   }
@@ -384,7 +473,7 @@ const getMyTickets = catchAsync(async (req, res, next) => {
       $addFields: {
         status: {
           $cond: [
-            { $gt: ["$buyAt", date.previousDateAt1159PM] },
+            { $gt: ["$buyAt", date.todaysDate] },
             "Waiting Results",
             "Drawn",
           ],
@@ -466,7 +555,7 @@ const getMyHistories = catchAsync(async (req, res, next) => {
   let query = {
     account: req.account._id,
     round,
-    buyAt: { $lte: date.currentDateAt1159PM },
+    buyAt: { $lte: date.todaysDate },
   };
   if (type === "winning") {
     query = { ...query, tier: { $ne: "ZERO" } };
@@ -534,7 +623,7 @@ const getAllBets = catchAsync(async (req, res, next) => {
   const round = Number(req.query.round || 1);
   const type = req.query.type;
 
-  let query = { round, buyAt: { $lte: date.currentDateAt1159PM } };
+  let query = { round, buyAt: { $lte: date.todaysDate } };
   if (type === "winning") {
     query = { ...query, tier: { $ne: "ZERO" } };
   } else if (type === "losing") {
@@ -599,12 +688,7 @@ const getTicketStatistics = catchAsync(async (req, res, next) => {
   const pacoBurnt = ticketPool ? ticketPool.PACO_BURNT : 0;
 
   // Calculate ticketsInPlay
-  const ticketsInPlay = await Ticket.countDocuments({
-    buyAt: {
-      $gt: date.previousDateAt1159PM,
-      $lte: date.currentDateAt1159PM,
-    },
-  });
+  const ticketsInPlay = await Ticket.countDocuments({ ...dateQuery("buyAt") });
 
   return res
     .status(200)
@@ -614,12 +698,7 @@ const getTicketStatistics = catchAsync(async (req, res, next) => {
 // Schedule of Transfer ticket reward & other calculated data to ticket pool and Staking pool
 const transferDailyTicketToTicketPool = async () => {
   // Get daily tickets
-  const dailyTickets = await DailyTicket.find({
-    date: {
-      $gt: date.previousDateAt1159PM,
-      $lte: date.currentDateAt1159PM,
-    },
-  });
+  const dailyTickets = await DailyTicket.find({ ...dateQuery("date") });
   if (!dailyTickets.length) return;
 
   await Promise.all(
@@ -695,6 +774,18 @@ const transferDailyTicketToTicketPool = async () => {
           dailyTicket.FEE
         );
 
+        // Subtract MINOR_JACKPOT_REDUCE to the Ticket pool
+        newTicketPool.MINOR_JACKPOT = decimal.subtract(
+          newTicketPool.MINOR_JACKPOT,
+          dailyTicket.MINOR_JACKPOT_REDUCE
+        );
+
+        // Subtract MEGA_JACKPOT_REDUCE to the Ticket pool
+        newTicketPool.MEGA_JACKPOT = decimal.subtract(
+          newTicketPool.MEGA_JACKPOT,
+          dailyTicket.MEGA_JACKPOT_REDUCE
+        );
+
         await newTicketPool.save();
       } else {
         // Transfer MINOR_JACKPOT
@@ -732,6 +823,18 @@ const transferDailyTicketToTicketPool = async () => {
 
         // Transfer FEE
         ticketPool.FEE = decimal.addition(ticketPool.FEE, dailyTicket.FEE);
+
+        // Subtract MINOR_JACKPOT_REDUCE to the Ticket pool
+        ticketPool.MINOR_JACKPOT = decimal.subtract(
+          ticketPool.MINOR_JACKPOT,
+          dailyTicket.MINOR_JACKPOT_REDUCE
+        );
+
+        // Subtract MEGA_JACKPOT_REDUCE to the Ticket pool
+        ticketPool.MEGA_JACKPOT = decimal.subtract(
+          ticketPool.MEGA_JACKPOT,
+          dailyTicket.MEGA_JACKPOT_REDUCE
+        );
 
         await ticketPool.save();
       }

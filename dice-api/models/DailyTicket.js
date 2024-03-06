@@ -23,6 +23,14 @@ const dailyTicketSchema = new Schema(
       type: String,
       default: "0",
     },
+    MINOR_JACKPOT_REDUCE: {
+      type: String,
+      default: "0",
+    },
+    MEGA_JACKPOT_REDUCE: {
+      type: String,
+      default: "0",
+    },
     RESERVE: {
       type: String,
       default: "0",

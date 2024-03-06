@@ -32,6 +32,7 @@ function LobbyCard() {
           label="Mega ticket"
           type="MEGA"
           price={ticketSetting?.["MEGA"]}
+          total={true}
           icon="/icons/ticket.png"
         />
       </div>
@@ -76,19 +77,20 @@ function LobbyCard() {
           <div className="text-center">
             <h2 className="uppercase text-xl md:text-2xl mb-2">Prize Table</h2>
             <div className="text-xs md:text-base">
-              <p>50% chance to win 750 tokens.</p>
-              <p>17% chance to win 2,500 tokens.</p>
-              <p>9% chance to win 5,000 tokens.</p>
-              <p>4% chance to win 10,000 tokens.</p>
-              <p>0.95% chance to win 50,000 tokens.</p>
-              <p>0.09% chance to win 500,000 tokens.</p>
-              <p>0.0085% chance to win 5,000,000 tokens.</p>
-              <p>0.00075% chance to win 50,000,000 tokens.</p>
-              <p>0.000075% chance to win 500,000,000 tokens.</p>
-              <p>0.000002% chance to win 50% of the minor jackpot.</p>
-              <p>0.000001% chance to win 80% of the minor jackpot.</p>
-              <p>0.0000005% chance to win 50% of the mega jackpot.</p>
-              <p>0.0000002% chance to win 80% of the mega jackpot.</p>
+              <p>25% chance to win 150 tokens.</p>
+              <p>3% chance to win 750 tokens.</p>
+              <p>0.25% chance to win 2,500 tokens.</p>
+              <p>0.035% chance to win 5,000 tokens.</p>
+              <p>0.005% chance to win 10,000 tokens.</p>
+              <p>0.00395% chance to win 100,000 tokens.</p>
+              <p>0.000595 chance to win 1,000,000 tokens.</p>
+              <p>0.0000645% chance to win 10,000,000 tokens.</p>
+              <p>0.00000395% chance to win 100,000,000 tokens.</p>
+              <p>0.000000435% chance to win 1,000,000,000 tokens.</p>
+              <p>0.0000001% chance to win 50% of the minor jackpot.</p>
+              <p>0.00000005% chance to win 80% of the minor jackpot.</p>
+              <p>0.000000025% chance to win 50% of the mega jackpot.</p>
+              <p>0.00000001495% chance to win 80% of the mega jackpot.</p>
             </div>
           </div>
 
