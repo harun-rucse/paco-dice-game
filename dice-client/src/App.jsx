@@ -69,14 +69,7 @@ function App() {
               <Route path="/staking" element={<StakingLayout />}>
                 <Route index element={<Staking />} />
               </Route>
-              <Route
-                path="/lottery"
-                element={
-                  <ProtectedRoute roles={["admin"]}>
-                    <StakingLayout />
-                  </ProtectedRoute>
-                }
-              >
+              <Route path="/lottery" element={<StakingLayout />}>
                 <Route index element={<Lottery />} />
               </Route>
               <Route
