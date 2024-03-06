@@ -5,6 +5,7 @@ const db = require("./config/db");
 const { listEvent } = require("./services/event-service");
 const Web3 = require("web3");
 const scheduleStakingJob = require("./utils/scheduleStakingJob");
+const scheduleLotteryJob = require("./utils/scheduleLotteryJob");
 
 // database connection
 db()
@@ -13,6 +14,9 @@ db()
 
 // Schedule automatic transfer stake pool to stake holder
 scheduleStakingJob();
+
+// Schedule automatic transfer daily ticket to ticket pool & distribute reward
+scheduleLotteryJob();
 
 const PORT = process.env.PORT || 4000;
 
@@ -34,7 +38,7 @@ app.listen(PORT, () => {
 
   const web3 = new Web3(provider);
   // lister event
-  // listEvent(web3); TODO: uncomment in production
+  listEvent(web3);
 
   // avoid websocket connection go idle
   web3?.eth

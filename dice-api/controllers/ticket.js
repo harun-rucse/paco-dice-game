@@ -30,21 +30,21 @@ function weightedRandomNumber() {
   ];
 
   // Define the numbers and their corresponding weights
-  var numbers = [...Array(13).keys()]; // Numbers from 0 to 13
-  var weights = [
-    18.95164755, 50, 17, 9, 4, 0.95, 0.09, 0.0085, 0.00075, 0.000002, 0.000001,
-    0.0000005, 0.0000002,
-  ]; // Example weights (adjust as needed)
+  const numbers = [...Array(14).keys()]; // Numbers from 0 to 14
+  const weights = [
+    71.70538592505, 25, 3, 0.25, 0.035, 0.005, 0.00395, 0.000595, 0.0000645,
+    0.00000395, 0.000000435, 0.0000001, 0.00000005, 0.000000025, 0.00000001495,
+  ];
 
   // Calculate the total weight
-  var totalWeight = weights.reduce((a, b) => a + b, 0);
+  const totalWeight = weights.reduce((a, b) => a + b, 0);
 
   // Generate a random number between 0 and the total weight
-  var randomNumber = Math.random() * totalWeight;
+  const randomNumber = Math.random() * totalWeight;
 
   // Loop through the weights to find the corresponding number
-  var cumulativeWeight = 0;
-  for (var i = 0; i < numbers.length; i++) {
+  let cumulativeWeight = 0;
+  for (let i = 0; i < numbers.length; i++) {
     cumulativeWeight += weights[i];
     if (randomNumber < cumulativeWeight) {
       return strings[numbers[i]];
@@ -73,6 +73,13 @@ function getWinningTierName(tier) {
 
   return tierMapping[tier];
 }
+
+const dateQuery = (field) => ({
+  [field]: {
+    $gt: date.todaysDate,
+    $lte: date.nextDate,
+  },
+});
 
 /**
  * @desc    Create new ticket setting
@@ -245,10 +252,7 @@ const createTicket = catchAsync(async (req, res, next) => {
 
   // Get the previous ticket round number
   const prevTicket = await Ticket.findOne({
-    buyAt: {
-      $gt: date.currentDateAt3AM,
-      $lte: date.nextDateAt3AM,
-    },
+    buyAt: { $lte: date.todaysDate },
   }).sort("-buyAt");
   const round = prevTicket ? prevTicket.round + 1 : 1;
 
@@ -358,10 +362,7 @@ const createTicket = catchAsync(async (req, res, next) => {
   // Create daily ticket document for same account in a day [3AM - 3AM]
   const dailyTicket = await DailyTicket.findOne({
     account: accountId,
-    date: {
-      $gt: date.currentDateAt3AM,
-      $lte: date.nextDateAt3AM,
-    },
+    ...dateQuery("date"),
   });
 
   if (!dailyTicket) {
@@ -387,15 +388,30 @@ const createTicket = catchAsync(async (req, res, next) => {
       dailyTicket.REVENUE_SHARING_POOL,
       poolAmount
     );
-    dailyTicket.MINOR_JACKPOT = minorJackpotAmount;
-    dailyTicket.MEGA_JACKPOT = megaJackpotAmount;
-    dailyTicket.MINOR_JACKPOT_REDUCE = minorJackpotReduceAmount;
-    dailyTicket.MEGA_JACKPOT_REDUCE = megaJackpotReduceAmount;
-    dailyTicket.RESERVE = reserveAmount;
-    dailyTicket.BONUS = bonusAmount;
-    dailyTicket.TEAM = teamAmount;
-    dailyTicket.PACO_BURNT = pacoBurntAmount;
-    dailyTicket.FEE = feeAmount;
+    dailyTicket.MINOR_JACKPOT = decimal.addition(
+      dailyTicket.MINOR_JACKPOT,
+      minorJackpotAmount
+    );
+    dailyTicket.MEGA_JACKPOT = decimal.addition(
+      dailyTicket.MEGA_JACKPOT,
+      megaJackpotAmount
+    );
+    dailyTicket.MINOR_JACKPOT_REDUCE = decimal.addition(
+      dailyTicket.MINOR_JACKPOT_REDUCE,
+      minorJackpotReduceAmount
+    );
+    dailyTicket.MEGA_JACKPOT_REDUCE = decimal.addition(
+      dailyTicket.MEGA_JACKPOT_REDUCE,
+      megaJackpotReduceAmount
+    );
+    dailyTicket.RESERVE = decimal.addition(dailyTicket.RESERVE, reserveAmount);
+    dailyTicket.BONUS = decimal.addition(dailyTicket.BONUS, bonusAmount);
+    dailyTicket.TEAM = decimal.addition(dailyTicket.TEAM, teamAmount);
+    dailyTicket.PACO_BURNT = decimal.addition(
+      dailyTicket.PACO_BURNT,
+      pacoBurntAmount
+    );
+    dailyTicket.FEE = decimal.addition(dailyTicket.FEE, feeAmount);
 
     await dailyTicket.save();
   }
@@ -457,7 +473,7 @@ const getMyTickets = catchAsync(async (req, res, next) => {
       $addFields: {
         status: {
           $cond: [
-            { $gt: ["$buyAt", date.currentDateAt3AM] },
+            { $gt: ["$buyAt", date.todaysDate] },
             "Waiting Results",
             "Drawn",
           ],
@@ -539,7 +555,7 @@ const getMyHistories = catchAsync(async (req, res, next) => {
   let query = {
     account: req.account._id,
     round,
-    buyAt: { $lte: date.currentDateAt3AM },
+    buyAt: { $lte: date.todaysDate },
   };
   if (type === "winning") {
     query = { ...query, tier: { $ne: "ZERO" } };
@@ -607,7 +623,7 @@ const getAllBets = catchAsync(async (req, res, next) => {
   const round = Number(req.query.round || 1);
   const type = req.query.type;
 
-  let query = { round, buyAt: { $lte: date.currentDateAt3AM } };
+  let query = { round, buyAt: { $lte: date.todaysDate } };
   if (type === "winning") {
     query = { ...query, tier: { $ne: "ZERO" } };
   } else if (type === "losing") {
@@ -672,12 +688,7 @@ const getTicketStatistics = catchAsync(async (req, res, next) => {
   const pacoBurnt = ticketPool ? ticketPool.PACO_BURNT : 0;
 
   // Calculate ticketsInPlay
-  const ticketsInPlay = await Ticket.countDocuments({
-    buyAt: {
-      $gt: date.previousDateAt1159PM,
-      $lte: date.currentDateAt1159PM,
-    },
-  });
+  const ticketsInPlay = await Ticket.countDocuments({ ...dateQuery("buyAt") });
 
   return res
     .status(200)
@@ -687,12 +698,7 @@ const getTicketStatistics = catchAsync(async (req, res, next) => {
 // Schedule of Transfer ticket reward & other calculated data to ticket pool and Staking pool
 const transferDailyTicketToTicketPool = async () => {
   // Get daily tickets
-  const dailyTickets = await DailyTicket.find({
-    date: {
-      $gt: date.currentDateAt3AM,
-      $lte: date.nextDateAt3AM,
-    },
-  });
+  const dailyTickets = await DailyTicket.find({ ...dateQuery("date") });
   if (!dailyTickets.length) return;
 
   await Promise.all(
