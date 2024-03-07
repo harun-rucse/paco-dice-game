@@ -1,10 +1,14 @@
 import { useState } from "react";
 import { useBuyTicket } from "../useBuyTicket";
 import { abbreviateNumber } from "../../../utils/format";
+import Modal from "../../../components/Modal";
+import Authentication from "../../authentication/Authentication";
+import { useCurrentUser } from "../../authentication/useCurrentUser";
 
 function InputBox({ price, label, type, total, icon }) {
   const [amount, setAmount] = useState("");
   const { isLoading, buyTicket } = useBuyTicket();
+  const { isAuthenticated, isLoading: isAuthLoading } = useCurrentUser();
 
   function handleBuyTicket() {
     if (!amount || !type) return;
@@ -14,7 +18,7 @@ function InputBox({ price, label, type, total, icon }) {
   }
 
   return (
-    <div className="flex justify-between items-center gap-2 md:gap-8">
+    <div className="flex justify-between items-center gap-4 md:gap-8">
       <div className="space-y-1">
         <div className="flex flex-col md:flex-row md:items-end justify-between">
           <div className="text-[#b4b3b3]">
@@ -40,16 +44,33 @@ function InputBox({ price, label, type, total, icon }) {
             onChange={(e) => setAmount(e.target.value)}
             placeholder="Input amount of tickets"
             className="md:w-[20rem] bg-transparent text-white focus:outline-none placeholder:text-[#534b5c]"
+            disabled={!isAuthLoading && !isAuthenticated}
           />
         </div>
       </div>
-      <button
-        className="self-end button !bg-[#d11f1f] px-2 md:!px-8"
-        onClick={handleBuyTicket}
-        disabled={isLoading}
-      >
-        {isLoading ? "Buying..." : "Buy"}
-      </button>
+
+      {!isAuthLoading && isAuthenticated && (
+        <button
+          className="self-end button !bg-[#d11f1f] px-2 md:!px-8"
+          onClick={handleBuyTicket}
+          disabled={isLoading}
+        >
+          {isLoading ? "Buying..." : "Buy"}
+        </button>
+      )}
+
+      {!isAuthLoading && !isAuthenticated && (
+        <Modal>
+          <Modal.Open opens="authentication">
+            <button className="self-end text-sm md:text-base button !bg-[#d11f1f] px-2 md:!px-8">
+              Login
+            </button>
+          </Modal.Open>
+          <Modal.Body name="authentication">
+            <Authentication />
+          </Modal.Body>
+        </Modal>
+      )}
     </div>
   );
 }

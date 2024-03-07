@@ -66,9 +66,9 @@ function LobbyCard() {
             <p>Mega Jackpot Feature:</p>
             <span className="text-sm md:text-base">
               The Mega Jackpot feature is activated by purchasing MEGA lottery
-              tickets priced at 1000 PACO tokens each. The mega jackpot winner
-              is entitled to up to 80% of the total mega jackpot, while 20% of
-              the jackpot is consistently rolled over to the next round,
+              tickets priced at 200 PACO tokens each. The mega jackpot winner is
+              entitled to up to 80% of the total mega jackpot, while 20% of the
+              jackpot is consistently rolled over to the next round,
               irrespective of the number of jackpot winners.
             </span>
           </div>
@@ -99,15 +99,18 @@ function LobbyCard() {
               Lottery Distribution
             </h2>
             <div className="text-xs md:text-base">
-              <p>Losing lottery tickets is distributed the following way:</p>
+              <p>
+                Lost lottery tickets are used to cover prizes. Any remaining
+                funds distributed accordingly:
+              </p>
               <p>60% goes to the revenue-sharing pool</p>
               <p>15% goes to the mega jackpot</p>
               <p>5% goes to the minor jackpot</p>
               <p>1% goes to the reserve</p>
-              <p>1% goes to bonuses</p>
+              <p>1.5% goes to bonuses</p>
               <p>17% Team</p>
-              <p>0.5% burn</p>
-              <p>0.5 % fee</p>
+              <p>0.25% burn</p>
+              <p>0.25 % fee</p>
             </div>
           </div>
         </div>

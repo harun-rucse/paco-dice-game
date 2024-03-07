@@ -5,12 +5,13 @@ const { auth, restrictTo } = require("../middlewares/auth");
 const router = express.Router();
 
 router.get("/last-round", ticketController.getLastRound);
+router.get("/statistics", ticketController.getTicketStatistics);
+router.get("/setting", ticketController.getTicketSetting);
 
 router.use(auth);
 router.get("/my-tickets", ticketController.getMyTickets);
 router.get("/my-histories", ticketController.getMyHistories);
 router.get("/all-bets", ticketController.getAllBets);
-router.get("/statistics", ticketController.getTicketStatistics);
 router.get("/my-tickets-count", ticketController.getMyTicketsCount);
 
 router
@@ -20,8 +21,7 @@ router
 
 router
   .route("/setting")
-  .post(restrictTo("admin"), ticketController.createTicketSetting)
-  .get(ticketController.getTicketSetting);
+  .post(restrictTo("admin"), ticketController.createTicketSetting);
 
 router.use(restrictTo("admin"));
 router

@@ -113,7 +113,7 @@ const createTicketSetting = catchAsync(async (req, res, next) => {
 /**
  * @desc    Get ticket setting
  * @route   GET /api/tickets/setting
- * @access  Private
+ * @access  Public
  */
 const getTicketSetting = catchAsync(async (req, res, next) => {
   const ticketSetting = await TicketSettings.findOne();
@@ -344,17 +344,17 @@ const createTicket = catchAsync(async (req, res, next) => {
             reserveAmount,
             newTicket.price * 0.01
           );
-          // 1% goes to bonuses
-          bonusAmount = decimal.addition(bonusAmount, newTicket.price * 0.01);
+          // 1.5% goes to bonuses
+          bonusAmount = decimal.addition(bonusAmount, newTicket.price * 0.015);
           // 17% Team
-          teamAmount = decimal.addition(teamAmount, newTicket.price * 0.01);
-          // 0.5% burn
+          teamAmount = decimal.addition(teamAmount, newTicket.price * 0.17);
+          // 0.25% burn
           pacoBurntAmount = decimal.addition(
             pacoBurntAmount,
-            newTicket.price * 0.005
+            newTicket.price * 0.0025
           );
-          // 0.5 % fee
-          feeAmount = decimal.addition(feeAmount, newTicket.price * 0.005);
+          // 0.25 % fee
+          feeAmount = decimal.addition(feeAmount, newTicket.price * 0.0025);
         }
       })
   );
@@ -473,9 +473,9 @@ const getMyTickets = catchAsync(async (req, res, next) => {
       $addFields: {
         status: {
           $cond: [
-            { $gt: ["$buyAt", date.todaysDate] },
-            "Waiting Results",
+            { $lte: ["$buyAt", new Date(date.todaysDate)] },
             "Drawn",
+            "Waiting Results",
           ],
         },
       },
@@ -678,7 +678,7 @@ const getAllBets = catchAsync(async (req, res, next) => {
 /**
  * @desc    Get Ticket statistics
  * @route   GET /api/tickets/statistics
- * @access  Private
+ * @access  Public
  */
 const getTicketStatistics = catchAsync(async (req, res, next) => {
   const ticketPool = await TicketPool.findOne();
