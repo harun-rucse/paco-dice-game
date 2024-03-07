@@ -9,11 +9,11 @@ const formatNumber = (num) => (num < 10 ? `0${num}` : num);
 function PacoLottery() {
   const { isLoading, ticketStatistics } = useGetTicketStatistics();
 
-  // Calculate the time until the next 3:00 AM
+  // Calculate the time until the next 3:00 PM
   const now = new Date();
   const midnight = new Date();
   midnight.setDate(midnight.getDate() + 1);
-  midnight.setHours(3, 0, 0, 0);
+  midnight.setHours(15, 0, 0, 0);
   const timeUntilMidnight = midnight - now;
 
   const renderer = ({ hours, minutes, seconds }) => {
