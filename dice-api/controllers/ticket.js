@@ -76,8 +76,8 @@ function getWinningTierName(tier) {
 
 const dateQuery = (field) => ({
   [field]: {
-    $gt: date.todaysDate,
-    $lte: date.nextDate,
+    $gt: new Date(date.todaysDate),
+    $lte: new Date(date.nextDate),
   },
 });
 
@@ -362,7 +362,7 @@ const createTicket = catchAsync(async (req, res, next) => {
   // Create daily ticket document for same account in a day [3AM - 3AM]
   const dailyTicket = await DailyTicket.findOne({
     account: accountId,
-    ...dateQuery("date"),
+    ...dateQuery("createdAt"),
   });
 
   if (!dailyTicket) {
@@ -473,7 +473,7 @@ const getMyTickets = catchAsync(async (req, res, next) => {
       $addFields: {
         status: {
           $cond: [
-            { $lte: ["$buyAt", new Date(date.todaysDate)] },
+            { $lte: ["$createdAt", new Date(date.todaysDate)] },
             "Drawn",
             "Waiting Results",
           ],
@@ -555,7 +555,7 @@ const getMyHistories = catchAsync(async (req, res, next) => {
   let query = {
     account: req.account._id,
     round,
-    buyAt: { $lte: date.todaysDate },
+    createdAt: { $lte: new Date(date.todaysDate) },
   };
   if (type === "winning") {
     query = { ...query, tier: { $ne: "ZERO" } };
@@ -623,7 +623,7 @@ const getAllBets = catchAsync(async (req, res, next) => {
   const round = Number(req.query.round || 1);
   const type = req.query.type;
 
-  let query = { round, buyAt: { $lte: date.todaysDate } };
+  let query = { round, createdAt: { $lte: new Date(date.todaysDate) } };
   if (type === "winning") {
     query = { ...query, tier: { $ne: "ZERO" } };
   } else if (type === "losing") {
@@ -688,7 +688,9 @@ const getTicketStatistics = catchAsync(async (req, res, next) => {
   const pacoBurnt = ticketPool ? ticketPool.PACO_BURNT : 0;
 
   // Calculate ticketsInPlay
-  const ticketsInPlay = await Ticket.countDocuments({ ...dateQuery("buyAt") });
+  const ticketsInPlay = await Ticket.countDocuments({
+    ...dateQuery("createdAt"),
+  });
 
   return res
     .status(200)
@@ -698,7 +700,7 @@ const getTicketStatistics = catchAsync(async (req, res, next) => {
 // Schedule of Transfer ticket reward & other calculated data to ticket pool and Staking pool
 const transferDailyTicketToTicketPool = async () => {
   // Get daily tickets
-  const dailyTickets = await DailyTicket.find({ ...dateQuery("date") });
+  const dailyTickets = await DailyTicket.find({ ...dateQuery("createdAt") });
   if (!dailyTickets.length) return;
 
   await Promise.all(
