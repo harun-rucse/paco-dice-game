@@ -183,7 +183,7 @@ const getTicketTier = catchAsync(async (req, res, next) => {
  */
 const createTicket = catchAsync(async (req, res, next) => {
   const worker = new Worker("./workers/create-tickets.js", {
-    workerData: { reqBody: req.body, accountId: req.account._id },
+    workerData: { reqBody: req.body, accountId: req.account._id?.toString() },
   });
 
   worker.on("message", (message) => {

@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const { parentPort, workerData } = require("worker_threads");
 const TicketSettings = require("../models/TicketSettings");
 const TicketTier = require("../models/TicketTier");
@@ -8,6 +9,7 @@ const DailyTicket = require("../models/DailyTicket");
 const AppError = require("../utils/app-error");
 const decimal = require("../utils/decimal");
 const { date } = require("../utils/date");
+const db = require("../config/db");
 
 function weightedRandomNumber() {
   const strings = [
@@ -53,13 +55,21 @@ function weightedRandomNumber() {
 
 const dateQuery = (field) => ({
   [field]: {
-    $gt: date.todaysDate,
-    $lte: date.nextDate,
+    $gt: new Date(date.todaysDate),
+    $lte: new Date(date.nextDate),
   },
 });
 
 const { reqBody, accountId } = workerData;
 const { type, amount } = reqBody;
+
+// database connection
+db()
+  .then(() => {
+    console.log("Thread DB Connect success!");
+    createTicket();
+  })
+  .catch((err) => console.log("Thread DB Connect failed!", err));
 
 const createTicket = async () => {
   try {
@@ -67,7 +77,7 @@ const createTicket = async () => {
       throw new AppError("Ticket type & amount is required", 400);
 
     // Get ticket setting
-    const ticketSetting = await TicketSettings.findOne().maxTimeMS(20000);
+    const ticketSetting = await TicketSettings.findOne();
     if (!ticketSetting) throw new AppError("Ticket setting not found", 404);
 
     // Get ticket tier
@@ -82,14 +92,18 @@ const createTicket = async () => {
     const requiredPaco = amount * price;
 
     // Check account has sufficient paco balance to buy ticket
-    const account = await Account.findById(accountId);
+    const id = new mongoose.Types.ObjectId(accountId);
+    const account = await Account.findById(id);
     if (decimal.compare(account.paco, requiredPaco, "lt"))
       throw new AppError("Insufficient balance for buying ticket", 400);
 
     // Get the previous ticket round number
     const prevTicket = await Ticket.findOne({
-      buyAt: { $lte: dateQuery("date") },
-    }).sort("-buyAt");
+      createdAt: {
+        $gt: new Date(date.todaysDate),
+        $lte: new Date(date.nextDate),
+      },
+    }).sort("-createdAt");
     const round = prevTicket ? prevTicket.round + 1 : 1;
 
     let rewardAmount = "0";
@@ -104,104 +118,104 @@ const createTicket = async () => {
     let pacoBurntAmount = "0";
     let feeAmount = "0";
 
-    await Promise.all(
-      Array(amount)
-        .fill()
-        .map(async () => {
-          // Generate random tier for each ticket
-          const tier = weightedRandomNumber();
+    Array(parseInt(amount))
+      .fill()
+      .map(async () => {
+        // Generate random tier for each ticket
+        const tier = weightedRandomNumber();
 
-          // Calculate reward for mega and minor jackpot
-          let reward;
+        // Calculate reward for mega and minor jackpot
+        let reward;
 
-          if (tier === "ELEVEN") {
-            // 50% of the minor jackpot
-            reward = decimal.multiply(ticketPool["MINOR_JACKPOT"], 0.5);
-            minorJackpotReduceAmount = decimal.addition(
-              minorJackpotReduceAmount,
-              reward
-            );
-          } else if (tier === "TWELVE") {
-            // 80% of the minor jackpot
-            reward = decimal.multiply(ticketPool["MINOR_JACKPOT"], 0.8);
-            minorJackpotReduceAmount = decimal.addition(
-              minorJackpotReduceAmount,
-              reward
-            );
-          } else if (tier === "THIRTEEN") {
-            // 50% of the mega jackpot
-            reward = decimal.multiply(ticketPool["MEGA_JACKPOT"], 0.5);
-            minorJackpotReduceAmount = decimal.addition(
-              megaJackpotReduceAmount,
-              reward
-            );
-          } else if (tier === "FOURTEEN") {
-            // 80% of the mega jackpot
-            reward = decimal.multiply(ticketPool["MEGA_JACKPOT"], 0.8);
-            minorJackpotReduceAmount = decimal.addition(
-              megaJackpotReduceAmount,
-              reward
-            );
-          } else {
-            reward = ticketTier[tier];
-          }
+        if (tier === "ELEVEN") {
+          // 50% of the minor jackpot
+          reward = decimal.multiply(ticketPool["MINOR_JACKPOT"], 0.5);
+          minorJackpotReduceAmount = decimal.addition(
+            minorJackpotReduceAmount,
+            reward
+          );
+        } else if (tier === "TWELVE") {
+          // 80% of the minor jackpot
+          reward = decimal.multiply(ticketPool["MINOR_JACKPOT"], 0.8);
+          minorJackpotReduceAmount = decimal.addition(
+            minorJackpotReduceAmount,
+            reward
+          );
+        } else if (tier === "THIRTEEN") {
+          // 50% of the mega jackpot
+          reward = decimal.multiply(ticketPool["MEGA_JACKPOT"], 0.5);
+          minorJackpotReduceAmount = decimal.addition(
+            megaJackpotReduceAmount,
+            reward
+          );
+        } else if (tier === "FOURTEEN") {
+          // 80% of the mega jackpot
+          reward = decimal.multiply(ticketPool["MEGA_JACKPOT"], 0.8);
+          minorJackpotReduceAmount = decimal.addition(
+            megaJackpotReduceAmount,
+            reward
+          );
+        } else {
+          reward = ticketTier[tier];
+        }
 
-          const newTicket = new Ticket({
-            account: accountId,
-            type,
-            price,
-            tier,
-            reward,
-            round,
-          });
+        const newTicket = new Ticket({
+          account: accountId,
+          type,
+          price,
+          tier,
+          reward,
+          round,
+        });
 
-          await newTicket.save();
+        // await newTicket.save();
 
-          // Calculate pool amount
-          if (tier !== "ZERO") {
-            rewardAmount = decimal.addition(rewardAmount, newTicket.reward);
-          }
+        // Calculate pool amount
+        if (tier !== "ZERO") {
+          rewardAmount = decimal.addition(rewardAmount, newTicket.reward);
+        }
 
-          if (tier === "ZERO") {
-            // 60% goes to the revenue-sharing pool
-            poolAmount = decimal.addition(poolAmount, newTicket.price * 0.6);
-            // 15% goes to the mega jackpot
-            megaJackpotAmount = decimal.addition(
-              megaJackpotAmount,
-              newTicket.price * 0.15
-            );
-            // 5% goes to the minor jackpot
-            minorJackpotAmount = decimal.addition(
-              minorJackpotAmount,
-              newTicket.price * 0.05
-            );
-            // 1% goes to the reserve
-            reserveAmount = decimal.addition(
-              reserveAmount,
-              newTicket.price * 0.01
-            );
-            // 1.5% goes to bonuses
-            bonusAmount = decimal.addition(
-              bonusAmount,
-              newTicket.price * 0.015
-            );
-            // 17% Team
-            teamAmount = decimal.addition(teamAmount, newTicket.price * 0.17);
-            // 0.25% burn
-            pacoBurntAmount = decimal.addition(
-              pacoBurntAmount,
-              newTicket.price * 0.0025
-            );
-            // 0.25 % fee
-            feeAmount = decimal.addition(feeAmount, newTicket.price * 0.0025);
-          }
-        })
-    );
+        if (tier === "ZERO") {
+          // 60% goes to the revenue-sharing pool
+          poolAmount = decimal.addition(poolAmount, newTicket.price * 0.6);
+          // 15% goes to the mega jackpot
+          megaJackpotAmount = decimal.addition(
+            megaJackpotAmount,
+            newTicket.price * 0.15
+          );
+          // 5% goes to the minor jackpot
+          minorJackpotAmount = decimal.addition(
+            minorJackpotAmount,
+            newTicket.price * 0.05
+          );
+          // 1% goes to the reserve
+          reserveAmount = decimal.addition(
+            reserveAmount,
+            newTicket.price * 0.01
+          );
+          // 1.5% goes to bonuses
+          bonusAmount = decimal.addition(bonusAmount, newTicket.price * 0.015);
+          // 17% Team
+          teamAmount = decimal.addition(teamAmount, newTicket.price * 0.17);
+          // 0.25% burn
+          pacoBurntAmount = decimal.addition(
+            pacoBurntAmount,
+            newTicket.price * 0.0025
+          );
+          // 0.25 % fee
+          feeAmount = decimal.addition(feeAmount, newTicket.price * 0.0025);
+        }
+
+        return newTicket.save();
+      });
 
     // Create daily ticket document for the same account in a day [3AM - 3AM]
     const dailyTicket = await DailyTicket.findOne({
       account: accountId,
-      ...dateQuery("date"),
+      createdAt: {
+        $gt: new Date(date.todaysDate),
+        $lte: new Date(date.nextDate),
+      },
     });
 
     if (!dailyTicket) {
@@ -266,10 +280,7 @@ const createTicket = async () => {
     parentPort.postMessage(`${amount} Tickets bought successfully`);
   } catch (error) {
     // Post message to parent thread with error response
-    console.log(error);
+    // console.log(error);
     parentPort.postMessage(error.message);
   }
 };
-
-// Execute the createTicket function
-createTicket();
