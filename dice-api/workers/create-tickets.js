@@ -99,11 +99,8 @@ const createTicket = async () => {
 
     // Get the previous ticket round number
     const prevTicket = await Ticket.findOne({
-      createdAt: {
-        $gt: new Date(date.todaysDate),
-        $lte: new Date(date.nextDate),
-      },
-    }).sort("-createdAt");
+      createdAt: { $lte: new Date(date.todaysDate) },
+    }).sort("-buyAt");
     const round = prevTicket ? prevTicket.round + 1 : 1;
 
     let rewardAmount = "0";
