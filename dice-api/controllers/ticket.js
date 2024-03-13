@@ -226,6 +226,9 @@ const getMyTickets = catchAsync(async (req, res, next) => {
   const query = { account: req.account._id, round };
   const count = await Ticket.countDocuments(query);
 
+  const ticketSetting = await TicketSettings.findOne();
+  if (!ticketSetting) return next(new AppError("No ticket setting found", 404));
+
   const tickets = await Ticket.aggregate([
     {
       $match: query,
@@ -245,9 +248,9 @@ const getMyTickets = catchAsync(async (req, res, next) => {
       $addFields: {
         status: {
           $cond: [
-            { $lte: ["$createdAt", new Date(date.todaysDate)] },
-            "Drawn",
+            { $eq: ["$round", ticketSetting.round] },
             "Waiting Results",
+            "Drawn",
           ],
         },
       },
@@ -303,10 +306,10 @@ const getMyTicketsCount = catchAsync(async (req, res, next) => {
  * @access  Public
  */
 const getLastRound = catchAsync(async (req, res, next) => {
-  const ticket = await Ticket.findOne().sort("-buyAt");
-  if (!ticket) return next(new AppError("No ticket found", 400));
+  const ticketSetting = await TicketSettings.findOne();
+  if (!ticketSetting) return next(new AppError("No ticket setting found", 404));
 
-  res.status(200).json(ticket.round);
+  res.status(200).json(ticketSetting.round);
 });
 
 /**
@@ -327,7 +330,7 @@ const getMyHistories = catchAsync(async (req, res, next) => {
   let query = {
     account: req.account._id,
     round,
-    createdAt: { $lte: new Date(date.todaysDate) },
+    // createdAt: { $lte: new Date(date.todaysDate) },
   };
   if (type === "winning") {
     query = { ...query, tier: { $ne: "ZERO" } };
@@ -395,7 +398,8 @@ const getAllBets = catchAsync(async (req, res, next) => {
   const round = Number(req.query.round || 1);
   const type = req.query.type;
 
-  let query = { round, createdAt: { $lte: new Date(date.todaysDate) } };
+  // let query = { round, createdAt: { $lte: new Date(date.todaysDate) } };
+  let query = { round };
   if (type === "winning") {
     query = { ...query, tier: { $ne: "ZERO" } };
   } else if (type === "losing") {
@@ -454,6 +458,7 @@ const getAllBets = catchAsync(async (req, res, next) => {
  */
 const getTicketStatistics = catchAsync(async (req, res, next) => {
   const ticketPool = await TicketPool.findOne();
+  const ticketSetting = await TicketSettings.findOne();
 
   const minorJackpot = ticketPool ? ticketPool.MINOR_JACKPOT : 0;
   const megaJackpot = ticketPool ? ticketPool.MEGA_JACKPOT : 0;
@@ -461,7 +466,7 @@ const getTicketStatistics = catchAsync(async (req, res, next) => {
 
   // Calculate ticketsInPlay
   const ticketsInPlay = await Ticket.countDocuments({
-    ...dateQuery("createdAt"),
+    round: ticketSetting.round,
   });
 
   return res
@@ -472,7 +477,8 @@ const getTicketStatistics = catchAsync(async (req, res, next) => {
 // Schedule of Transfer ticket reward & other calculated data to ticket pool and Staking pool
 const transferDailyTicketToTicketPool = async () => {
   // Get daily tickets
-  const dailyTickets = await DailyTicket.find({ ...dateQuery("createdAt") });
+  const ticketSetting = await TicketSettings.findOne();
+  const dailyTickets = await DailyTicket.find({ round: ticketSetting.round });
   if (!dailyTickets.length) return;
 
   await Promise.all(
@@ -617,6 +623,10 @@ const transferDailyTicketToTicketPool = async () => {
       await DailyTicket.findByIdAndDelete(dailyTicket._id);
     })
   );
+
+  // Update todays round
+  ticketSetting.round = ticketSetting.round + 1;
+  await ticketSetting.save();
 };
 
 module.exports = {
