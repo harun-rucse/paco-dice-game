@@ -11,6 +11,10 @@ const ticketSettingSchema = new Schema(
       type: Number,
       required: true,
     },
+    round: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,

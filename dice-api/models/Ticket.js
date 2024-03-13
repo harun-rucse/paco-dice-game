@@ -45,10 +45,6 @@ const ticketSchema = new Schema(
     round: {
       type: Number,
     },
-    buyAt: {
-      type: Date,
-      default: Date.now(),
-    },
   },
   {
     timestamps: true,

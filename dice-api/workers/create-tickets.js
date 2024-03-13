@@ -53,13 +53,6 @@ function weightedRandomNumber() {
   }
 }
 
-const dateQuery = (field) => ({
-  [field]: {
-    $gt: new Date(date.todaysDate),
-    $lte: new Date(date.nextDate),
-  },
-});
-
 const { reqBody, accountId } = workerData;
 const { type, amount } = reqBody;
 
@@ -97,11 +90,8 @@ const createTicket = async () => {
     if (decimal.compare(account.paco, requiredPaco, "lt"))
       throw new AppError("Insufficient balance for buying ticket", 400);
 
-    // Get the previous ticket round number
-    const prevTicket = await Ticket.findOne({
-      createdAt: { $lte: new Date(date.todaysDate) },
-    }).sort("-buyAt");
-    const round = prevTicket ? prevTicket.round + 1 : 1;
+    // Get the todays round number
+    const round = ticketSetting.round;
 
     let rewardAmount = "0";
     let poolAmount = "0";
@@ -165,8 +155,6 @@ const createTicket = async () => {
           round,
         });
 
-        // await newTicket.save();
-
         // Calculate pool amount
         if (tier !== "ZERO") {
           rewardAmount = decimal.addition(rewardAmount, newTicket.reward);
@@ -209,15 +197,13 @@ const createTicket = async () => {
     // Create daily ticket document for the same account in a day [3AM - 3AM]
     const dailyTicket = await DailyTicket.findOne({
       account: accountId,
-      createdAt: {
-        $gt: new Date(date.todaysDate),
-        $lte: new Date(date.nextDate),
-      },
+      round: round,
     });
 
     if (!dailyTicket) {
       const newDailyTicket = new DailyTicket({
         account: accountId,
+        round: round,
         REWARD: rewardAmount,
         REVENUE_SHARING_POOL: poolAmount,
         MINOR_JACKPOT: minorJackpotAmount,

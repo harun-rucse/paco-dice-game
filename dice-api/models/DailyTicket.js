@@ -51,9 +51,9 @@ const dailyTicketSchema = new Schema(
       type: String,
       default: "0",
     },
-    date: {
-      type: Date,
-      default: Date.now(),
+    round: {
+      type: Number,
+      default: 0,
     },
   },
   {

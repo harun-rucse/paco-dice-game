@@ -19,6 +19,7 @@ database()
     await TicketSettings.create({
       STANDARD: 100,
       MEGA: 200,
+      round: 1,
     });
 
     console.log(`--- Completed ticket settings data seed ---`);
@@ -41,8 +42,8 @@ database()
 
     // Initiate ticket-pool
     await TicketPool.create({
-      MINOR_JACKPOT: "0",
-      MEGA_JACKPOT: "0",
+      MINOR_JACKPOT: "1223358964",
+      MEGA_JACKPOT: "10850600311",
       RESERVE: "0",
       BONUS: "0",
       TEAM: "0",
