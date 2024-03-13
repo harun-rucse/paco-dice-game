@@ -1,6 +1,5 @@
 import { useSearchParams } from "react-router-dom";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
-import { padNumber } from "../../utils/format";
 
 function RoundCard({ round }) {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -26,8 +25,8 @@ function RoundCard({ round }) {
         >
           <FaChevronLeft size={26} color="#9760b1" />
         </button>
-        <div className="bg-[#7c4b7d] text-sm md:text-base px-4 py-2 rounded-lg shadow-lg">
-          {padNumber(roundParams, 8)}
+        <div className="bg-[#7c4b7d] text-sm md:text-base px-12 py-2 rounded-lg shadow-lg">
+          {`#${roundParams}`}
         </div>
         <button
           className="shadow-xl cursor-pointer"

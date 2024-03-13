@@ -10,12 +10,6 @@ function PacoLottery() {
   const { isLoading, ticketStatistics } = useGetTicketStatistics();
 
   // Calculate the time until the next 3:00 PM
-  // const now = new Date();
-  // const midnight = new Date();
-  // midnight.setDate(midnight.getDate() + 1);
-  // midnight.setHours(15, 0, 0, 0);
-  // const timeUntilMidnight = midnight - now;
-
   const now = new Date();
   const midnight = new Date(
     Date.UTC(
@@ -83,6 +77,10 @@ function PacoLottery() {
         <InfoCard
           title="Tickets In Play"
           subTitle={numberFormat(ticketStatistics.ticketsInPlay)}
+        />
+        <InfoCard
+          title="Round"
+          subTitle={`#${numberFormat(ticketStatistics.round)}`}
         />
       </div>
     </div>
