@@ -49,7 +49,7 @@ function MyTickets() {
               Standard tickets: <span>{tickets.allTime.standard}</span>
             </p>
             <p className="text-lg">
-              Mega tickets: <span>{tickets.allTime.standard}</span>
+              Mega tickets: <span>{tickets.allTime.mega}</span>
             </p>
           </div>
         </>
