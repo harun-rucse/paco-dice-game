@@ -1,63 +1,59 @@
-import { useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
 import LoadingSpinner from "../../../components/LoadingSpinner";
-import Pagination from "../../../components/Pagination";
-import Table from "../Table";
-import TopBar from "../TopBar";
-import RoundCard from "../RoundCard";
 import useGetMyTickets from "../useGetMyTickets";
-import useGetLastRound from "../useGetLastRound";
+import Spinner from "../../../components/Spinner";
 
 function MyTickets() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const { isLoading, tickets, count } = useGetMyTickets();
-  const { isLoading: isRoundLoading, round } = useGetLastRound();
+  const { isLoading, tickets } = useGetMyTickets();
 
-  // Set todays round and reset page
-  useEffect(() => {
-    if (round) {
-      searchParams.set("round", round);
-      searchParams.set("page", 1);
-
-      setSearchParams(searchParams);
-    }
-  }, [round]);
-
-  if (isLoading || isRoundLoading)
-    return <LoadingSpinner className="h-[36rem]" />;
+  if (isLoading) return <LoadingSpinner className="h-[36rem]" />;
 
   return (
-    <div className="text-white">
-      {/* TopBar */}
-      <TopBar title="My Tickets">
-        <RoundCard round={round} />
-        <div className="hidden md:block" />
-      </TopBar>
+    <div className="text-white flex flex-col items-center justify-center">
+      <div className="flex items-center gap-12 mb-6 mt-4">
+        <img
+          src="/icons/lottery_icon.png"
+          alt=""
+          className="w-[70px] md:w-[90px]"
+        />
+        <span className="uppercase md:text-xl">All Tickets</span>
+        <img
+          src="/icons/lottery_icon.png"
+          alt=""
+          className="w-[70px] md:w-[90px] rotate-[35deg]"
+        />
+      </div>
 
-      <div className="lottery-divider my-4" />
+      {isLoading ? (
+        <Spinner />
+      ) : (
+        <>
+          <div className="text-center">
+            <h4 className="uppercase text-lg font-normal mb-2">
+              My Total active tickets
+            </h4>
+            <p className="text-lg">
+              My Standard tickets: <span>{tickets.active.standard}</span>
+            </p>
+            <p className="text-lg">
+              My Mega tickets: <span>{tickets.active.mega}</span>
+            </p>
+          </div>
 
-      {/* My tickets Table */}
-      <Table columns="grid-cols-[1fr_1fr_1fr_0.5fr]">
-        <Table.Header>
-          <span>Username</span>
-          <span>Round</span>
-          <span>Status</span>
-          <span>Ticket Type</span>
-        </Table.Header>
-        <Table.Body>
-          {tickets?.map((ticket, i) => (
-            <Table.Row key={i}>
-              <span>{ticket.username}</span>
-              <span>{ticket.round}</span>
-              <span>{ticket.status}</span>
-              <span>{ticket.type}</span>
-            </Table.Row>
-          ))}
-        </Table.Body>
-        <Table.Footer>
-          <Pagination count={count} />
-        </Table.Footer>
-      </Table>
+          <span className="w-full h-[2px] bg-[#ba7bbd] my-4" />
+
+          <div className="text-center">
+            <h4 className="uppercase text-lg font-normal mb-2">
+              My Total tickets of all time
+            </h4>
+            <p className="text-lg">
+              Standard tickets: <span>{tickets.allTime.standard}</span>
+            </p>
+            <p className="text-lg">
+              Mega tickets: <span>{tickets.allTime.standard}</span>
+            </p>
+          </div>
+        </>
+      )}
     </div>
   );
 }

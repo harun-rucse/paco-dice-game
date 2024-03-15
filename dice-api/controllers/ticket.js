@@ -9,11 +9,10 @@ const StakePool = require("../models/StakePool");
 const AppError = require("../utils/app-error");
 const catchAsync = require("../utils/catch-async");
 const decimal = require("../utils/decimal");
-const { date } = require("../utils/date");
 
 function getWinningTierName(tier) {
   const tierMapping = {
-    ZERO: "-",
+    ZERO: "Lost",
     ONE: "Tier 1",
     TWO: "Tier 2",
     THREE: "Tier 3",
@@ -33,12 +32,59 @@ function getWinningTierName(tier) {
   return tierMapping[tier];
 }
 
-const dateQuery = (field) => ({
-  [field]: {
-    $gt: new Date(date.todaysDate),
-    $lte: new Date(date.nextDate),
-  },
-});
+function getTotalWinnings(winningTickets, tierName, ticketPool, ticketTier) {
+  switch (tierName) {
+    case "ELEVEN": {
+      return decimal.multiply(
+        winningTickets,
+        decimal.multiply(ticketPool["MINOR_JACKPOT"], 0.5)
+      );
+    }
+    case "TWELVE": {
+      return decimal.multiply(
+        winningTickets,
+        decimal.multiply(ticketPool["MINOR_JACKPOT"], 0.8)
+      );
+    }
+    case "THIRTEEN": {
+      return decimal.multiply(
+        winningTickets,
+        decimal.multiply(ticketPool["MEGA_JACKPOT"], 0.5)
+      );
+    }
+    case "FOURTEEN": {
+      return decimal.multiply(
+        winningTickets,
+        decimal.multiply(ticketPool["MEGA_JACKPOT"], 0.8)
+      );
+    }
+
+    default: {
+      return decimal.multiply(winningTickets, ticketTier[tierName]);
+    }
+  }
+}
+
+function getPrize(tierName, ticketTier) {
+  switch (tierName) {
+    case "ELEVEN": {
+      return "50% of minor jackpot";
+    }
+    case "TWELVE": {
+      return "80% of minor jackpot";
+    }
+    case "THIRTEEN": {
+      return "50% of mega jackpot";
+    }
+    case "FOURTEEN": {
+      return "80% of mega jackpot ";
+    }
+
+    default: {
+      return ticketTier[tierName];
+    }
+  }
+}
 
 /**
  * @desc    Create new ticket setting
@@ -215,67 +261,48 @@ const getAllTickets = catchAsync(async (req, res, next) => {
 
 /**
  * @desc    Get My tickets
- * @route   GET /api/tickets/my-tickets?page=1&limit=10
+ * @route   GET /api/tickets/my-tickets
  * @access  Private
  */
 const getMyTickets = catchAsync(async (req, res, next) => {
-  const page = Number(req.query.page || 1);
-  const limit = Number(req.query.limit || 10);
-  const round = Number(req.query.round || 1);
-
-  const query = { account: req.account._id, round };
-  const count = await Ticket.countDocuments(query);
-
   const ticketSetting = await TicketSettings.findOne();
-  if (!ticketSetting) return next(new AppError("No ticket setting found", 404));
+  const round = ticketSetting.round;
 
-  const tickets = await Ticket.aggregate([
-    {
-      $match: query,
-    },
-    {
-      $lookup: {
-        from: "accounts",
-        localField: "account",
-        foreignField: "_id",
-        as: "account",
-      },
-    },
-    {
-      $unwind: "$account",
-    },
-    {
-      $addFields: {
-        status: {
-          $cond: [
-            { $eq: ["$round", ticketSetting.round] },
-            "Waiting Results",
-            "Drawn",
-          ],
-        },
-      },
-    },
-    {
-      $project: {
-        _id: 1,
-        username: "$account.username",
-        status: 1,
-        type: "$type",
-        round: { $concat: ["Round ", { $toString: "$round" }] },
-        buyAt: 1,
-      },
-    },
-    {
-      $skip: limit * (page - 1),
-    },
-    {
-      $limit: limit,
-    },
-  ]);
+  // Total active standard ticket
+  const activeTotalStandardTicket = await Ticket.countDocuments({
+    account: req.account._id,
+    type: "STANDARD",
+    round,
+  });
+
+  // Total active mega ticket
+  const activeTotalMegaTicket = await Ticket.countDocuments({
+    account: req.account._id,
+    type: "MEGA",
+    round,
+  });
+
+  // Total allTime standard ticket
+  const allTimeTotalStandardTicket = await Ticket.countDocuments({
+    account: req.account._id,
+    type: "STANDARD",
+  });
+
+  // Total allTime mega ticket
+  const allTimeTotalMegaTicket = await Ticket.countDocuments({
+    account: req.account._id,
+    type: "MEGA",
+  });
 
   res.status(200).json({
-    tickets,
-    count,
+    active: {
+      standard: activeTotalStandardTicket,
+      mega: activeTotalMegaTicket,
+    },
+    allTime: {
+      standard: allTimeTotalStandardTicket,
+      mega: allTimeTotalMegaTicket,
+    },
   });
 });
 
@@ -314,141 +341,232 @@ const getLastRound = catchAsync(async (req, res, next) => {
 
 /**
  * @desc    Get My Histories
- * @route   GET /api/tickets/my-histories?page=1&limit=10&type=all
- * @query   page number
- * @query   limit number
+ * @route   GET /api/tickets/my-histories?page=1&limit=10&type=winning
  * @query   round number
- * @query   type = all, losing, winning
+ * @query   type = loosing, winning
  * @access  Private
  */
 const getMyHistories = catchAsync(async (req, res, next) => {
-  const page = Number(req.query.page || 1);
-  const limit = Number(req.query.limit || 10);
   const round = Number(req.query.round || 1);
   const type = req.query.type;
 
-  let query = {
-    account: req.account._id,
-    round,
-    // createdAt: { $lte: new Date(date.todaysDate) },
-  };
+  // winning bets
   if (type === "winning") {
-    query = { ...query, tier: { $ne: "ZERO" } };
-  } else if (type === "losing") {
-    query = { ...query, tier: { $eq: "ZERO" } };
+    const query = {
+      account: req.account._id,
+      round,
+      tier: { $ne: "ZERO" },
+    };
+
+    const ticketTier = await TicketTier.findOne();
+    const ticketPool = await TicketPool.findOne();
+
+    let tickets = await Ticket.aggregate([
+      {
+        $match: query,
+      },
+      {
+        $group: {
+          _id: "$tier",
+          winningTickets: { $sum: 1 },
+          round: { $first: "$round" },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          tier: "$_id",
+          winningTickets: 1,
+          round: { $concat: ["Round ", { $toString: "$round" }] },
+          tierOrder: {
+            $switch: {
+              branches: [
+                { case: { $eq: ["$_id", "ONE"] }, then: 1 },
+                { case: { $eq: ["$_id", "TWO"] }, then: 2 },
+                { case: { $eq: ["$_id", "THREE"] }, then: 3 },
+                { case: { $eq: ["$_id", "FOUR"] }, then: 4 },
+                { case: { $eq: ["$_id", "FIVE"] }, then: 5 },
+                { case: { $eq: ["$_id", "SIX"] }, then: 6 },
+                { case: { $eq: ["$_id", "SEVEN"] }, then: 7 },
+                { case: { $eq: ["$_id", "EIGHT"] }, then: 8 },
+                { case: { $eq: ["$_id", "NINE"] }, then: 9 },
+                { case: { $eq: ["$_id", "TEN"] }, then: 10 },
+                { case: { $eq: ["$_id", "ELEVEN"] }, then: 11 },
+                { case: { $eq: ["$_id", "TWELVE"] }, then: 12 },
+                { case: { $eq: ["$_id", "THIRTEEN"] }, then: 13 },
+                { case: { $eq: ["$_id", "FOURTEEN"] }, then: 14 },
+              ],
+              default: 999,
+            },
+          },
+        },
+      },
+      {
+        $sort: { tierOrder: 1 },
+      },
+      {
+        $project: {
+          _id: 0,
+          tierOrder: 0,
+        },
+      },
+    ]);
+
+    tickets = tickets.map((ticket) => ({
+      ...ticket,
+      tier: getWinningTierName(ticket.tier),
+      prize: getPrize(ticket.tier, ticketTier),
+      totalWinnings: getTotalWinnings(
+        ticket.winningTickets,
+        ticket.tier,
+        ticketPool,
+        ticketTier
+      ),
+    }));
+
+    return res.status(200).json({ histories: tickets });
   }
 
-  const count = await Ticket.countDocuments(query);
+  // Loosing bets
+  if (type === "loosing") {
+    const query = {
+      account: req.account._id,
+      round,
+      tier: { $eq: "ZERO" },
+    };
 
-  let tickets = await Ticket.aggregate([
-    {
-      $match: query,
-    },
-    {
-      $lookup: {
-        from: "accounts",
-        localField: "account",
-        foreignField: "_id",
-        as: "account",
+    const ticketSetting = await TicketSettings.findOne();
+
+    let tickets = await Ticket.aggregate([
+      {
+        $match: query,
       },
-    },
-    {
-      $unwind: "$account",
-    },
-    {
-      $project: {
-        _id: 1,
-        username: "$account.username",
-        type: "$type",
-        round: { $concat: ["Round ", { $toString: "$round" }] },
-        tier: "$tier",
-        buyAt: 1,
-        prize: "$reward",
-        reward: 1,
+      {
+        $group: {
+          _id: "$type",
+          loosingTickets: { $sum: 1 },
+          round: { $first: "$round" },
+        },
       },
-    },
-    {
-      $skip: limit * (page - 1),
-    },
-    {
-      $limit: limit,
-    },
-  ]);
+      {
+        $project: {
+          _id: 1,
+          ticketType: { $toUpper: "$_id" },
+          loosingTickets: 1,
+          round: { $concat: ["Round ", { $toString: "$round" }] },
+          typeOrder: {
+            $switch: {
+              branches: [
+                { case: { $eq: ["$_id", "STANDARD"] }, then: 1 },
+                { case: { $eq: ["$_id", "MEGA"] }, then: 2 },
+              ],
+              default: 999,
+            },
+          },
+        },
+      },
+      {
+        $sort: { typeOrder: 1 },
+      },
+      {
+        $project: {
+          _id: 0,
+          typeOrder: 0,
+        },
+      },
+    ]);
 
-  tickets = tickets.map((ticket) => ({
-    ...ticket,
-    winningTier: getWinningTierName(ticket.tier),
-  }));
+    tickets = tickets.map((ticket) => ({
+      ...ticket,
+      totalPacoSpent: decimal.multiply(
+        ticket.loosingTickets,
+        ticketSetting[ticket.ticketType]
+      ),
+    }));
 
-  res.status(200).json({ histories: tickets, count });
+    return res.status(200).json({ histories: tickets });
+  }
 });
 
 /**
  * @desc    Get All bets
- * @route   GET /api/tickets/all-bets?page=1&limit=10&type=all
- * @query   page number
- * @query   limit number
+ * @route   GET /api/tickets/all-bets?page=1&limit=10&type=winning
  * @query   round number
- * @query   type = all, losing, winning
+ * @query   type = loosing, winning
  * @access  Private
  */
 const getAllBets = catchAsync(async (req, res, next) => {
-  const page = Number(req.query.page || 1);
-  const limit = Number(req.query.limit || 10);
   const round = Number(req.query.round || 1);
-  const type = req.query.type;
+  const query = { round };
 
-  // let query = { round, createdAt: { $lte: new Date(date.todaysDate) } };
-  let query = { round };
-  if (type === "winning") {
-    query = { ...query, tier: { $ne: "ZERO" } };
-  } else if (type === "losing") {
-    query = { ...query, tier: { $eq: "ZERO" } };
-  }
-
-  const count = await Ticket.countDocuments(query);
+  const ticketTier = await TicketTier.findOne();
+  const ticketPool = await TicketPool.findOne();
 
   let tickets = await Ticket.aggregate([
     {
       $match: query,
     },
     {
-      $lookup: {
-        from: "accounts",
-        localField: "account",
-        foreignField: "_id",
-        as: "account",
+      $group: {
+        _id: "$tier",
+        winningTickets: { $sum: 1 },
+        round: { $first: "$round" },
       },
-    },
-    {
-      $unwind: "$account",
     },
     {
       $project: {
         _id: 1,
-        username: "$account.username",
-        type: "$type",
+        tier: "$_id",
+        winningTickets: 1,
         round: { $concat: ["Round ", { $toString: "$round" }] },
-        tier: "$tier",
-        buyAt: 1,
-        prize: "$reward",
-        reward: 1,
+        tierOrder: {
+          $switch: {
+            branches: [
+              { case: { $eq: ["$_id", "ZERO"] }, then: 1 },
+              { case: { $eq: ["$_id", "ONE"] }, then: 2 },
+              { case: { $eq: ["$_id", "TWO"] }, then: 3 },
+              { case: { $eq: ["$_id", "THREE"] }, then: 4 },
+              { case: { $eq: ["$_id", "FOUR"] }, then: 5 },
+              { case: { $eq: ["$_id", "FIVE"] }, then: 6 },
+              { case: { $eq: ["$_id", "SIX"] }, then: 7 },
+              { case: { $eq: ["$_id", "SEVEN"] }, then: 8 },
+              { case: { $eq: ["$_id", "EIGHT"] }, then: 9 },
+              { case: { $eq: ["$_id", "NINE"] }, then: 10 },
+              { case: { $eq: ["$_id", "TEN"] }, then: 11 },
+              { case: { $eq: ["$_id", "ELEVEN"] }, then: 12 },
+              { case: { $eq: ["$_id", "TWELVE"] }, then: 13 },
+              { case: { $eq: ["$_id", "THIRTEEN"] }, then: 14 },
+              { case: { $eq: ["$_id", "FOURTEEN"] }, then: 15 },
+            ],
+            default: 999,
+          },
+        },
       },
     },
     {
-      $skip: limit * (page - 1),
+      $sort: { tierOrder: 1 },
     },
     {
-      $limit: limit,
+      $project: {
+        _id: 0,
+        tierOrder: 0,
+      },
     },
   ]);
 
   tickets = tickets.map((ticket) => ({
     ...ticket,
-    winningTier: getWinningTierName(ticket.tier),
+    tier: getWinningTierName(ticket.tier),
+    prize: getPrize(ticket.tier, ticketTier),
+    totalWinnings: getTotalWinnings(
+      ticket.winningTickets,
+      ticket.tier,
+      ticketPool,
+      ticketTier
+    ),
   }));
 
-  res.status(200).json({ allBets: tickets, count });
+  return res.status(200).json({ allBets: tickets });
 });
 
 /**
@@ -459,6 +577,7 @@ const getAllBets = catchAsync(async (req, res, next) => {
 const getTicketStatistics = catchAsync(async (req, res, next) => {
   const ticketPool = await TicketPool.findOne();
   const ticketSetting = await TicketSettings.findOne();
+  const round = ticketSetting.round;
 
   const minorJackpot = ticketPool ? ticketPool.MINOR_JACKPOT : 0;
   const megaJackpot = ticketPool ? ticketPool.MEGA_JACKPOT : 0;
@@ -466,12 +585,16 @@ const getTicketStatistics = catchAsync(async (req, res, next) => {
 
   // Calculate ticketsInPlay
   const ticketsInPlay = await Ticket.countDocuments({
-    round: ticketSetting.round,
+    round,
   });
 
-  return res
-    .status(200)
-    .json({ minorJackpot, megaJackpot, pacoBurnt, ticketsInPlay });
+  return res.status(200).json({
+    minorJackpot,
+    megaJackpot,
+    pacoBurnt,
+    ticketsInPlay,
+    round,
+  });
 });
 
 // Schedule of Transfer ticket reward & other calculated data to ticket pool and Staking pool

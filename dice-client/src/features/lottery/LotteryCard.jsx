@@ -4,17 +4,13 @@ import MyTickets from "./my-tickets/MyTickets";
 import MyHistory from "./my-history/MyHistory";
 import AllBets from "./all-bets/AllBets";
 import { cn } from "../../utils";
-import useGetMyTicketCount from "./useGetMyTicketsCount";
-import LoadingSpinner from "../../components/LoadingSpinner";
 import { useCurrentUser } from "../authentication/useCurrentUser";
 import LotteryLogin from "./LotteryLogin";
+import Modal from "../../components/Modal";
 
 function LotteryCard() {
   const [tab, setTab] = useState("lobby");
-  const { isLoading, ticketCount } = useGetMyTicketCount();
   const { isAuthenticated, isLoading: isAuthLoading } = useCurrentUser();
-
-  if (isLoading) return <LoadingSpinner className="h-[8rem]" />;
 
   return (
     <div>
@@ -30,24 +26,39 @@ function LotteryCard() {
             >
               Lobby
             </button>
-            <button
-              className={cn(
-                "transition text-white border border-transparent hover:bg-[#90558e] hover:border-black rounded-3xl px-2 md:px-4 py-1",
-                tab === "my-tickets" && "active"
-              )}
-              onClick={() => setTab("my-tickets")}
-            >
-              My Tickets
-            </button>
-            <button
-              className={cn(
-                "transition text-white border border-transparent hover:bg-[#90558e] hover:border-black rounded-3xl px-2 md:px-4 py-1",
-                tab === "my-history" && "active"
-              )}
-              onClick={() => setTab("my-history")}
-            >
-              My History
-            </button>
+            {!isAuthLoading && isAuthenticated && (
+              <>
+                <Modal>
+                  <Modal.Open opens="my-tickets">
+                    <button
+                      className={cn(
+                        "transition text-white border border-transparent hover:bg-[#90558e] hover:border-black rounded-3xl px-2 md:px-4 py-1",
+                        tab === "my-tickets" && "active"
+                      )}
+                    >
+                      My Tickets
+                    </button>
+                  </Modal.Open>
+                  <Modal.Body
+                    name="my-tickets"
+                    className="bg-[#753d89] border border-[#955997] min-h-[20rem] md:min-h-[22rem] md:min-w-[36rem]"
+                  >
+                    <MyTickets />
+                  </Modal.Body>
+                </Modal>
+
+                <button
+                  className={cn(
+                    "transition text-white border border-transparent hover:bg-[#90558e] hover:border-black rounded-3xl px-2 md:px-4 py-1",
+                    tab === "my-history" && "active"
+                  )}
+                  onClick={() => setTab("my-history")}
+                >
+                  My History
+                </button>
+              </>
+            )}
+
             <button
               className={cn(
                 "transition text-white border border-transparent hover:bg-[#90558e] hover:border-black rounded-3xl px-2 md:px-4 py-1",
@@ -58,19 +69,6 @@ function LotteryCard() {
               All Bets
             </button>
           </div>
-          {!isAuthLoading && isAuthenticated && (
-            <div className="flex flex-col md:flex-row items-center gap-4">
-              {tab === "my-tickets" && (
-                <div className="my-lottery-bg text-sm md:text-base text-white px-6 md:px-8 py-2 rounded-3xl md:rounded-full">
-                  <p>My Standard Tickets: {ticketCount?.totalStandardToken}</p>
-                  <p>My Mega Tickets: {ticketCount?.totalMegaToken}</p>
-                </div>
-              )}
-              <button className="button !bg-[#3e5eaf] text-sm md:text-base">
-                Provably Fair
-              </button>
-            </div>
-          )}
         </div>
 
         {!isAuthLoading && !isAuthenticated && tab !== "lobby" && (
@@ -78,9 +76,6 @@ function LotteryCard() {
         )}
 
         {tab === "lobby" && <LobbyCard />}
-        {!isAuthLoading && isAuthenticated && tab === "my-tickets" && (
-          <MyTickets />
-        )}
         {!isAuthLoading && isAuthenticated && tab === "my-history" && (
           <MyHistory />
         )}

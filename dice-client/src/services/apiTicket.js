@@ -23,11 +23,9 @@ export const getTicketSetting = async () => {
   }
 };
 
-export const getMyTickets = async (page = 1, limit = 10, round = 1) => {
+export const getMyTickets = async () => {
   try {
-    const { data } = await api.get(
-      `/tickets/my-tickets?page=${page}&limit=${limit}&round=${round}`
-    );
+    const { data } = await api.get(`/tickets/my-tickets`);
 
     return data;
   } catch (err) {
@@ -45,15 +43,10 @@ export const getLastRound = async () => {
   }
 };
 
-export const getMyHistories = async (
-  page = 1,
-  limit = 10,
-  round = 1,
-  type = "all"
-) => {
+export const getMyHistories = async (round = 1, type = "winning") => {
   try {
     const { data } = await api.get(
-      `/tickets/my-histories?page=${page}&limit=${limit}&round=${round}&type=${type}`
+      `/tickets/my-histories?round=${round}&type=${type}`
     );
 
     return data;
@@ -62,16 +55,9 @@ export const getMyHistories = async (
   }
 };
 
-export const getAllBets = async (
-  page = 1,
-  limit = 10,
-  round = 1,
-  type = "all"
-) => {
+export const getAllBets = async (round = 1) => {
   try {
-    const { data } = await api.get(
-      `/tickets/all-bets?page=${page}&limit=${limit}&round=${round}&type=${type}`
-    );
+    const { data } = await api.get(`/tickets/all-bets?round=${round}`);
 
     return data;
   } catch (err) {

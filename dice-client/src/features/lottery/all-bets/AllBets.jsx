@@ -1,38 +1,26 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import Table from "../Table";
 import TopBar from "../TopBar";
 import RoundCard from "../RoundCard";
 import LoadingSpinner from "../../../components/LoadingSpinner";
-import Pagination from "../../../components/Pagination";
 import { numberFormat } from "../../../utils/format";
-import { cn } from "../../../utils";
 import useGetAllBets from "../useGetAllBets";
 import useGetLastRound from "../useGetLastRound";
 
 function AllBets() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [type, setType] = useState("all");
-  const { isLoading, allBets, count } = useGetAllBets(type);
+  const { isLoading, allBets } = useGetAllBets();
   const { isLoading: isRoundLoading, round } = useGetLastRound();
 
   // Set todays round and reset page
   useEffect(() => {
     if (round) {
       searchParams.set("round", round - 1);
-      searchParams.set("page", 1);
 
       setSearchParams(searchParams);
     }
   }, [round]);
-
-  // Reset page to 1
-  useEffect(() => {
-    if (type) {
-      searchParams.set("page", 1);
-      setSearchParams(searchParams);
-    }
-  }, [type]);
 
   if (isLoading || isRoundLoading)
     return <LoadingSpinner className="h-[36rem]" />;
@@ -42,68 +30,38 @@ function AllBets() {
       {/* TopBar */}
       <TopBar title="All Bets">
         <RoundCard round={round - 1} />
-
-        <div className="flex items-center gap-2 mt-4 md:mt-0">
-          <button
-            className={cn(
-              "text-white text-sm md:text-base px-3 md:px-6 py-1 md:py-2 rounded-xl shadow-xl border border-[#8e758f]",
-              type === "all" ? "bg-[#915093]" : "bg-[#6a446b]"
-            )}
-            onClick={() => setType("all")}
-          >
-            All
-          </button>
-          <button
-            className={cn(
-              "text-white text-sm md:text-base px-3 md:px-6 py-1 md:py-2 rounded-xl shadow-xl border border-[#8e758f]",
-              type === "losing" ? "bg-[#915093]" : "bg-[#6a446b]"
-            )}
-            onClick={() => setType("losing")}
-          >
-            Losing Bets
-          </button>
-          <button
-            className={cn(
-              "text-white text-sm md:text-base px-3 md:px-6 py-1 md:py-2 rounded-xl shadow-xl border border-[#8e758f]",
-              type === "winning" ? "bg-[#915093]" : "bg-[#6a446b]"
-            )}
-            onClick={() => setType("winning")}
-          >
-            Winning Bets
-          </button>
-        </div>
+        <div />
       </TopBar>
 
       <div className="lottery-divider my-4" />
 
-      {/* My winnings Table */}
+      {/*All bets Table */}
       <Table
-        columns="grid-cols-[0.5fr_0.5fr_0.5fr_0.5fr_0.5fr_0.1fr] md:grid-cols-[1fr_1fr_1fr_1fr_0.5fr_0.1fr]"
+        columns="grid-cols-[0.5fr_0.5fr_0.1fr_0.5fr_0.5fr_0.5fr_0.1fr] md:grid-cols-[0.5fr_0.5fr_0.3fr_0.5fr_0.7fr_0.4fr_0.1fr]"
         className="min-w-[40rem]"
       >
         <Table.Header>
-          <span>Username</span>
-          <span>Ticket</span>
-          <span>Round</span>
-          <span>Winning Tier</span>
+          <span>Tier</span>
           <span>Prize</span>
+          <span />
+          <span>Round</span>
+          <span>Tickets</span>
+          <span>Total Winnings</span>
           <span />
         </Table.Header>
         <Table.Body>
           {allBets?.map((ticket, i) => (
             <Table.Row key={i}>
-              <span>{ticket.username}</span>
-              <span>{ticket.type}</span>
+              <span>{ticket.tier}</span>
+              <span>{numberFormat(ticket.prize)}</span>
+              <img src="/tokens/paco.png" alt="" className="w-6" />
               <span>{ticket.round}</span>
-              <span>{ticket.winningTier}</span>
-              <span>{ticket.reward ? numberFormat(ticket.reward) : "-"}</span>
+              <span>{numberFormat(ticket.winningTickets)}</span>
+              <span>{numberFormat(ticket.totalWinnings)}</span>
               <img src="/tokens/paco.png" alt="" className="w-6" />
             </Table.Row>
           ))}
         </Table.Body>
-        <Table.Footer>
-          <Pagination count={count} />
-        </Table.Footer>
       </Table>
     </div>
   );
