@@ -53,11 +53,21 @@ function AllBets() {
           {allBets?.map((ticket, i) => (
             <Table.Row key={i}>
               <span>{ticket.tier}</span>
-              <span>{numberFormat(ticket.prize)}</span>
+              <span>
+                {ticket.prize === "-" ? "-" : numberFormat(ticket.prize)}
+              </span>
               <img src="/tokens/paco.png" alt="" className="w-6" />
               <span>{ticket.round}</span>
-              <span>{numberFormat(ticket.winningTickets)}</span>
-              <span>{numberFormat(ticket.totalWinnings)}</span>
+              <span>
+                {ticket.winningTickets === "-"
+                  ? "-"
+                  : numberFormat(ticket.winningTickets)}
+              </span>
+              <span>
+                {ticket.totalWinnings === "-"
+                  ? "-"
+                  : numberFormat(ticket.totalWinnings)}
+              </span>
               <img src="/tokens/paco.png" alt="" className="w-6" />
             </Table.Row>
           ))}
