@@ -571,7 +571,7 @@ const getAllBets = catchAsync(async (req, res, next) => {
   }));
 
   // Other tier ticket
-  for (let i = tickets.length; i <= 15; i++) {
+  for (let i = tickets.length; i <= 14; i++) {
     tickets.push({
       tier: `Tier ${i}`,
       prize: "-",
@@ -660,7 +660,7 @@ const getAllTime = catchAsync(async (req, res, next) => {
   }));
 
   // Other tier ticket
-  for (let i = tickets.length; i <= 15; i++) {
+  for (let i = tickets.length; i <= 14; i++) {
     tickets.push({
       tier: `Tier ${i}`,
       prize: "-",
