@@ -12,6 +12,7 @@ router.use(auth);
 router.get("/my-tickets", ticketController.getMyTickets);
 router.get("/my-histories", ticketController.getMyHistories);
 router.get("/all-bets", ticketController.getAllBets);
+router.get("/all-time", ticketController.getAllTime);
 router.get("/my-tickets-count", ticketController.getMyTicketsCount);
 
 router

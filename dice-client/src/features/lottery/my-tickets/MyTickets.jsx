@@ -1,6 +1,7 @@
 import LoadingSpinner from "../../../components/LoadingSpinner";
 import useGetMyTickets from "../useGetMyTickets";
 import Spinner from "../../../components/Spinner";
+import { numberFormat } from "../../../utils/format";
 
 function MyTickets() {
   const { isLoading, tickets } = useGetMyTickets();
@@ -28,7 +29,7 @@ function MyTickets() {
       ) : (
         <>
           <div className="text-center">
-            <h4 className="uppercase text-lg font-normal mb-2">
+            <h4 className="uppercase md:text-lg font-normal mb-2">
               My Total active tickets
             </h4>
             <p className="text-lg">
@@ -42,15 +43,31 @@ function MyTickets() {
           <span className="w-full h-[2px] bg-[#ba7bbd] my-4" />
 
           <div className="text-center">
-            <h4 className="uppercase text-lg font-normal mb-2">
+            <h4 className="uppercase md:text-lg font-normal mb-2">
               My Total tickets of all time
             </h4>
-            <p className="text-lg">
+            <p className="md:text-lg">
               Standard tickets: <span>{tickets.allTime.standard}</span>
             </p>
-            <p className="text-lg">
+            <p className="md:text-lg">
               Mega tickets: <span>{tickets.allTime.mega}</span>
             </p>
+          </div>
+
+          <span className="w-full h-[2px] bg-[#ba7bbd] my-4" />
+
+          <div className="text-center">
+            <h4 className="uppercase md:text-lg font-normal mb-2">
+              My Total paco spent on lottery tickets
+            </h4>
+            <div className="md:text-lg flex items-center justify-center gap-2">
+              <span>{numberFormat(tickets.totalPacoSpent)}</span>
+              <img
+                src="/tokens/paco.png"
+                alt=""
+                className="w-[20px] md:w-[24px]"
+              />
+            </div>
           </div>
         </>
       )}

@@ -3,6 +3,7 @@ import LobbyCard from "./lobby/LobbyCard";
 import MyTickets from "./my-tickets/MyTickets";
 import MyHistory from "./my-history/MyHistory";
 import AllBets from "./all-bets/AllBets";
+import AllTime from "./all-time/AllTime";
 import { cn } from "../../utils";
 import { useCurrentUser } from "../authentication/useCurrentUser";
 import LotteryLogin from "./LotteryLogin";
@@ -41,7 +42,7 @@ function LotteryCard() {
                   </Modal.Open>
                   <Modal.Body
                     name="my-tickets"
-                    className="bg-[#753d89] border border-[#955997] min-h-[20rem] md:min-h-[24rem] md:min-w-[36rem]"
+                    className="bg-[#753d89] border border-[#955997] min-h-[28rem] md:min-h-[30rem] md:min-w-[36rem]"
                   >
                     <MyTickets />
                   </Modal.Body>
@@ -68,6 +69,16 @@ function LotteryCard() {
             >
               All Bets
             </button>
+
+            <button
+              className={cn(
+                "transition text-white border border-transparent hover:bg-[#90558e] hover:border-black rounded-3xl px-2 md:px-4 py-1",
+                tab === "all-time" && "active"
+              )}
+              onClick={() => setTab("all-time")}
+            >
+              All Time
+            </button>
           </div>
         </div>
 
@@ -80,6 +91,7 @@ function LotteryCard() {
           <MyHistory />
         )}
         {!isAuthLoading && isAuthenticated && tab === "all-bets" && <AllBets />}
+        {!isAuthLoading && isAuthenticated && tab === "all-time" && <AllTime />}
       </div>
     </div>
   );

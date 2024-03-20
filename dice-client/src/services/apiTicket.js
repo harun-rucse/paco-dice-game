@@ -84,3 +84,13 @@ export const getMyTicketsCount = async () => {
     throw new Error(err?.response?.data?.message);
   }
 };
+
+export const getAllTime = async () => {
+  try {
+    const { data } = await api.get(`/tickets/all-time`);
+
+    return data;
+  } catch (err) {
+    throw new Error(err?.response?.data?.message);
+  }
+};

@@ -294,15 +294,20 @@ const getMyTickets = catchAsync(async (req, res, next) => {
     type: "MEGA",
   });
 
+  const totalPacoSpent =
+    allTimeTotalStandardTicket * ticketSetting.STANDARD +
+    allTimeTotalMegaTicket * ticketSetting.MEGA;
+
   res.status(200).json({
     active: {
-      standard: activeTotalStandardTicket,
-      mega: activeTotalMegaTicket,
+      standard: activeTotalStandardTicket || 0,
+      mega: activeTotalMegaTicket || 0,
     },
     allTime: {
-      standard: allTimeTotalStandardTicket,
-      mega: allTimeTotalMegaTicket,
+      standard: allTimeTotalStandardTicket || 0,
+      mega: allTimeTotalMegaTicket || 0,
     },
+    totalPacoSpent: totalPacoSpent || 0,
   });
 });
 
@@ -490,9 +495,8 @@ const getMyHistories = catchAsync(async (req, res, next) => {
 
 /**
  * @desc    Get All bets
- * @route   GET /api/tickets/all-bets?page=1&limit=10&type=winning
+ * @route   GET /api/tickets/all-bets
  * @query   round number
- * @query   type = loosing, winning
  * @access  Private
  */
 const getAllBets = catchAsync(async (req, res, next) => {
@@ -566,7 +570,160 @@ const getAllBets = catchAsync(async (req, res, next) => {
     ),
   }));
 
+  // Other tier ticket
+  for (let i = tickets.length; i <= 15; i++) {
+    tickets.push({
+      tier: `Tier ${i}`,
+      prize: "-",
+      round: `Round ${round}`,
+      winningTickets: "-",
+      totalWinnings: "-",
+    });
+  }
+
   return res.status(200).json({ allBets: tickets });
+});
+
+/**
+ * @desc    Get All time
+ * @route   GET /api/tickets/all-time
+ * @query   round number
+ * @access  Private
+ */
+const getAllTime = catchAsync(async (req, res, next) => {
+  const ticketTier = await TicketTier.findOne();
+  const ticketPool = await TicketPool.findOne();
+
+  const ticketSetting = await TicketSettings.findOne();
+  const round = ticketSetting.round;
+
+  let tickets = await Ticket.aggregate([
+    {
+      $match: { round: { $lt: round } },
+    },
+    {
+      $group: {
+        _id: "$tier",
+        totalTickets: { $sum: 1 },
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        tier: "$_id",
+        totalTickets: 1,
+        tierOrder: {
+          $switch: {
+            branches: [
+              { case: { $eq: ["$_id", "ZERO"] }, then: 1 },
+              { case: { $eq: ["$_id", "ONE"] }, then: 2 },
+              { case: { $eq: ["$_id", "TWO"] }, then: 3 },
+              { case: { $eq: ["$_id", "THREE"] }, then: 4 },
+              { case: { $eq: ["$_id", "FOUR"] }, then: 5 },
+              { case: { $eq: ["$_id", "FIVE"] }, then: 6 },
+              { case: { $eq: ["$_id", "SIX"] }, then: 7 },
+              { case: { $eq: ["$_id", "SEVEN"] }, then: 8 },
+              { case: { $eq: ["$_id", "EIGHT"] }, then: 9 },
+              { case: { $eq: ["$_id", "NINE"] }, then: 10 },
+              { case: { $eq: ["$_id", "TEN"] }, then: 11 },
+              { case: { $eq: ["$_id", "ELEVEN"] }, then: 12 },
+              { case: { $eq: ["$_id", "TWELVE"] }, then: 13 },
+              { case: { $eq: ["$_id", "THIRTEEN"] }, then: 14 },
+              { case: { $eq: ["$_id", "FOURTEEN"] }, then: 15 },
+            ],
+            default: 999,
+          },
+        },
+      },
+    },
+    {
+      $sort: { tierOrder: 1 },
+    },
+    {
+      $project: {
+        _id: 0,
+        tierOrder: 0,
+      },
+    },
+  ]);
+
+  tickets = tickets.map((ticket) => ({
+    ...ticket,
+    tier: getWinningTierName(ticket.tier),
+    prize: getPrize(ticket.tier, ticketTier),
+    totalWinnings: getTotalWinnings(
+      ticket.totalTickets,
+      ticket.tier,
+      ticketPool,
+      ticketTier
+    ),
+  }));
+
+  // Other tier ticket
+  for (let i = tickets.length; i <= 15; i++) {
+    tickets.push({
+      tier: `Tier ${i}`,
+      prize: "-",
+      totalTickets: "-",
+      totalWinnings: "-",
+    });
+  }
+
+  const pacoWon = await Ticket.aggregate([
+    {
+      $match: { tier: { $ne: "ZERO" }, round: { $lt: round } },
+    },
+    {
+      $group: {
+        _id: null,
+        totalPacoWon: {
+          $sum: {
+            $convert: {
+              input: "$reward",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+      },
+    },
+    {
+      $project: {
+        totalPacoWon: { $toString: "$totalPacoWon" },
+      },
+    },
+  ]);
+
+  const pacoSpent = await Ticket.aggregate([
+    {
+      $group: {
+        _id: null,
+        totalPacoSpent: { $sum: "$price" },
+      },
+    },
+  ]);
+
+  const { totalPacoWon } = pacoWon[0];
+  const { totalPacoSpent } = pacoSpent[0];
+
+  const totalStandardTicket = await Ticket.countDocuments({
+    type: "STANDARD",
+  });
+
+  const totalMegaTicket = await Ticket.countDocuments({
+    type: "MEGA",
+  });
+
+  return res.status(200).json({
+    allTime: tickets,
+    stats: {
+      totalPacoWon,
+      totalPacoSpent,
+      totalStandardTicket,
+      totalMegaTicket,
+    },
+  });
 });
 
 /**
@@ -766,4 +923,5 @@ module.exports = {
   getTicketStatistics,
   transferDailyTicketToTicketPool,
   getMyTicketsCount,
+  getAllTime,
 };
