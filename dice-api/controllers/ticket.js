@@ -32,6 +32,28 @@ function getWinningTierName(tier) {
   return tierMapping[tier];
 }
 
+function convertNumberString(num) {
+  const stringMapping = {
+    0: "ZERO",
+    1: "ONE",
+    2: "TWO",
+    3: "THREE",
+    4: "FOUR",
+    5: "FIVE",
+    6: "SIX",
+    7: "SEVEN",
+    8: "EIGHT",
+    9: "NINE",
+    10: "TEN",
+    11: "ELEVEN",
+    12: "TWELVE",
+    13: "THIRTEEN",
+    14: "FOURTEEN",
+  };
+
+  return stringMapping[num];
+}
+
 function getTotalWinnings(winningTickets, tierName, ticketPool, ticketTier) {
   switch (tierName) {
     case "ELEVEN": {
@@ -268,46 +290,144 @@ const getMyTickets = catchAsync(async (req, res, next) => {
   const ticketSetting = await TicketSettings.findOne();
   const round = ticketSetting.round;
 
-  // Total active standard ticket
-  const activeTotalStandardTicket = await Ticket.countDocuments({
-    account: req.account._id,
-    type: "STANDARD",
-    round,
-  });
+  // Total active ticket
+  const activeTicketStats = await DailyTicket.aggregate([
+    {
+      $match: { account: req.account._id, round },
+    },
+    {
+      $group: {
+        _id: null,
+        totalStandard: {
+          $sum: {
+            $convert: {
+              input: "$STANDARD",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        totalMega: {
+          $sum: {
+            $convert: {
+              input: "$MEGA",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+      },
+    },
+    {
+      $project: {
+        totalStandard: { $toString: "$totalStandard" },
+        totalMega: { $toString: "$totalMega" },
+      },
+    },
+  ]);
 
-  // Total active mega ticket
-  const activeTotalMegaTicket = await Ticket.countDocuments({
-    account: req.account._id,
-    type: "MEGA",
-    round,
-  });
+  // Total allTime ticket
+  const allTimeTicketStats = await DailyTicket.aggregate([
+    {
+      $match: { account: req.account._id },
+    },
+    {
+      $group: {
+        _id: null,
+        totalStandard: {
+          $sum: {
+            $convert: {
+              input: "$STANDARD",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        totalMega: {
+          $sum: {
+            $convert: {
+              input: "$MEGA",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+      },
+    },
+    {
+      $project: {
+        totalStandard: { $toString: "$totalStandard" },
+        totalMega: { $toString: "$totalMega" },
+      },
+    },
+  ]);
 
-  // Total allTime standard ticket
-  const allTimeTotalStandardTicket = await Ticket.countDocuments({
-    account: req.account._id,
-    type: "STANDARD",
-  });
+  // active
+  let active;
+  let activeTicket;
+  let activeTotalStandardTicket = 0;
+  let activeTotalMegaTicket = 0;
 
-  // Total allTime mega ticket
-  const allTimeTotalMegaTicket = await Ticket.countDocuments({
-    account: req.account._id,
-    type: "MEGA",
-  });
+  if (activeTicketStats.length === 0) {
+    active = {
+      standard: 0,
+      mega: 0,
+    };
+  } else {
+    activeTicket = activeTicketStats[0];
+    activeTotalStandardTicket = activeTicket.totalStandard;
+    activeTotalMegaTicket = activeTicket.totalMega;
 
-  const totalPacoSpent =
-    allTimeTotalStandardTicket * ticketSetting.STANDARD +
-    allTimeTotalMegaTicket * ticketSetting.MEGA;
+    active = {
+      standard: activeTotalStandardTicket,
+      mega: activeTotalMegaTicket,
+    };
+  }
+
+  // allTime
+  let allTime;
+  let allTimeTicket;
+  let allTimeTotalStandardTicket = 0;
+  let allTimeTotalMegaTicket = 0;
+
+  if (allTimeTicketStats.length === 0) {
+    allTime = {
+      standard: 0,
+      mega: 0,
+    };
+  } else {
+    allTimeTicket = allTimeTicketStats[0];
+    allTimeTotalStandardTicket = allTimeTicket.totalStandard;
+    allTimeTotalMegaTicket = allTimeTicket.totalMega;
+
+    allTime = {
+      standard: allTimeTotalStandardTicket,
+      mega: allTimeTotalMegaTicket,
+    };
+  }
+
+  const totalPacoSpentForStandard = decimal.multiply(
+    allTimeTotalStandardTicket,
+    ticketSetting.STANDARD
+  );
+  const totalPacoSpentForMega = decimal.multiply(
+    allTimeTotalMegaTicket,
+    ticketSetting.MEGA
+  );
+
+  const totalPacoSpent = decimal.addition(
+    totalPacoSpentForStandard,
+    totalPacoSpentForMega
+  );
 
   res.status(200).json({
-    active: {
-      standard: activeTotalStandardTicket || 0,
-      mega: activeTotalMegaTicket || 0,
-    },
-    allTime: {
-      standard: allTimeTotalStandardTicket || 0,
-      mega: allTimeTotalMegaTicket || 0,
-    },
-    totalPacoSpent: totalPacoSpent || 0,
+    active,
+    allTime,
+    totalPacoSpent: totalPacoSpent,
   });
 });
 
@@ -346,7 +466,7 @@ const getLastRound = catchAsync(async (req, res, next) => {
 
 /**
  * @desc    Get My Histories
- * @route   GET /api/tickets/my-histories?page=1&limit=10&type=winning
+ * @route   GET /api/tickets/my-histories?round=1&type=winning
  * @query   round number
  * @query   type = loosing, winning
  * @access  Private
@@ -357,79 +477,201 @@ const getMyHistories = catchAsync(async (req, res, next) => {
 
   // winning bets
   if (type === "winning") {
-    const query = {
-      account: req.account._id,
-      round,
-      tier: { $ne: "ZERO" },
-    };
-
     const ticketTier = await TicketTier.findOne();
     const ticketPool = await TicketPool.findOne();
 
-    let tickets = await Ticket.aggregate([
+    const dailyTicketStats = await DailyTicket.aggregate([
       {
-        $match: query,
-      },
-      {
-        $group: {
-          _id: "$tier",
-          winningTickets: { $sum: 1 },
-          round: { $first: "$round" },
-        },
+        $match: { account: req.account._id, round },
       },
       {
         $project: {
-          _id: 1,
-          tier: "$_id",
-          winningTickets: 1,
-          round: { $concat: ["Round ", { $toString: "$round" }] },
-          tierOrder: {
-            $switch: {
-              branches: [
-                { case: { $eq: ["$_id", "ONE"] }, then: 1 },
-                { case: { $eq: ["$_id", "TWO"] }, then: 2 },
-                { case: { $eq: ["$_id", "THREE"] }, then: 3 },
-                { case: { $eq: ["$_id", "FOUR"] }, then: 4 },
-                { case: { $eq: ["$_id", "FIVE"] }, then: 5 },
-                { case: { $eq: ["$_id", "SIX"] }, then: 6 },
-                { case: { $eq: ["$_id", "SEVEN"] }, then: 7 },
-                { case: { $eq: ["$_id", "EIGHT"] }, then: 8 },
-                { case: { $eq: ["$_id", "NINE"] }, then: 9 },
-                { case: { $eq: ["$_id", "TEN"] }, then: 10 },
-                { case: { $eq: ["$_id", "ELEVEN"] }, then: 11 },
-                { case: { $eq: ["$_id", "TWELVE"] }, then: 12 },
-                { case: { $eq: ["$_id", "THIRTEEN"] }, then: 13 },
-                { case: { $eq: ["$_id", "FOURTEEN"] }, then: 14 },
-              ],
-              default: 999,
+          ONE: {
+            $sum: {
+              $convert: {
+                input: "$TIER_ONE",
+                to: "decimal",
+                onError: 0,
+                onNull: 0,
+              },
+            },
+          },
+          TWO: {
+            $sum: {
+              $convert: {
+                input: "$TIER_TWO",
+                to: "decimal",
+                onError: 0,
+                onNull: 0,
+              },
+            },
+          },
+          THREE: {
+            $sum: {
+              $convert: {
+                input: "$TIER_THREE",
+                to: "decimal",
+                onError: 0,
+                onNull: 0,
+              },
+            },
+          },
+          FOUR: {
+            $sum: {
+              $convert: {
+                input: "$TIER_FOUR",
+                to: "decimal",
+                onError: 0,
+                onNull: 0,
+              },
+            },
+          },
+          FIVE: {
+            $sum: {
+              $convert: {
+                input: "$TIER_FIVE",
+                to: "decimal",
+                onError: 0,
+                onNull: 0,
+              },
+            },
+          },
+          SIX: {
+            $sum: {
+              $convert: {
+                input: "$TIER_SIX",
+                to: "decimal",
+                onError: 0,
+                onNull: 0,
+              },
+            },
+          },
+          SEVEN: {
+            $sum: {
+              $convert: {
+                input: "$TIER_SEVEN",
+                to: "decimal",
+                onError: 0,
+                onNull: 0,
+              },
+            },
+          },
+          EIGHT: {
+            $sum: {
+              $convert: {
+                input: "$TIER_EIGHT",
+                to: "decimal",
+                onError: 0,
+                onNull: 0,
+              },
+            },
+          },
+          NINE: {
+            $sum: {
+              $convert: {
+                input: "$TIER_NINE",
+                to: "decimal",
+                onError: 0,
+                onNull: 0,
+              },
+            },
+          },
+          TEN: {
+            $sum: {
+              $convert: {
+                input: "$TIER_TEN",
+                to: "decimal",
+                onError: 0,
+                onNull: 0,
+              },
+            },
+          },
+          ELEVEN: {
+            $sum: {
+              $convert: {
+                input: "$TIER_ELEVEN",
+                to: "decimal",
+                onError: 0,
+                onNull: 0,
+              },
+            },
+          },
+          TWELVE: {
+            $sum: {
+              $convert: {
+                input: "$TIER_TWELVE",
+                to: "decimal",
+                onError: 0,
+                onNull: 0,
+              },
+            },
+          },
+          THIRTEEN: {
+            $sum: {
+              $convert: {
+                input: "$TIER_THIRTEEN",
+                to: "decimal",
+                onError: 0,
+                onNull: 0,
+              },
+            },
+          },
+          FOURTEEN: {
+            $sum: {
+              $convert: {
+                input: "$TIER_FOURTEEN",
+                to: "decimal",
+                onError: 0,
+                onNull: 0,
+              },
             },
           },
         },
       },
       {
-        $sort: { tierOrder: 1 },
-      },
-      {
         $project: {
-          _id: 0,
-          tierOrder: 0,
+          ONE: { $toString: "$ONE" },
+          TWO: { $toString: "$TWO" },
+          THREE: { $toString: "$THREE" },
+          FOUR: { $toString: "$FOUR" },
+          FIVE: { $toString: "$FIVE" },
+          SIX: { $toString: "$SIX" },
+          SEVEN: { $toString: "$SEVEN" },
+          EIGHT: { $toString: "$EIGHT" },
+          NINE: { $toString: "$NINE" },
+          TEN: { $toString: "$TEN" },
+          ELEVEN: { $toString: "$ELEVEN" },
+          TWELVE: { $toString: "$TWELVE" },
+          THIRTEEN: { $toString: "$THIRTEEN" },
+          FOURTEEN: { $toString: "$FOURTEEN" },
         },
       },
     ]);
 
-    tickets = tickets.map((ticket) => ({
-      ...ticket,
-      tier: getWinningTierName(ticket.tier),
-      prize: getPrize(ticket.tier, ticketTier),
-      totalWinnings: getTotalWinnings(
-        ticket.winningTickets,
-        ticket.tier,
-        ticketPool,
-        ticketTier
-      ),
-    }));
+    if (dailyTicketStats.length === 0) {
+      return res.status(200).json({ histories: [] });
+    }
 
-    return res.status(200).json({ histories: tickets });
+    // Prepare for response data
+    const ticket = dailyTicketStats[0];
+    const data = [];
+
+    for (let i = 1; i <= 14; i++) {
+      data.push({
+        tier: getWinningTierName(convertNumberString(i)),
+        prize: getPrize(convertNumberString(i), ticketTier),
+        round,
+        winningTickets: ticket[convertNumberString(i)],
+        totalWinnings: getTotalWinnings(
+          ticket[convertNumberString(i)],
+          convertNumberString(i),
+          ticketPool,
+          ticketTier
+        ),
+      });
+    }
+
+    return res.status(200).json({ histories: data });
   }
 
   // Loosing bets
@@ -442,54 +684,117 @@ const getMyHistories = catchAsync(async (req, res, next) => {
 
     const ticketSetting = await TicketSettings.findOne();
 
-    let tickets = await Ticket.aggregate([
+    const dailyTicketStats = await DailyTicket.aggregate([
       {
-        $match: query,
-      },
-      {
-        $group: {
-          _id: "$type",
-          loosingTickets: { $sum: 1 },
-          round: { $first: "$round" },
-        },
+        $match: { account: req.account._id, round },
       },
       {
         $project: {
-          _id: 1,
-          ticketType: { $toUpper: "$_id" },
-          loosingTickets: 1,
-          round: { $concat: ["Round ", { $toString: "$round" }] },
-          typeOrder: {
-            $switch: {
-              branches: [
-                { case: { $eq: ["$_id", "STANDARD"] }, then: 1 },
-                { case: { $eq: ["$_id", "MEGA"] }, then: 2 },
-              ],
-              default: 999,
+          STANDARD_LOOSING: {
+            $sum: {
+              $convert: {
+                input: "$STANDARD_LOOSING",
+                to: "decimal",
+                onError: 0,
+                onNull: 0,
+              },
+            },
+          },
+          MEGA_LOOSING: {
+            $sum: {
+              $convert: {
+                input: "$MEGA_LOOSING",
+                to: "decimal",
+                onError: 0,
+                onNull: 0,
+              },
             },
           },
         },
       },
       {
-        $sort: { typeOrder: 1 },
-      },
-      {
         $project: {
-          _id: 0,
-          typeOrder: 0,
+          STANDARD_LOOSING: { $toString: "$STANDARD_LOOSING" },
+          MEGA_LOOSING: { $toString: "$MEGA_LOOSING" },
         },
       },
     ]);
 
-    tickets = tickets.map((ticket) => ({
-      ...ticket,
-      totalPacoSpent: decimal.multiply(
-        ticket.loosingTickets,
-        ticketSetting[ticket.ticketType]
-      ),
-    }));
+    if (dailyTicketStats.length === 0) {
+      return res.status(200).json({ histories: [] });
+    }
 
-    return res.status(200).json({ histories: tickets });
+    const ticket = dailyTicketStats[0];
+
+    const data = [
+      {
+        ticketType: "STANDARD",
+        loosingTickets: ticket.STANDARD_LOOSING,
+        round: `Round ${round}`,
+        totalPacoSpent: decimal.multiply(
+          ticket.STANDARD_LOOSING,
+          ticketSetting["STANDARD"]
+        ),
+      },
+      {
+        ticketType: "MEGA",
+        loosingTickets: ticket.MEGA_LOOSING,
+        round: `Round ${round}`,
+        totalPacoSpent: decimal.multiply(
+          ticket.MEGA_LOOSING,
+          ticketSetting["MEGA"]
+        ),
+      },
+    ];
+
+    // let tickets = await Ticket.aggregate([
+    //   {
+    //     $match: query,
+    //   },
+    //   {
+    //     $group: {
+    //       _id: "$type",
+    //       loosingTickets: { $sum: 1 },
+    //       round: { $first: "$round" },
+    //     },
+    //   },
+    //   {
+    //     $project: {
+    //       _id: 1,
+    //       ticketType: { $toUpper: "$_id" },
+    //       loosingTickets: 1,
+    //       round: { $concat: ["Round ", { $toString: "$round" }] },
+    //       typeOrder: {
+    //         $switch: {
+    //           branches: [
+    //             { case: { $eq: ["$_id", "STANDARD"] }, then: 1 },
+    //             { case: { $eq: ["$_id", "MEGA"] }, then: 2 },
+    //           ],
+    //           default: 999,
+    //         },
+    //       },
+    //     },
+    //   },
+    //   {
+    //     $sort: { typeOrder: 1 },
+    //   },
+    //   {
+    //     $project: {
+    //       _id: 0,
+    //       typeOrder: 0,
+    //     },
+    //   },
+    // ]);
+
+    // tickets = tickets.map((ticket) => ({
+    //   ...ticket,
+    //   totalPacoSpent: decimal.multiply(
+    //     ticket.loosingTickets,
+    //     ticketSetting[ticket.ticketType]
+    //   ),
+    // }));
+
+    return res.status(200).json({ histories: data });
   }
 });
 
@@ -506,82 +811,210 @@ const getAllBets = catchAsync(async (req, res, next) => {
   const ticketTier = await TicketTier.findOne();
   const ticketPool = await TicketPool.findOne();
 
-  let tickets = await Ticket.aggregate([
+  const dailyTicketStats = await DailyTicket.aggregate([
     {
       $match: query,
     },
     {
       $group: {
-        _id: "$tier",
-        winningTickets: { $sum: 1 },
-        round: { $first: "$round" },
-      },
-    },
-    {
-      $project: {
-        _id: 1,
-        tier: "$_id",
-        winningTickets: 1,
-        round: { $concat: ["Round ", { $toString: "$round" }] },
-        tierOrder: {
-          $switch: {
-            branches: [
-              { case: { $eq: ["$_id", "ZERO"] }, then: 1 },
-              { case: { $eq: ["$_id", "ONE"] }, then: 2 },
-              { case: { $eq: ["$_id", "TWO"] }, then: 3 },
-              { case: { $eq: ["$_id", "THREE"] }, then: 4 },
-              { case: { $eq: ["$_id", "FOUR"] }, then: 5 },
-              { case: { $eq: ["$_id", "FIVE"] }, then: 6 },
-              { case: { $eq: ["$_id", "SIX"] }, then: 7 },
-              { case: { $eq: ["$_id", "SEVEN"] }, then: 8 },
-              { case: { $eq: ["$_id", "EIGHT"] }, then: 9 },
-              { case: { $eq: ["$_id", "NINE"] }, then: 10 },
-              { case: { $eq: ["$_id", "TEN"] }, then: 11 },
-              { case: { $eq: ["$_id", "ELEVEN"] }, then: 12 },
-              { case: { $eq: ["$_id", "TWELVE"] }, then: 13 },
-              { case: { $eq: ["$_id", "THIRTEEN"] }, then: 14 },
-              { case: { $eq: ["$_id", "FOURTEEN"] }, then: 15 },
-            ],
-            default: 999,
+        _id: null,
+        ZERO: {
+          $sum: {
+            $convert: {
+              input: "$TIER_ZERO",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        ONE: {
+          $sum: {
+            $convert: {
+              input: "$TIER_ONE",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        TWO: {
+          $sum: {
+            $convert: {
+              input: "$TIER_TWO",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        THREE: {
+          $sum: {
+            $convert: {
+              input: "$TIER_THREE",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        FOUR: {
+          $sum: {
+            $convert: {
+              input: "$TIER_FOUR",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        FIVE: {
+          $sum: {
+            $convert: {
+              input: "$TIER_FIVE",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        SIX: {
+          $sum: {
+            $convert: {
+              input: "$TIER_SIX",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        SEVEN: {
+          $sum: {
+            $convert: {
+              input: "$TIER_SEVEN",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        EIGHT: {
+          $sum: {
+            $convert: {
+              input: "$TIER_EIGHT",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        NINE: {
+          $sum: {
+            $convert: {
+              input: "$TIER_NINE",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        TEN: {
+          $sum: {
+            $convert: {
+              input: "$TIER_TEN",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        ELEVEN: {
+          $sum: {
+            $convert: {
+              input: "$TIER_ELEVEN",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        TWELVE: {
+          $sum: {
+            $convert: {
+              input: "$TIER_TWELVE",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        THIRTEEN: {
+          $sum: {
+            $convert: {
+              input: "$TIER_THIRTEEN",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        FOURTEEN: {
+          $sum: {
+            $convert: {
+              input: "$TIER_FOURTEEN",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
           },
         },
       },
     },
     {
-      $sort: { tierOrder: 1 },
-    },
-    {
       $project: {
-        _id: 0,
-        tierOrder: 0,
+        ZERO: { $toString: "$ZERO" },
+        ONE: { $toString: "$ONE" },
+        TWO: { $toString: "$TWO" },
+        THREE: { $toString: "$THREE" },
+        FOUR: { $toString: "$FOUR" },
+        FIVE: { $toString: "$FIVE" },
+        SIX: { $toString: "$SIX" },
+        SEVEN: { $toString: "$SEVEN" },
+        EIGHT: { $toString: "$EIGHT" },
+        NINE: { $toString: "$NINE" },
+        TEN: { $toString: "$TEN" },
+        ELEVEN: { $toString: "$ELEVEN" },
+        TWELVE: { $toString: "$TWELVE" },
+        THIRTEEN: { $toString: "$THIRTEEN" },
+        FOURTEEN: { $toString: "$FOURTEEN" },
       },
     },
   ]);
 
-  tickets = tickets.map((ticket) => ({
-    ...ticket,
-    tier: getWinningTierName(ticket.tier),
-    prize: getPrize(ticket.tier, ticketTier),
-    totalWinnings: getTotalWinnings(
-      ticket.winningTickets,
-      ticket.tier,
-      ticketPool,
-      ticketTier
-    ),
-  }));
+  if (dailyTicketStats.length === 0) {
+    return res.status(200).json({ allBets: [] });
+  }
 
-  // Other tier ticket
-  for (let i = tickets.length; i <= 14; i++) {
-    tickets.push({
-      tier: `Tier ${i}`,
-      prize: "-",
-      round: `Round ${round}`,
-      winningTickets: "-",
-      totalWinnings: "-",
+  // Prepare for response data
+  const ticket = dailyTicketStats[0];
+  const data = [];
+
+  for (let i = 0; i <= 14; i++) {
+    data.push({
+      tier: getWinningTierName(convertNumberString(i)),
+      prize: getPrize(convertNumberString(i), ticketTier),
+      round,
+      winningTickets: ticket[convertNumberString(i)],
+      totalWinnings: getTotalWinnings(
+        ticket[convertNumberString(i)],
+        convertNumberString(i),
+        ticketPool,
+        ticketTier
+      ),
     });
   }
 
-  return res.status(200).json({ allBets: tickets });
+  return res.status(200).json({ allBets: data });
 });
 
 /**
@@ -597,89 +1030,197 @@ const getAllTime = catchAsync(async (req, res, next) => {
   const ticketSetting = await TicketSettings.findOne();
   const round = ticketSetting.round;
 
-  let tickets = await Ticket.aggregate([
+  const dailyTicketStats = await DailyTicket.aggregate([
     {
       $match: { round: { $lt: round } },
     },
     {
       $group: {
-        _id: "$tier",
-        totalTickets: { $sum: 1 },
-      },
-    },
-    {
-      $project: {
-        _id: 1,
-        tier: "$_id",
-        totalTickets: 1,
-        tierOrder: {
-          $switch: {
-            branches: [
-              { case: { $eq: ["$_id", "ZERO"] }, then: 1 },
-              { case: { $eq: ["$_id", "ONE"] }, then: 2 },
-              { case: { $eq: ["$_id", "TWO"] }, then: 3 },
-              { case: { $eq: ["$_id", "THREE"] }, then: 4 },
-              { case: { $eq: ["$_id", "FOUR"] }, then: 5 },
-              { case: { $eq: ["$_id", "FIVE"] }, then: 6 },
-              { case: { $eq: ["$_id", "SIX"] }, then: 7 },
-              { case: { $eq: ["$_id", "SEVEN"] }, then: 8 },
-              { case: { $eq: ["$_id", "EIGHT"] }, then: 9 },
-              { case: { $eq: ["$_id", "NINE"] }, then: 10 },
-              { case: { $eq: ["$_id", "TEN"] }, then: 11 },
-              { case: { $eq: ["$_id", "ELEVEN"] }, then: 12 },
-              { case: { $eq: ["$_id", "TWELVE"] }, then: 13 },
-              { case: { $eq: ["$_id", "THIRTEEN"] }, then: 14 },
-              { case: { $eq: ["$_id", "FOURTEEN"] }, then: 15 },
-            ],
-            default: 999,
-          },
-        },
-      },
-    },
-    {
-      $sort: { tierOrder: 1 },
-    },
-    {
-      $project: {
-        _id: 0,
-        tierOrder: 0,
-      },
-    },
-  ]);
-
-  tickets = tickets.map((ticket) => ({
-    ...ticket,
-    tier: getWinningTierName(ticket.tier),
-    prize: getPrize(ticket.tier, ticketTier),
-    totalWinnings: getTotalWinnings(
-      ticket.totalTickets,
-      ticket.tier,
-      ticketPool,
-      ticketTier
-    ),
-  }));
-
-  // Other tier ticket
-  for (let i = tickets.length; i <= 14; i++) {
-    tickets.push({
-      tier: `Tier ${i}`,
-      prize: "-",
-      totalTickets: "-",
-      totalWinnings: "-",
-    });
-  }
-
-  const pacoWon = await Ticket.aggregate([
-    {
-      $match: { tier: { $ne: "ZERO" }, round: { $lt: round } },
-    },
-    {
-      $group: {
         _id: null,
-        totalPacoWon: {
+        ZERO: {
           $sum: {
             $convert: {
-              input: "$reward",
+              input: "$TIER_ZERO",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        ONE: {
+          $sum: {
+            $convert: {
+              input: "$TIER_ONE",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        TWO: {
+          $sum: {
+            $convert: {
+              input: "$TIER_TWO",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        THREE: {
+          $sum: {
+            $convert: {
+              input: "$TIER_THREE",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        FOUR: {
+          $sum: {
+            $convert: {
+              input: "$TIER_FOUR",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        FIVE: {
+          $sum: {
+            $convert: {
+              input: "$TIER_FIVE",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        SIX: {
+          $sum: {
+            $convert: {
+              input: "$TIER_SIX",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        SEVEN: {
+          $sum: {
+            $convert: {
+              input: "$TIER_SEVEN",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        EIGHT: {
+          $sum: {
+            $convert: {
+              input: "$TIER_EIGHT",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        NINE: {
+          $sum: {
+            $convert: {
+              input: "$TIER_NINE",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        TEN: {
+          $sum: {
+            $convert: {
+              input: "$TIER_TEN",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        ELEVEN: {
+          $sum: {
+            $convert: {
+              input: "$TIER_ELEVEN",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        TWELVE: {
+          $sum: {
+            $convert: {
+              input: "$TIER_TWELVE",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        THIRTEEN: {
+          $sum: {
+            $convert: {
+              input: "$TIER_THIRTEEN",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        FOURTEEN: {
+          $sum: {
+            $convert: {
+              input: "$TIER_FOURTEEN",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        REWARD: {
+          $sum: {
+            $convert: {
+              input: "$REWARD",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        PACO_SPENT: {
+          $sum: {
+            $convert: {
+              input: "$PACO_SPENT",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        STANDARD: {
+          $sum: {
+            $convert: {
+              input: "$STANDARD",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        MEGA: {
+          $sum: {
+            $convert: {
+              input: "$MEGA",
               to: "decimal",
               onError: 0,
               onNull: 0,
@@ -690,33 +1231,100 @@ const getAllTime = catchAsync(async (req, res, next) => {
     },
     {
       $project: {
-        totalPacoWon: { $toString: "$totalPacoWon" },
+        ZERO: { $toString: "$ZERO" },
+        ONE: { $toString: "$ONE" },
+        TWO: { $toString: "$TWO" },
+        THREE: { $toString: "$THREE" },
+        FOUR: { $toString: "$FOUR" },
+        FIVE: { $toString: "$FIVE" },
+        SIX: { $toString: "$SIX" },
+        SEVEN: { $toString: "$SEVEN" },
+        EIGHT: { $toString: "$EIGHT" },
+        NINE: { $toString: "$NINE" },
+        TEN: { $toString: "$TEN" },
+        ELEVEN: { $toString: "$ELEVEN" },
+        TWELVE: { $toString: "$TWELVE" },
+        THIRTEEN: { $toString: "$THIRTEEN" },
+        FOURTEEN: { $toString: "$FOURTEEN" },
+        REWARD: { $toString: "$REWARD" },
+        PACO_SPENT: { $toString: "$PACO_SPENT" },
+        STANDARD: { $toString: "$STANDARD" },
+        MEGA: { $toString: "$MEGA" },
       },
     },
   ]);
 
-  const pacoSpent = await Ticket.aggregate([
+  if (dailyTicketStats.length === 0) {
+    return res.status(200).json({
+      allTime: [],
+      stats: {
+        totalPacoWon: 0,
+        totalPacoSpent: 0,
+        totalStandardTicket: 0,
+        totalMegaTicket: 0,
+      },
+    });
+  }
+
+  // Prepare for response data
+  const ticket = dailyTicketStats[0];
+  const data = [];
+
+  for (let i = 0; i <= 14; i++) {
+    data.push({
+      tier: getWinningTierName(convertNumberString(i)),
+      prize: getPrize(convertNumberString(i), ticketTier),
+      totalTickets: ticket[convertNumberString(i)],
+      totalWinnings: getTotalWinnings(
+        ticket[convertNumberString(i)],
+        convertNumberString(i),
+        ticketPool,
+        ticketTier
+      ),
+    });
+  }
+
+  const totalPacoWon = ticket.REWARD;
+
+  // Calculate for totalPacoSpent include todays round
+  const pacoSpentStats = await DailyTicket.aggregate([
+    {
+      $match: { round: { $lte: round } },
+    },
     {
       $group: {
         _id: null,
-        totalPacoSpent: { $sum: "$price" },
+        PACO_SPENT: {
+          $sum: {
+            $convert: {
+              input: "$PACO_SPENT",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+      },
+    },
+    {
+      $project: {
+        PACO_SPENT: { $toString: "$PACO_SPENT" },
       },
     },
   ]);
 
-  const { totalPacoWon } = pacoWon[0];
-  const { totalPacoSpent } = pacoSpent[0];
+  let totalPacoSpent;
+  if (pacoSpentStats.length === 0) {
+    totalPacoSpent = 0;
+  } else {
+    totalPacoSpent = pacoSpentStats[0].PACO_SPENT;
+  }
 
-  const totalStandardTicket = await Ticket.countDocuments({
-    type: "STANDARD",
-  });
-
-  const totalMegaTicket = await Ticket.countDocuments({
-    type: "MEGA",
-  });
+  const totalStandardTicket = ticket.STANDARD;
+  const totalMegaTicket = ticket.MEGA;
 
   return res.status(200).json({
-    allTime: tickets,
+    allTime: data,
     stats: {
       totalPacoWon,
       totalPacoSpent,
@@ -741,9 +1349,214 @@ const getTicketStatistics = catchAsync(async (req, res, next) => {
   const pacoBurnt = ticketPool ? ticketPool.PACO_BURNT : 0;
 
   // Calculate ticketsInPlay
-  const ticketsInPlay = await Ticket.countDocuments({
-    round,
-  });
+  const stats = await DailyTicket.aggregate([
+    {
+      $match: { round },
+    },
+    {
+      $group: {
+        _id: null,
+        ZERO: {
+          $sum: {
+            $convert: {
+              input: "$TIER_ZERO",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        ONE: {
+          $sum: {
+            $convert: {
+              input: "$TIER_ONE",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        TWO: {
+          $sum: {
+            $convert: {
+              input: "$TIER_TWO",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        THREE: {
+          $sum: {
+            $convert: {
+              input: "$TIER_THREE",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        FOUR: {
+          $sum: {
+            $convert: {
+              input: "$TIER_FOUR",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        FIVE: {
+          $sum: {
+            $convert: {
+              input: "$TIER_FIVE",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        SIX: {
+          $sum: {
+            $convert: {
+              input: "$TIER_SIX",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        SEVEN: {
+          $sum: {
+            $convert: {
+              input: "$TIER_SEVEN",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        EIGHT: {
+          $sum: {
+            $convert: {
+              input: "$TIER_EIGHT",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        NINE: {
+          $sum: {
+            $convert: {
+              input: "$TIER_NINE",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        TEN: {
+          $sum: {
+            $convert: {
+              input: "$TIER_TEN",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        ELEVEN: {
+          $sum: {
+            $convert: {
+              input: "$TIER_ELEVEN",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        TWELVE: {
+          $sum: {
+            $convert: {
+              input: "$TIER_TWELVE",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        THIRTEEN: {
+          $sum: {
+            $convert: {
+              input: "$TIER_THIRTEEN",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        FOURTEEN: {
+          $sum: {
+            $convert: {
+              input: "$TIER_FOURTEEN",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+      },
+    },
+    {
+      $project: {
+        ZERO: { $toString: "$ZERO" },
+        ONE: { $toString: "$ONE" },
+        TWO: { $toString: "$TWO" },
+        THREE: { $toString: "$THREE" },
+        FOUR: { $toString: "$FOUR" },
+        FIVE: { $toString: "$FIVE" },
+        SIX: { $toString: "$SIX" },
+        SEVEN: { $toString: "$SEVEN" },
+        EIGHT: { $toString: "$EIGHT" },
+        NINE: { $toString: "$NINE" },
+        TEN: { $toString: "$TEN" },
+        ELEVEN: { $toString: "$ELEVEN" },
+        TWELVE: { $toString: "$TWELVE" },
+        THIRTEEN: { $toString: "$THIRTEEN" },
+        FOURTEEN: { $toString: "$FOURTEEN" },
+      },
+    },
+  ]);
+
+  if (stats.length === 0) {
+    return res.status(200).json({
+      minorJackpot: 0,
+      megaJackpot: 0,
+      pacoBurnt: 0,
+      ticketsInPlay: 0,
+      round,
+    });
+  }
+
+  const ticketStats = stats[0];
+  const ticketsInPlay = decimal.addition(
+    ticketStats.ZERO,
+    ticketStats.ONE,
+    ticketStats.TWO,
+    ticketStats.THREE,
+    ticketStats.FOUR,
+    ticketStats.FIVE,
+    ticketStats.SIX,
+    ticketStats.SEVEN,
+    ticketStats.EIGHT,
+    ticketStats.NINE,
+    ticketStats.TEN,
+    ticketStats.ELEVEN,
+    ticketStats.TWELVE,
+    ticketStats.THIRTEEN,
+    ticketStats.FOURTEEN
+  );
 
   return res.status(200).json({
     minorJackpot,
@@ -898,9 +1711,6 @@ const transferDailyTicketToTicketPool = async () => {
 
         await ticketPool.save();
       }
-
-      // Delete daily ticket document from db
-      await DailyTicket.findByIdAndDelete(dailyTicket._id);
     })
   );
 

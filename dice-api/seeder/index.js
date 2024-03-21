@@ -35,7 +35,7 @@ database()
       SEVEN: "1000000",
       EIGHT: "10000000",
       NINE: "100000000",
-      TEN: "1000000000 ",
+      TEN: "1000000000",
     });
 
     console.log(`--- Completed ticket tier data seed ---`);

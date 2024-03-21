@@ -54,7 +54,7 @@ function AllBets() {
       <div className="lottery-divider my-4" />
 
       <Table
-        columns="grid-cols-[0.5fr_0.2fr_0.3fr_0.5fr_0.5fr_0.1fr] md:grid-cols-[0.5fr_0.2fr_0.3fr_0.5fr_0.3fr_0.1fr]"
+        columns="grid-cols-[0.5fr_0.7fr_0.5fr_0.5fr_0.5fr_0.1fr] md:grid-cols-[0.5fr_0.4fr_0.3fr_0.5fr_0.3fr_0.1fr]"
         className="min-w-[40rem]"
       >
         <Table.Header>
@@ -69,19 +69,17 @@ function AllBets() {
           {allTime?.map((ticket, i) => (
             <Table.Row key={i}>
               <span>{ticket.tier}</span>
-              <span>
-                {ticket.prize === "-" ? "-" : numberFormat(ticket.prize)}
-              </span>
+              <span>{i < 10 ? numberFormat(ticket.prize) : ticket.prize}</span>
               <img src="/tokens/paco.png" alt="" className="w-6" />
               <span>
-                {ticket.totalTickets === "-"
-                  ? "-"
-                  : numberFormat(ticket.totalTickets)}
+                {i < 10
+                  ? numberFormat(ticket.totalTickets)
+                  : ticket.totalTickets}
               </span>
               <span>
-                {ticket.totalWinnings === "-"
-                  ? "-"
-                  : numberFormat(ticket.totalWinnings)}
+                {i < 10
+                  ? numberFormat(ticket.totalWinnings)
+                  : ticket.totalWinnings}
               </span>
               <img src="/tokens/paco.png" alt="" className="w-6" />
             </Table.Row>
