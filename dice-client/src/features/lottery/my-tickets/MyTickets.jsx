@@ -33,10 +33,10 @@ function MyTickets() {
               My Total active tickets
             </h4>
             <p className="text-lg">
-              My Standard tickets: <span>{tickets.active.standard}</span>
+              My Standard tickets: <span>{tickets?.active?.standard}</span>
             </p>
             <p className="text-lg">
-              My Mega tickets: <span>{tickets.active.mega}</span>
+              My Mega tickets: <span>{tickets?.active?.mega}</span>
             </p>
           </div>
 
@@ -47,10 +47,10 @@ function MyTickets() {
               My Total tickets of all time
             </h4>
             <p className="md:text-lg">
-              Standard tickets: <span>{tickets.allTime.standard}</span>
+              Standard tickets: <span>{tickets?.allTime?.standard}</span>
             </p>
             <p className="md:text-lg">
-              Mega tickets: <span>{tickets.allTime.mega}</span>
+              Mega tickets: <span>{tickets?.allTime?.mega}</span>
             </p>
           </div>
 
@@ -61,7 +61,7 @@ function MyTickets() {
               My Total paco spent on lottery tickets
             </h4>
             <div className="md:text-lg flex items-center justify-center gap-2">
-              <span>{numberFormat(tickets.totalPacoSpent)}</span>
+              <span>{numberFormat(tickets?.totalPacoSpent)}</span>
               <img
                 src="/tokens/paco.png"
                 alt=""

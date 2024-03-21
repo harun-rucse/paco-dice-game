@@ -60,7 +60,7 @@ function MyHistory() {
       {/* My winnings Table */}
       {type === "winning" && (
         <Table
-          columns="grid-cols-[0.5fr_0.5fr_0.1fr_0.5fr_0.5fr_0.5fr_0.1fr] md:grid-cols-[0.5fr_0.5fr_0.3fr_0.5fr_0.7fr_0.4fr_0.1fr]"
+          columns="grid-cols-[0.5fr_0.7fr_0.4fr_0.5fr_0.5fr_0.5fr_0.1fr] md:grid-cols-[0.5fr_0.5fr_0.3fr_0.5fr_0.7fr_0.4fr_0.1fr]"
           className="min-w-[40rem]"
         >
           <Table.Header>
@@ -76,7 +76,9 @@ function MyHistory() {
             {histories?.map((ticket, i) => (
               <Table.Row key={i}>
                 <span>{ticket.tier}</span>
-                <span>{numberFormat(ticket.prize)}</span>
+                <span>
+                  {i < 10 ? numberFormat(ticket.prize) : ticket.prize}
+                </span>
                 <img src="/tokens/paco.png" alt="" className="w-6" />
                 <span>{ticket.round}</span>
                 <span>{numberFormat(ticket.winningTickets)}</span>
