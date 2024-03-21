@@ -6,7 +6,6 @@ services:
       dockerfile: Dockerfile.prod
       context: ./dice-api
     container_name: dice-api
-    restart: always
     ports:
       - "4000:4000"
     env_file:
