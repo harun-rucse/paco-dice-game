@@ -1,7 +1,6 @@
 const { Worker } = require("worker_threads");
 const TicketSettings = require("../models/TicketSettings");
 const TicketTier = require("../models/TicketTier");
-const Ticket = require("../models/Ticket");
 const TicketPool = require("../models/TicketPool");
 const Account = require("../models/Account");
 const DailyTicket = require("../models/DailyTicket");
