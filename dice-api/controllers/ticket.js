@@ -1029,6 +1029,40 @@ const getAllTime = catchAsync(async (req, res, next) => {
   const ticketSetting = await TicketSettings.findOne();
   const round = ticketSetting.round;
 
+  // Calculate for totalPacoSpent include todays round
+  const pacoSpentStats = await DailyTicket.aggregate([
+    {
+      $match: { round: { $lte: round } },
+    },
+    {
+      $group: {
+        _id: null,
+        PACO_SPENT: {
+          $sum: {
+            $convert: {
+              input: "$PACO_SPENT",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+      },
+    },
+    {
+      $project: {
+        PACO_SPENT: { $toString: "$PACO_SPENT" },
+      },
+    },
+  ]);
+
+  let totalPacoSpent;
+  if (pacoSpentStats.length === 0) {
+    totalPacoSpent = 0;
+  } else {
+    totalPacoSpent = pacoSpentStats[0].PACO_SPENT;
+  }
+
   const dailyTicketStats = await DailyTicket.aggregate([
     {
       $match: { round: { $lt: round } },
@@ -1258,7 +1292,7 @@ const getAllTime = catchAsync(async (req, res, next) => {
       allTime: [],
       stats: {
         totalPacoWon: 0,
-        totalPacoSpent: 0,
+        totalPacoSpent,
         totalStandardTicket: 0,
         totalMegaTicket: 0,
       },
@@ -1284,40 +1318,6 @@ const getAllTime = catchAsync(async (req, res, next) => {
   }
 
   const totalPacoWon = ticket.REWARD;
-
-  // Calculate for totalPacoSpent include todays round
-  const pacoSpentStats = await DailyTicket.aggregate([
-    {
-      $match: { round: { $lte: round } },
-    },
-    {
-      $group: {
-        _id: null,
-        PACO_SPENT: {
-          $sum: {
-            $convert: {
-              input: "$PACO_SPENT",
-              to: "decimal",
-              onError: 0,
-              onNull: 0,
-            },
-          },
-        },
-      },
-    },
-    {
-      $project: {
-        PACO_SPENT: { $toString: "$PACO_SPENT" },
-      },
-    },
-  ]);
-
-  let totalPacoSpent;
-  if (pacoSpentStats.length === 0) {
-    totalPacoSpent = 0;
-  } else {
-    totalPacoSpent = pacoSpentStats[0].PACO_SPENT;
-  }
 
   const totalStandardTicket = ticket.STANDARD;
   const totalMegaTicket = ticket.MEGA;
