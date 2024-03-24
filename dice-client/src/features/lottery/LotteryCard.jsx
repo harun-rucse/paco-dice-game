@@ -15,7 +15,7 @@ function LotteryCard() {
 
   return (
     <div>
-      <div className="gradient-lottery-card rounded-2xl px-4 md:px-8 py-4 space-y-8">
+      <div className="gradient-lottery-card rounded-2xl px-4 md:px-8 py-4 space-y-8 relative">
         <div className="flex flex-col md:flex-row gap-4 md:gap-0 items-center md:items-start justify-between">
           <div className="lottery flex text-xs md:text-base space-x-1">
             <button

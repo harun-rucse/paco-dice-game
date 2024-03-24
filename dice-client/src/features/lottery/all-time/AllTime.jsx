@@ -69,18 +69,10 @@ function AllBets() {
           {allTime?.map((ticket, i) => (
             <Table.Row key={i}>
               <span>{ticket.tier}</span>
-              <span>{i < 10 ? numberFormat(ticket.prize) : ticket.prize}</span>
+              <span>{i <= 10 ? numberFormat(ticket.prize) : ticket.prize}</span>
               <img src="/tokens/paco.png" alt="" className="w-6" />
-              <span>
-                {i < 10
-                  ? numberFormat(ticket.totalTickets)
-                  : ticket.totalTickets}
-              </span>
-              <span>
-                {i < 10
-                  ? numberFormat(ticket.totalWinnings)
-                  : ticket.totalWinnings}
-              </span>
+              <span>{numberFormat(ticket.totalTickets)}</span>
+              <span>{numberFormat(ticket.totalWinnings)}</span>
               <img src="/tokens/paco.png" alt="" className="w-6" />
             </Table.Row>
           ))}

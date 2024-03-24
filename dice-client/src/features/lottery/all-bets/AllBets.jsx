@@ -53,7 +53,7 @@ function AllBets() {
           {allBets?.map((ticket, i) => (
             <Table.Row key={i}>
               <span>{ticket.tier}</span>
-              <span>{i < 10 ? numberFormat(ticket.prize) : ticket.prize}</span>
+              <span>{i <= 10 ? numberFormat(ticket.prize) : ticket.prize}</span>
               <img src="/tokens/paco.png" alt="" className="w-6" />
               <span>{ticket.round}</span>
               <span>

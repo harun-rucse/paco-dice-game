@@ -474,17 +474,209 @@ const getMyHistories = catchAsync(async (req, res, next) => {
   const round = Number(req.query.round || 1);
   const type = req.query.type;
 
+  // calculate my total paco winnings
+  const ticketSetting = await TicketSettings.findOne();
+  const ticketTier = await TicketTier.findOne();
+  const ticketPool = await TicketPool.findOne();
+
+  let myTotalWinnings = "0";
+
+  const myPacoWinStats = await DailyTicket.aggregate([
+    {
+      $match: { account: req.account._id, round: { $lt: ticketSetting.round } },
+    },
+    {
+      $group: {
+        _id: null,
+        ONE: {
+          $sum: {
+            $convert: {
+              input: "$TIER_ONE",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        TWO: {
+          $sum: {
+            $convert: {
+              input: "$TIER_TWO",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        THREE: {
+          $sum: {
+            $convert: {
+              input: "$TIER_THREE",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        FOUR: {
+          $sum: {
+            $convert: {
+              input: "$TIER_FOUR",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        FIVE: {
+          $sum: {
+            $convert: {
+              input: "$TIER_FIVE",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        SIX: {
+          $sum: {
+            $convert: {
+              input: "$TIER_SIX",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        SEVEN: {
+          $sum: {
+            $convert: {
+              input: "$TIER_SEVEN",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        EIGHT: {
+          $sum: {
+            $convert: {
+              input: "$TIER_EIGHT",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        NINE: {
+          $sum: {
+            $convert: {
+              input: "$TIER_NINE",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        TEN: {
+          $sum: {
+            $convert: {
+              input: "$TIER_TEN",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        ELEVEN: {
+          $sum: {
+            $convert: {
+              input: "$TIER_ELEVEN",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        TWELVE: {
+          $sum: {
+            $convert: {
+              input: "$TIER_TWELVE",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        THIRTEEN: {
+          $sum: {
+            $convert: {
+              input: "$TIER_THIRTEEN",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        FOURTEEN: {
+          $sum: {
+            $convert: {
+              input: "$TIER_FOURTEEN",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+      },
+    },
+    {
+      $project: {
+        ONE: { $toString: "$ONE" },
+        TWO: { $toString: "$TWO" },
+        THREE: { $toString: "$THREE" },
+        FOUR: { $toString: "$FOUR" },
+        FIVE: { $toString: "$FIVE" },
+        SIX: { $toString: "$SIX" },
+        SEVEN: { $toString: "$SEVEN" },
+        EIGHT: { $toString: "$EIGHT" },
+        NINE: { $toString: "$NINE" },
+        TEN: { $toString: "$TEN" },
+        ELEVEN: { $toString: "$ELEVEN" },
+        TWELVE: { $toString: "$TWELVE" },
+        THIRTEEN: { $toString: "$THIRTEEN" },
+        FOURTEEN: { $toString: "$FOURTEEN" },
+      },
+    },
+  ]);
+
+  if (myPacoWinStats.length === 0) {
+    myTotalWinnings = "0";
+  } else {
+    const ticket = myPacoWinStats[0];
+
+    for (let i = 1; i <= 14; i++) {
+      myTotalWinnings = decimal.addition(
+        myTotalWinnings,
+        getTotalWinnings(
+          ticket[convertNumberString(i)],
+          convertNumberString(i),
+          ticketPool,
+          ticketTier
+        )
+      );
+    }
+  }
+
   // winning bets
   if (type === "winning") {
-    const ticketTier = await TicketTier.findOne();
-    const ticketPool = await TicketPool.findOne();
-
     const dailyTicketStats = await DailyTicket.aggregate([
       {
         $match: { account: req.account._id, round },
       },
       {
-        $project: {
+        $group: {
+          _id: null,
           ONE: {
             $sum: {
               $convert: {
@@ -648,7 +840,7 @@ const getMyHistories = catchAsync(async (req, res, next) => {
     ]);
 
     if (dailyTicketStats.length === 0) {
-      return res.status(200).json({ histories: [] });
+      return res.status(200).json({ histories: [], myTotalWinnings });
     }
 
     // Prepare for response data
@@ -670,25 +862,18 @@ const getMyHistories = catchAsync(async (req, res, next) => {
       });
     }
 
-    return res.status(200).json({ histories: data });
+    return res.status(200).json({ histories: data, myTotalWinnings });
   }
 
   // Loosing bets
   if (type === "loosing") {
-    const query = {
-      account: req.account._id,
-      round,
-      tier: { $eq: "ZERO" },
-    };
-
-    const ticketSetting = await TicketSettings.findOne();
-
     const dailyTicketStats = await DailyTicket.aggregate([
       {
         $match: { account: req.account._id, round },
       },
       {
-        $project: {
+        $group: {
+          _id: null,
           STANDARD_LOOSING: {
             $sum: {
               $convert: {
@@ -720,7 +905,7 @@ const getMyHistories = catchAsync(async (req, res, next) => {
     ]);
 
     if (dailyTicketStats.length === 0) {
-      return res.status(200).json({ histories: [] });
+      return res.status(200).json({ histories: [], myTotalWinnings });
     }
 
     const ticket = dailyTicketStats[0];
@@ -746,54 +931,7 @@ const getMyHistories = catchAsync(async (req, res, next) => {
       },
     ];
 
-    // let tickets = await Ticket.aggregate([
-    //   {
-    //     $match: query,
-    //   },
-    //   {
-    //     $group: {
-    //       _id: "$type",
-    //       loosingTickets: { $sum: 1 },
-    //       round: { $first: "$round" },
-    //     },
-    //   },
-    //   {
-    //     $project: {
-    //       _id: 1,
-    //       ticketType: { $toUpper: "$_id" },
-    //       loosingTickets: 1,
-    //       round: { $concat: ["Round ", { $toString: "$round" }] },
-    //       typeOrder: {
-    //         $switch: {
-    //           branches: [
-    //             { case: { $eq: ["$_id", "STANDARD"] }, then: 1 },
-    //             { case: { $eq: ["$_id", "MEGA"] }, then: 2 },
-    //           ],
-    //           default: 999,
-    //         },
-    //       },
-    //     },
-    //   },
-    //   {
-    //     $sort: { typeOrder: 1 },
-    //   },
-    //   {
-    //     $project: {
-    //       _id: 0,
-    //       typeOrder: 0,
-    //     },
-    //   },
-    // ]);
-
-    // tickets = tickets.map((ticket) => ({
-    //   ...ticket,
-    //   totalPacoSpent: decimal.multiply(
-    //     ticket.loosingTickets,
-    //     ticketSetting[ticket.ticketType]
-    //   ),
-    // }));
-
-    return res.status(200).json({ histories: data });
+    return res.status(200).json({ histories: data, myTotalWinnings });
   }
 });
 
@@ -1029,8 +1167,8 @@ const getAllTime = catchAsync(async (req, res, next) => {
   const ticketSetting = await TicketSettings.findOne();
   const round = ticketSetting.round;
 
-  // Calculate for totalPacoSpent include todays round
-  const pacoSpentStats = await DailyTicket.aggregate([
+  // Calculate for total standard and mega ticket, totalPacoSpent include todays round
+  const pacoStats = await DailyTicket.aggregate([
     {
       $match: { round: { $lte: round } },
     },
@@ -1047,20 +1185,49 @@ const getAllTime = catchAsync(async (req, res, next) => {
             },
           },
         },
+        STANDARD: {
+          $sum: {
+            $convert: {
+              input: "$STANDARD",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        MEGA: {
+          $sum: {
+            $convert: {
+              input: "$MEGA",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
       },
     },
     {
       $project: {
         PACO_SPENT: { $toString: "$PACO_SPENT" },
+        STANDARD: { $toString: "$STANDARD" },
+        MEGA: { $toString: "$MEGA" },
       },
     },
   ]);
 
   let totalPacoSpent;
-  if (pacoSpentStats.length === 0) {
+  let totalStandardTicket;
+  let totalMegaTicket;
+  if (pacoStats.length === 0) {
     totalPacoSpent = 0;
+    totalStandardTicket = 0;
+    totalMegaTicket = 0;
   } else {
-    totalPacoSpent = pacoSpentStats[0].PACO_SPENT;
+    const ticket = pacoStats[0];
+    totalPacoSpent = ticket.PACO_SPENT;
+    totalStandardTicket = ticket.STANDARD;
+    totalMegaTicket = ticket.MEGA;
   }
 
   const dailyTicketStats = await DailyTicket.aggregate([
@@ -1240,26 +1407,6 @@ const getAllTime = catchAsync(async (req, res, next) => {
             },
           },
         },
-        STANDARD: {
-          $sum: {
-            $convert: {
-              input: "$STANDARD",
-              to: "decimal",
-              onError: 0,
-              onNull: 0,
-            },
-          },
-        },
-        MEGA: {
-          $sum: {
-            $convert: {
-              input: "$MEGA",
-              to: "decimal",
-              onError: 0,
-              onNull: 0,
-            },
-          },
-        },
       },
     },
     {
@@ -1281,8 +1428,6 @@ const getAllTime = catchAsync(async (req, res, next) => {
         FOURTEEN: { $toString: "$FOURTEEN" },
         REWARD: { $toString: "$REWARD" },
         PACO_SPENT: { $toString: "$PACO_SPENT" },
-        STANDARD: { $toString: "$STANDARD" },
-        MEGA: { $toString: "$MEGA" },
       },
     },
   ]);
@@ -1293,8 +1438,8 @@ const getAllTime = catchAsync(async (req, res, next) => {
       stats: {
         totalPacoWon: 0,
         totalPacoSpent,
-        totalStandardTicket: 0,
-        totalMegaTicket: 0,
+        totalStandardTicket,
+        totalMegaTicket,
       },
     });
   }
@@ -1318,9 +1463,6 @@ const getAllTime = catchAsync(async (req, res, next) => {
   }
 
   const totalPacoWon = ticket.REWARD;
-
-  const totalStandardTicket = ticket.STANDARD;
-  const totalMegaTicket = ticket.MEGA;
 
   return res.status(200).json({
     allTime: data,
