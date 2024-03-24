@@ -12,7 +12,7 @@ import useGetLastRound from "../useGetLastRound";
 function MyHistory() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [type, setType] = useState("winning");
-  const { isLoading, histories } = useGetMyHistories(type);
+  const { isLoading, histories, myTotalWinnings } = useGetMyHistories(type);
   const { isLoading: isRoundLoading, round } = useGetLastRound();
 
   // Set todays round
@@ -29,8 +29,18 @@ function MyHistory() {
 
   return (
     <div className="text-white">
+      <div className="absolute top-20 md:top-4 right-12 md:right-8 w-[240px] md:w-[300px] text-sm md:text-lg text-center bg-[#753d89] border border-[#955997] rounded-2xl px-8 py-1 space-y-2 md:space-y-0">
+        <h4 className="uppercase">My total winnings</h4>
+        <p className="flex items-center justify-center uppercase gap-2">
+          <span>{numberFormat(myTotalWinnings)}</span>
+          <img src="/tokens/paco.png" alt="" className="w-5" />
+        </p>
+      </div>
       {/* TopBar */}
-      <TopBar title={type === "winning" ? "My Winnings" : "My Loosing Bets"}>
+      <TopBar
+        title={type === "winning" ? "My Winnings" : "My Loosing Bets"}
+        className="mt-28 md:mt-16"
+      >
         <RoundCard round={round - 1} />
 
         <div className="flex items-center gap-2 mt-4 md:mt-0">

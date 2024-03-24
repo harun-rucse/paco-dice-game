@@ -24,7 +24,8 @@ function Deposite() {
 
       <div className="flex flex-col gap-3 pt-6 text-white">
         <strong className="text-lg">
-          YOUR {currentBalance?.name} DEPOSIT ADDRESS
+          YOUR {currentBalance?.name === "BTC" ? "WBTC" : currentBalance?.name}{" "}
+          DEPOSIT ADDRESS
         </strong>
         <strong className="text-sm text-gray-300">
           IMPORTANT: THIS ADDRESS ACCEPTS ONLY BEP-20 TOKENS ON BNB SMART CHAIN

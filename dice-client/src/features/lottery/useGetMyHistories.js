@@ -8,10 +8,10 @@ export default function useGetMyHistories(type) {
     ? 1
     : Number(searchParams.get("round"));
 
-  const { isLoading, data: { histories } = {} } = useQuery({
+  const { isLoading, data: { histories, myTotalWinnings } = {} } = useQuery({
     queryKey: ["my-histories", round, type],
     queryFn: () => getMyHistories(round, type),
   });
 
-  return { isLoading, histories };
+  return { isLoading, histories, myTotalWinnings };
 }

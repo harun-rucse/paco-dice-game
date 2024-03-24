@@ -54,7 +54,7 @@ function Balance({ className }) {
       {showBalance && (
         <div className="absolute w-[13rem] md:w-[18rem] top-12 left-0 bg-[#3c2f61] p-2 rounded-2xl space-y-2 z-[999] shadow-md">
           <BalanceItem
-            name="BTC"
+            name="WBTC"
             value={account?.btc}
             imgUrl="/tokens/btc.png"
             onHide={setShowBalance}
