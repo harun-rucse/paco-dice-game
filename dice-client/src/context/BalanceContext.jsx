@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { useCurrentUser } from "../features/authentication/useCurrentUser";
+import { useCurrentUser } from "../hooks/useCurrentUser";
 
 const BalanceContext = createContext();
 
