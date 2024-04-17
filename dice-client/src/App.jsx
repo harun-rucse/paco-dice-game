@@ -4,7 +4,7 @@ import { Toaster } from "react-hot-toast";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
-import Routes from "./old-ui/routes";
+import Routes from "./new-ui/routes";
 import Spinner from "./components/Spinner";
 import { BalanceProvider } from "./context/BalanceContext";
 

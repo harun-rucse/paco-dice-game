@@ -1,3 +1,5 @@
+import defaultTheme from "tailwindcss/defaultTheme";
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
@@ -10,6 +12,12 @@ export default {
       fontFamily: {
         baloo: ["Baloo"],
       },
+    },
+    screens: {
+      ...defaultTheme.screens,
+      tablet: "640px",
+      laptop: "1024px",
+      desktop: "1280px",
     },
   },
   plugins: [],

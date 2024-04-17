@@ -14,14 +14,14 @@
   }
   body {
     @apply bg-white;
-    @apply text-gray-700;
+    @apply text-white;
     font-family: "baloo", sans-serif;
     overflow-x: hidden;
   }
 }
 
 .active {
-  background: #161616;
+  /* background: #161616; */
   border: 1px solid #403e3e;
 }
 
