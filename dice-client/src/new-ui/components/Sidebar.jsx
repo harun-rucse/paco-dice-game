@@ -1,11 +1,12 @@
 import { Link, NavLink } from "react-router-dom";
 import ToggleDarkMode from "./ToggleDarkMode";
+import { useDarkMode } from "../../context/DarkModeContext";
 
 const items = [
   {
     image: "/images/dice.png",
     title: "Dice",
-    link: "/dice",
+    link: "/",
     isNew: false,
   },
   {
@@ -35,8 +36,10 @@ const items = [
 ];
 
 function Sidebar() {
+  const { toggleDarkMode } = useDarkMode();
+
   return (
-    <aside className="w-[19rem] bg-[#1b152a] border-r border-[#40335f]">
+    <aside className="hidden tablet:block w-[19rem] bg-[#24224a] dark:bg-[#1b152a] border-r border-[#444187] dark:border-[#40335f]">
       <div className="flex items-center gap-4">
         <img src="/images/sidebar-logo.png" alt="" className="w-20" />
         <div className="flex flex-col items-center uppercase">
@@ -48,12 +51,12 @@ function Sidebar() {
         </div>
       </div>
 
-      <ul className="space-y-4 py-8 px-4">
+      <ul className="space-y-4 py-8 px-4 sidebar">
         {items.map((item, i) => (
           <NavLink
             key={i}
             to={item.link}
-            className="flex items-center gap-5 transition-all hover:bg-[#241c38] px-2 rounded-md relative"
+            className="flex items-center gap-5 transition-all hover:bg-gradient-to-r from-[#5d4599] to-[#27254d] px-2 rounded-2xl relative"
           >
             <img
               src={item.image}
@@ -81,7 +84,7 @@ function Sidebar() {
 
       <div className="flex justify-center items-center gap-4 py-6">
         <img src="/images/sun.png" alt="" className="w-10 object-cover" />
-        <ToggleDarkMode onSwitch={() => {}} />
+        <ToggleDarkMode onSwitch={(state) => toggleDarkMode(!state)} />
         <img src="/images/moon.png" alt="" className="w-10 object-cover" />
       </div>
     </aside>

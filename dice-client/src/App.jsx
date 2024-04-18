@@ -7,6 +7,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import Routes from "./new-ui/routes";
 import Spinner from "./components/Spinner";
 import { BalanceProvider } from "./context/BalanceContext";
+import { DarkModeProvider } from "./context/DarkModeContext";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -19,24 +20,26 @@ const queryClient = new QueryClient({
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <BalanceProvider>
-        <ReactQueryDevtools initialIsOpen={false} />
+    <DarkModeProvider>
+      <QueryClientProvider client={queryClient}>
+        <BalanceProvider>
+          <ReactQueryDevtools initialIsOpen={false} />
 
-        <BrowserRouter>
-          <Suspense fallback={<Spinner />}>
-            <Routes />
-          </Suspense>
-        </BrowserRouter>
-        <Toaster
-          position="top-center"
-          reverseOrder={false}
-          containerStyle={{
-            zIndex: 999999999,
-          }}
-        />
-      </BalanceProvider>
-    </QueryClientProvider>
+          <BrowserRouter>
+            <Suspense fallback={<Spinner />}>
+              <Routes />
+            </Suspense>
+          </BrowserRouter>
+          <Toaster
+            position="top-center"
+            reverseOrder={false}
+            containerStyle={{
+              zIndex: 999999999,
+            }}
+          />
+        </BalanceProvider>
+      </QueryClientProvider>
+    </DarkModeProvider>
   );
 }
 

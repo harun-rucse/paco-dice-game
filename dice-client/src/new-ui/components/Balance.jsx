@@ -10,7 +10,7 @@ function BalanceItem({ name, value, imgUrl, onSelect, onHide }) {
         onSelect({ name, imgUrl, value });
         onHide(false);
       }}
-      className="flex items-center gap-2 justify-between bg-[#4d316c] transition-all hover:scale-105 px-3 py-1 rounded-lg cursor-pointer"
+      className="flex min-w-[16rem] tablet:w-full items-center gap-2 justify-between bg-[#55527d] dark:bg-[#523376] transition-all hover:scale-105 px-3 py-1 rounded-lg cursor-pointer"
     >
       <div className="flex items-center gap-2 text-sm tablet:text-base">
         <img src={imgUrl} alt="" className="h-7" />
@@ -35,7 +35,7 @@ function Balance({ className }) {
       <button
         onClick={() => setShowBalance((show) => !show)}
         className={cn(
-          "flex items-center justify-between text-white gap-2 bg-[#3a2354] rounded-xl px-4 tablet:px-4 py-1 tablet:py-2 shadow-[0px_4px_4px_0px_#00000040]",
+          "flex items-center justify-between w-max tablet:min-w-[180px] text-white gap-2 bg-[#413e72] dark:bg-[#3a2354] border border-[#605e96] dark:border-transparent rounded-xl px-4 tablet:px-4 py-1 tablet:py-2 shadow-[0px_4px_4px_0px_#00000040]",
           className
         )}
       >
@@ -44,15 +44,20 @@ function Balance({ className }) {
           alt=""
           className="h-6 tablet:h-7"
         />
-        <span className="uppercase font-extralight text-sm tablet:text-base">
+        <span className="hidden tablet:block uppercase font-extralight text-sm tablet:text-base">
           {Number(currentBalance.value)?.toFixed(8) ||
             Number(account?.btc).toFixed(8)}
         </span>
-        <MdOutlineKeyboardArrowDown />
+        <span className="block tablet:hidden uppercase font-extralight text-sm tablet:text-base">
+          {currentBalance?.value && currentBalance.value.toString()?.length > 6
+            ? currentBalance.value.substring(0, 6)
+            : Number(currentBalance.value)?.toFixed(4)}
+        </span>
+        <MdOutlineKeyboardArrowDown size={28} color="#ffff" />
       </button>
 
       {showBalance && (
-        <div className="absolute min-w-[13rem] tablet:w-[20rem] top-12 left-0 bg-[#3a2354] p-2 rounded-2xl space-y-2 z-[999] shadow-md">
+        <div className="absolute min-w-[13rem] tablet:w-[20rem] top-14 left-0 bg-[#413e72] dark:bg-[#3a2354] p-2 rounded-2xl space-y-2 z-[999] shadow-md">
           <BalanceItem
             name="WBTC"
             value={account?.btc}

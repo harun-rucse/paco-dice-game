@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 function Footer() {
   return (
-    <div className="hidden tablet:flex absolute left-0 bottom-0 w-full h-[10rem] z-50 bg-[#2a223e] items-end px-8 desktop:px-16 py-4 pb-6 justify-between border-t border-[#433761]">
+    <div className="hidden tablet:flex absolute left-0 bottom-0 w-full h-[10rem] z-50 bg-[#24224a] dark:bg-[#2a223e] items-end px-8 desktop:px-16 py-4 pb-6 justify-between border-t border-[#433761]">
       <div className="px-4 self-start space-y-1 tablet:w-[40%] desktop:w-[25%]">
         <p className="text-center text-white uppercase">Partners & Investors</p>
         <div className="flex items-center gap-6 pt-2">

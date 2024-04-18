@@ -20,9 +20,8 @@
   }
 }
 
-.active {
-  /* background: #161616; */
-  border: 1px solid #403e3e;
+.sidebar .active {
+  background: linear-gradient(to right, #5d4599, #27254d);
 }
 
 & .recharts-cartesian-grid-horizontal line,
