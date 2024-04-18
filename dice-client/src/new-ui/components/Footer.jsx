@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 function Footer() {
   return (
-    <div className="hidden tablet:flex absolute left-0 bottom-0 w-full z-50 bg-[#2a223e] items-end px-8 2xl:px-16 py-4 pb-6 justify-between border-t border-[#433761]">
+    <div className="hidden tablet:flex absolute left-0 bottom-0 w-full h-[10rem] z-50 bg-[#2a223e] items-end px-8 desktop:px-16 py-4 pb-6 justify-between border-t border-[#433761]">
       <div className="px-4 self-start space-y-1 tablet:w-[40%] desktop:w-[25%]">
         <p className="text-center text-white uppercase">Partners & Investors</p>
         <div className="flex items-center gap-6 pt-2">
@@ -28,7 +28,7 @@ function Footer() {
               <img
                 src="/icons/cyberscope.png"
                 alt=""
-                className="w-20 ddesktop:w-[5.5rem]"
+                className="w-20 desktop:w-[5.5rem]"
               />
             </Link>
             <Link to="https://cwallet.com" target="_blank">
@@ -76,7 +76,7 @@ function Footer() {
         <ul className="space-y-2">
           <li className="text-white">Socials</li>
           <li className="text-[#745b97]">
-            <Link to="/https://t.me/PacoDeLlama" target="_blank">
+            <Link to="https://t.me/PacoDeLlama" target="_blank">
               Telegram
             </Link>
           </li>
@@ -102,36 +102,6 @@ function Footer() {
           </li>
         </ul>
       </div>
-
-      {/* <div className="space-y-2">
-       
-        <div className="flex text-sm items-center justify-between gap-8 2xl:gap-16 w-full">
-          <Link
-            to="https://t.me/PacoDeLlama"
-            target="_blank"
-            className="flex items-center gap-2"
-          >
-            <img src="/icons/telegram.png" alt="" className="w-5" />
-            <span className="text-white uppercase">Telegram</span>
-          </Link>
-          <Link
-            to="https://twitter.com/pacodellamadefi"
-            target="_blank"
-            className="flex items-center gap-2"
-          >
-            <img src="/icons/twitter.png" alt="" className="w-5" />
-            <span className="text-white uppercase">Twitter</span>
-          </Link>
-          <Link
-            to="https://discord.com/invite/HpCG9rDz7X"
-            target="_blank"
-            className="flex items-center gap-2"
-          >
-            <img src="/icons/discord.png" alt="" className="w-5" />
-            <span className="text-white uppercase">Discord</span>
-          </Link>
-        </div>
-      </div> */}
     </div>
   );
 }

@@ -24,7 +24,7 @@ function Header() {
 
   return (
     <header className="p-0">
-      <div className="flex items-center justify-between bg-[#241c38] px-3 py-2 border-b-2 border-[#5b4788]">
+      <div className="flex h-[5rem] items-center justify-between bg-[#241c38] px-3 py-2 border-b-2 border-[#5b4788]">
         <div className="flex items-center justify-center tablet:justify-stretch gap-4 w-full">
           <Link to="/">
             <img src="/icon.png" alt="Paco Dice" className="h-12 tablet:h-16" />

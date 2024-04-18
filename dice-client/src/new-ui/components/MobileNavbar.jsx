@@ -3,7 +3,7 @@ import { IoMdMenu } from "react-icons/io";
 import { TfiReload } from "react-icons/tfi";
 import { BsCurrencyDollar } from "react-icons/bs";
 import { CiWallet } from "react-icons/ci";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import Modal from "./Modal";
 import Transaction from "../features/transactions/Transaction";
 import Authentication from "../features/authentication/Authentication";
@@ -18,22 +18,35 @@ function MobileNavbar() {
         {!isLoading && isAuthenticated ? (
           <>
             <div className="flex items-center gap-2">
-              <div className="bg-[#695d89] border border-[#8377a3] shadow-md w-[3.5rem] h-[3.2rem] rounded-md flex justify-center items-center">
-                <img src="/icons/ticket.png" alt="" className="w-10" />
+              <div className="bg-[#695d89] border border-[#8377a3] shadow-md w-[3.5rem] h-[3rem] rounded-md flex justify-center items-center">
+                <Link to="/dice">
+                  <img src="/images/dice.png" alt="" className="w-8" />
+                </Link>
               </div>
-              <div className="bg-[#695d89] border border-[#8377a3] shadow-md w-[3.5rem] h-[3.2rem] rounded-md flex justify-center items-center">
-                <img src="/icons/ticket.png" alt="" className="w-10" />
+              <div className="bg-[#695d89] border border-[#8377a3] shadow-md w-[3.5rem] h-[3rem] rounded-md flex justify-center items-center">
+                <Link to="/lottery">
+                  <img src="/images/ticket.png" alt="" className="w-8" />
+                </Link>
               </div>
             </div>
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 -mt-8 bg-[#695d89] w-[4rem] h-[4rem] rounded-full flex justify-center items-center">
-              <IoMdMenu size={32} color="#a18ed2" />
+              <Modal>
+                <Modal.Open opens="wallet">
+                  <img src="/images/wallet.png" alt="" className="w-8" />
+                </Modal.Open>
+                <Modal.Body name="wallet">
+                  <Transaction />
+                </Modal.Body>
+              </Modal>
             </div>
             <div className="flex items-center gap-2">
-              <div className="bg-[#695d89] border border-[#8377a3] shadow-md w-[3.5rem] h-[3.2rem] rounded-md flex justify-center items-center">
-                <img src="/icons/ticket.png" alt="" className="w-10" />
+              <div className="bg-[#695d89] border border-[#8377a3] shadow-md w-[3.5rem] h-[3rem] rounded-md flex justify-center items-center">
+                <Link to="/staking">
+                  <img src="/images/money.png" alt="" className="w-8" />
+                </Link>
               </div>
-              <div className="bg-[#695d89] border border-[#8377a3] shadow-md w-[3.5rem] h-[3.2rem] rounded-md flex justify-center items-center">
-                <img src="/icons/ticket.png" alt="" className="w-10" />
+              <div className="bg-[#695d89] border border-[#8377a3] shadow-md w-[3.5rem] h-[3rem] rounded-md flex justify-center items-center">
+                <img src="/images/menu.png" alt="" className="w-8" />
               </div>
             </div>
           </>
