@@ -59,18 +59,18 @@ input:disabled {
 /* width */
 ::-webkit-scrollbar {
   /* width: 8px; */
-  width: 0px;
+  width: 6px;
   height: 5px;
 }
 
 /* Track */
 ::-webkit-scrollbar-track {
-  background: #2e2046;
+  background: #211732;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #3f2b62;
+  background: #2c2447;
 }
 
 /* Handle on hover */

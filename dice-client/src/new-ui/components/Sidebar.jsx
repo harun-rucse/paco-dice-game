@@ -39,7 +39,7 @@ function Sidebar() {
   const { toggleDarkMode } = useDarkMode();
 
   return (
-    <aside className="hidden tablet:block w-[19rem] bg-[#24224a] dark:bg-[#1b152a] border-r border-[#444187] dark:border-[#40335f]">
+    <aside className="hidden tablet:block w-[21rem] desktop:w-[19rem] bg-[#24224a] dark:bg-[#1b152a] border-r border-[#444187] dark:border-[#40335f]">
       <div className="flex items-center gap-4">
         <img src="/images/sidebar-logo.png" alt="" className="w-20" />
         <div className="flex flex-col items-center uppercase">
