@@ -6,7 +6,7 @@ const items = [
   {
     image: "/images/dice.png",
     title: "Dice",
-    link: "/",
+    link: "/dice",
     isNew: false,
   },
   {
