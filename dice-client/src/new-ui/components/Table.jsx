@@ -11,7 +11,7 @@ function TableHeader({ children, className }) {
   return (
     <div
       className={cn(
-        `bg-[#161619] grid ${columns} items-center w-full px-6 py-3 text-[#7968a0] font-semibold border-b-2 border-[#111014]`,
+        `bg-[#1e1c3a] dark:bg-[#161619] grid ${columns} items-center w-full px-6 py-3 text-[#7968a0] font-semibold border-b-2 border-[#131230] dark:border-[#121115]`,
         className
       )}
     >
@@ -22,7 +22,9 @@ function TableHeader({ children, className }) {
 
 function TableBody({ children, className }) {
   return (
-    <div className={cn("space-y-1 py-2 bg-[#16151a]", className)}>
+    <div
+      className={cn("space-y-1 py-2 bg-[#232047] dark:bg-[#16151a]", className)}
+    >
       {children}
       {children?.length === 0 && (
         <span className="block text-center text-sm py-2">No data found!</span>
@@ -46,19 +48,6 @@ function TableRow({ children, className }) {
   );
 }
 
-function TableFooter({ children, className }) {
-  return (
-    <div
-      className={cn(
-        "bg-[#5c378a] flex items-center justify-between px-6 py-1 footer",
-        className
-      )}
-    >
-      {children}
-    </div>
-  );
-}
-
 function Table({ columns, children, className }) {
   return (
     <TableContext.Provider value={{ columns }}>
@@ -66,7 +55,7 @@ function Table({ columns, children, className }) {
         <div
           role="table"
           className={cn(
-            "w-full min-w-[30rem] rounded-lg overflow-x-auto",
+            "w-full min-w-[30rem] rounded-xl overflow-x-auto border border-[#39376b] dark:border-[#28272b]",
             className
           )}
         >
@@ -80,6 +69,5 @@ function Table({ columns, children, className }) {
 Table.Header = TableHeader;
 Table.Body = TableBody;
 Table.Row = TableRow;
-Table.Footer = TableFooter;
 
 export default Table;

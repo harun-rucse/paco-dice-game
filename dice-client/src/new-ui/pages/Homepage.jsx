@@ -27,7 +27,7 @@ function Homepage() {
   }
 
   return (
-    <div className="pb-40 desktop:px-10">
+    <div className="pb-40 ">
       <div className="h-[10rem] tablet:h-[16rem] desktop:h-[30rem]">
         <img
           src="/images/banner.jpeg"
@@ -36,7 +36,7 @@ function Homepage() {
         />
       </div>
 
-      <div className="pt-8 tablet:pt-10 desktop:pt-20 pb-10 px-4 desktop:px-0">
+      <div className="pt-8 tablet:pt-10 desktop:pt-20 pb-10 px-4 desktop:px-10">
         <h2 className="uppercase text-lg tablet:text-2xl">Featured</h2>
         <div className="mt-4 tablet:mt-6">
           <img
@@ -59,20 +59,20 @@ function Homepage() {
         </div>
       </div>
 
-      <div className="pb-10 tablet:pb-10 desktop:pb-20 px-4 desktop:px-0">
+      <div className="pb-10 tablet:pb-10 desktop:pb-20 px-4 desktop:px-10">
         <h2 className="uppercase text-lg tablet:text-2xl mb-5">Bet history</h2>
         <Table
           columns="grid-cols-[0.4fr_0.5fr_0.8fr_1fr_0.8fr_1fr_0.2fr] tablet:grid-cols-[0.3fr_0.6fr_1fr_1fr_0.9fr_1fr_0.5fr] desktop:grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_0.3fr]"
           className="min-w-[58rem] tablet:min-w-[20rem] desktop:min-w-[40rem]"
         >
-          <Table.Header className="bg-[#24224a] dark:bg-[#161619] text-sm tablet:text-xs desktop:text-lg text-[#6c5b91] font-semibold dark:text-[#7968a0] border-[#605e96]">
+          <Table.Header className="text-sm tablet:text-xs desktop:text-lg text-[#6c5b91] font-semibold dark:text-[#7968a0] border-[#131230]">
             <span>GAME</span>
             <span>TIME</span>
             <span>USER</span>
             <span>BET AMOUNT</span>
             <span>MULTIPLAYER</span>
             <span>PAYOUT</span>
-            <span className="bg-[#1c1a3e] dark:bg-[#212026] px-4 py-2 rounded-3xl">
+            <span className="px-4 py-2 rounded-3xl">
               <select
                 className="bg-transparent focus:outline-none cursor-pointer"
                 onChange={(e) => setRenderItem(e.target.value)}
@@ -92,7 +92,7 @@ function Homepage() {
               </select>
             </span>
           </Table.Header>
-          <Table.Body className="bg-[#24224a] dark:bg-[#16151a] max-h-[40rem] overflow-y-auto">
+          <Table.Body className="max-h-[40rem] overflow-y-auto">
             {Array.from({ length: renderItem }).map((_, i) => (
               <Table.Row
                 key={i}

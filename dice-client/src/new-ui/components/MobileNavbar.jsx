@@ -65,7 +65,11 @@ function MobileNavbar() {
               </Modal.Body>
             </Modal>
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 -mt-8 bg-[#695d89] w-[4rem] h-[4rem] rounded-full flex justify-center items-center">
-              <IoMdMenu size={32} color="#a18ed2" />
+              <IoMdMenu
+                size={32}
+                color="#a18ed2"
+                onClick={() => setOpen((state) => !state)}
+              />
             </div>
             <Modal>
               <Modal.Open opens="wallet">
