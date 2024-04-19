@@ -57,7 +57,7 @@ function Balance({ className }) {
       </button>
 
       {showBalance && (
-        <div className="absolute min-w-[13rem] tablet:w-[20rem] top-14 left-0 bg-[#413e72] dark:bg-[#3a2354] p-2 rounded-2xl space-y-2 z-[999] shadow-md">
+        <div className="absolute min-w-[13rem] tablet:w-[20rem] top-12 tablet:top-14 left-0 bg-[#413e72] dark:bg-[#3a2354] p-2 rounded-2xl space-y-2 z-[999] shadow-md">
           <BalanceItem
             name="WBTC"
             value={account?.btc}
