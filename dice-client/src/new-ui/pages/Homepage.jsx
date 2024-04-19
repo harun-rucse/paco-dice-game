@@ -6,7 +6,6 @@ function Homepage() {
 
   function formatColorChangeOfLeadingZero(val) {
     const [wholePart, decimalPart] = val.split(".");
-    console.log(decimalPart);
 
     let count = 0;
     for (let i = decimalPart.length - 1; i >= 0; i--) {
