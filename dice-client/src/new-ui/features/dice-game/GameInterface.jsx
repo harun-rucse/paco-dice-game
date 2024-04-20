@@ -425,7 +425,7 @@ function GameInterface() {
     };
   }, [stopRoll]);
 
-  // controll audio
+  // control audio
   useEffect(() => {
     if (playAudio) {
       winAudio.volume = 0.8;
@@ -436,7 +436,7 @@ function GameInterface() {
     }
   }, [playAudio]);
 
-  async function handleCahngeOFRoll(type = "rollUnder") {
+  async function handleChangeOfRoll(type = "rollUnder") {
     setRollType(type);
     if (type === "rollUnder" && prediction > 95) {
       setPrediction(95);
@@ -472,7 +472,21 @@ function GameInterface() {
                   setShowError={setShowError}
                 />
               ) : (
-                <AutoBet />
+                <AutoBet
+                  numberOfBet={numberOfBet}
+                  setNumberOfBet={setNumberOfBet}
+                  stopToWin={stopToWin}
+                  setStopToWin={setStopToWin}
+                  stopToLoss={stopToLoss}
+                  setStopToLoss={setStopToLoss}
+                  maxBetAmount={maxBetAmount}
+                  setMaxBetAmount={setMaxBetAmount}
+                  onWinReset={onWinReset}
+                  setOnWinReset={setOnWinReset}
+                  onLossIncrease={onLossIncrease}
+                  setOnLossIncrease={setOnLossIncrease}
+                  setAuto={setAuto}
+                />
               )}
             </div>
             <div className="bg-[#291f40] flex-1 px-6 py-4 w-[10rem] space-y-4">
@@ -484,7 +498,7 @@ function GameInterface() {
                 onStarRoll={handleStartRoll}
                 onStopRoll={handleStopRoll}
                 rollType={rollType}
-                setRollType={setRollType}
+                setRollType={handleChangeOfRoll}
                 isLoading={isLoading}
                 betStatus={betStatus}
                 stopRoll={stopRoll}

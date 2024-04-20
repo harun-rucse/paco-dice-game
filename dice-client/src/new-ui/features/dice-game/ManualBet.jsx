@@ -12,6 +12,7 @@ function ManualBet({
   minBet = "0.00000001",
 }) {
   const [maxBet, setMaxBet] = useState(0);
+  const [selectedBtn, setSelectedBtn] = useState("");
   const { currentBalance } = useBalance();
 
   useEffect(() => {
@@ -44,7 +45,7 @@ function ManualBet({
     <>
       <div className="px-4 py-4">
         <h2 className="text-xl mb-2">Bet Amount</h2>
-        <div className="flex items-center gap-3 bg-[#271836] p-2">
+        <div className="flex items-center gap-1 bg-[#271836] p-3 border-2 border-[#473459]">
           <div className="space-y-1">
             <div className="flex gap-2 items-center">
               <img src={currentBalance.imgUrl} alt="" className="w-8" />
@@ -66,39 +67,63 @@ function ManualBet({
               />
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-x-4 gap-y-2">
             <button
-              className="bg-[#563b71] border-2 border-[#745395] px-7 py-2 rounded-2xl shadow-lg flex justify-center items-center uppercase"
+              className={`${
+                selectedBtn === "1/2"
+                  ? "bg-[#3b2451] border-[#573b73]"
+                  : "bg-[#563b71] border-[#745395]"
+              } bg-[#563b71] border-2 px-7 py-2 rounded-2xl shadow-lg flex justify-center items-center uppercase`}
               onClick={() => {
                 if (parseFloat(betAmount / 2) < minBet) {
                   setBetAmount(parseFloat(minBet).toFixed(8));
                 } else {
                   setBetAmount(parseFloat(betAmount / 2).toFixed(8));
                 }
+                setSelectedBtn("1/2");
               }}
             >
               1/2
             </button>
             <button
-              className="bg-[#563b71] border-2 border-[#745395] px-7 py-2 rounded-2xl shadow-lg flex justify-center items-center uppercase"
+              className={`${
+                selectedBtn === "x2"
+                  ? "bg-[#3b2451] border-[#573b73]"
+                  : "bg-[#563b71] border-[#745395]"
+              } bg-[#563b71] border-2 border-[#745395] px-7 py-2 rounded-2xl shadow-lg flex justify-center items-center uppercase`}
               onClick={() => {
                 if (parseFloat(betAmount * 2) > maxBet) {
                   setBetAmount(parseFloat(maxBet).toFixed(8));
                 }
                 setBetAmount(parseFloat(betAmount * 2).toFixed(8));
+                setSelectedBtn("x2");
               }}
             >
               x2
             </button>
             <button
-              className="bg-[#563b71] border-2 border-[#745395] px-7 py-2 rounded-2xl shadow-lg flex justify-center items-center uppercase"
-              onClick={() => setBetAmount(parseFloat(minBet).toFixed(8))}
+              className={`${
+                selectedBtn === "Min"
+                  ? "bg-[#3b2451] border-[#573b73]"
+                  : "bg-[#563b71] border-[#745395]"
+              } bg-[#563b71] border-2 border-[#745395] px-7 py-2 rounded-2xl shadow-lg flex justify-center items-center uppercase`}
+              onClick={() => {
+                setBetAmount(parseFloat(minBet).toFixed(8));
+                setSelectedBtn("Min");
+              }}
             >
               Min
             </button>
             <button
-              className="bg-[#563b71] border-2 border-[#745395] px-7 py-2 rounded-2xl shadow-lg flex justify-center items-center uppercase"
-              onClick={() => setBetAmount(parseFloat(maxBet).toFixed(8))}
+              className={`${
+                selectedBtn === "Max"
+                  ? "bg-[#3b2451] border-[#573b73]"
+                  : "bg-[#563b71] border-[#745395]"
+              } bg-[#563b71] border-2 border-[#745395] px-7 py-2 rounded-2xl shadow-lg flex justify-center items-center uppercase`}
+              onClick={() => {
+                setBetAmount(parseFloat(maxBet).toFixed(8));
+                setSelectedBtn("Max");
+              }}
             >
               Max
             </button>
