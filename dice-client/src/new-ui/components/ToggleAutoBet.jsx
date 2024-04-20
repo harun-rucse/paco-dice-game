@@ -29,7 +29,7 @@ function ToggleAutoBet({ onSwitch }) {
         <div
           className={`absolute top-[2px] w-6 tablet:w-6 h-5 tablet:h-6 bg-[#ffff] border-2 border[#eee] rounded-full shadow-md transform transition-transform ${
             isOn
-              ? "translate-x-[4rem] tablet:translate-x-[3.25rem]"
+              ? "translate-x-[3.3rem] tablet:translate-x-[3.25rem]"
               : "translate-x-1"
           }`}
         ></div>

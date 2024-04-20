@@ -44,12 +44,16 @@ function ManualBet({
   return (
     <>
       <div className="px-4 py-4">
-        <h2 className="text-xl mb-2">Bet Amount</h2>
-        <div className="flex items-center gap-1 bg-[#271836] p-3 border-2 border-[#473459]">
+        <h2 className="text-base tablet:text-xl mb-2">Bet Amount</h2>
+        <div className="flex items-center gap-1 bg-[#271836] p-2 tablet:p-3 border-2 border-[#473459]">
           <div className="space-y-1">
             <div className="flex gap-2 items-center">
-              <img src={currentBalance.imgUrl} alt="" className="w-8" />
-              <span className="text-xl text-[#aa8fc6]">
+              <img
+                src={currentBalance.imgUrl}
+                alt=""
+                className="w-6 tablet:w-8"
+              />
+              <span className="text-lg tablet:text-xl text-[#aa8fc6]">
                 {currentBalance.name}
               </span>
             </div>
@@ -60,7 +64,7 @@ function ManualBet({
             >
               <input
                 type="number"
-                className="w-full bg-transparent text-2xl text-[#aa8fc6] focus:outline-none px-2"
+                className="w-full bg-transparent text-xl tablet:text-2xl text-[#aa8fc6] focus:outline-none px-2"
                 value={betAmount}
                 onChange={handleBetAmountChange}
                 placeholder="0"
@@ -73,7 +77,7 @@ function ManualBet({
                 selectedBtn === "1/2"
                   ? "bg-[#3b2451] border-[#573b73]"
                   : "bg-[#563b71] border-[#745395]"
-              } bg-[#563b71] border-2 px-7 py-2 rounded-2xl shadow-lg flex justify-center items-center uppercase`}
+              } bg-[#563b71] border-2 text-sm tablet:text-base px-6 tablet:px-7 py-1 tablet:py-2 rounded-2xl shadow-lg flex justify-center items-center uppercase`}
               onClick={() => {
                 if (parseFloat(betAmount / 2) < minBet) {
                   setBetAmount(parseFloat(minBet).toFixed(8));
@@ -90,7 +94,7 @@ function ManualBet({
                 selectedBtn === "x2"
                   ? "bg-[#3b2451] border-[#573b73]"
                   : "bg-[#563b71] border-[#745395]"
-              } bg-[#563b71] border-2 border-[#745395] px-7 py-2 rounded-2xl shadow-lg flex justify-center items-center uppercase`}
+              } bg-[#563b71] border-2 text-sm tablet:text-base border-[#745395] px-6 tablet:px-7 py-1 tablet:py-2 rounded-2xl shadow-lg flex justify-center items-center uppercase`}
               onClick={() => {
                 if (parseFloat(betAmount * 2) > maxBet) {
                   setBetAmount(parseFloat(maxBet).toFixed(8));
@@ -106,7 +110,7 @@ function ManualBet({
                 selectedBtn === "Min"
                   ? "bg-[#3b2451] border-[#573b73]"
                   : "bg-[#563b71] border-[#745395]"
-              } bg-[#563b71] border-2 border-[#745395] px-7 py-2 rounded-2xl shadow-lg flex justify-center items-center uppercase`}
+              } bg-[#563b71] border-2 text-sm tablet:text-base border-[#745395] px-6 tablet:px-7 py-1 tablet:py-2 rounded-2xl shadow-lg flex justify-center items-center uppercase`}
               onClick={() => {
                 setBetAmount(parseFloat(minBet).toFixed(8));
                 setSelectedBtn("Min");
@@ -119,7 +123,7 @@ function ManualBet({
                 selectedBtn === "Max"
                   ? "bg-[#3b2451] border-[#573b73]"
                   : "bg-[#563b71] border-[#745395]"
-              } bg-[#563b71] border-2 border-[#745395] px-7 py-2 rounded-2xl shadow-lg flex justify-center items-center uppercase`}
+              } bg-[#563b71] border-2 text-sm tablet:text-base border-[#745395] px-6 tablet:px-7 py-1 tablet:py-2 rounded-2xl shadow-lg flex justify-center items-center uppercase`}
               onClick={() => {
                 setBetAmount(parseFloat(maxBet).toFixed(8));
                 setSelectedBtn("Max");
@@ -131,7 +135,7 @@ function ManualBet({
         </div>
       </div>
       <div className="px-4 py-4 space-y-2">
-        <label htmlFor="profit" className="text-xl">
+        <label htmlFor="profit" className="text-base tablet:text-xl">
           Profit
         </label>
         <div className="flex items-center justify-between bg-[#43295c] border border-[#7f5ea0] rounded-xl px-4 py-2">
@@ -153,7 +157,7 @@ function ManualBet({
         </div>
       </div>
       <div className="px-4 pt-1 pb-4 space-y-2">
-        <label htmlFor="payout" className="text-xl">
+        <label htmlFor="payout" className="text-base tablet:text-xl">
           Payout
         </label>
         <div className="flex items-center justify-between bg-[#43295c] border border-[#7f5ea0] rounded-xl px-4 py-2">

@@ -6,11 +6,11 @@ import GameCard from "./GameCard";
 import TabHeader from "./TabHeader";
 import useGamesHistory from "./useGamesHistory";
 import { useCreateGame } from "./useCreateGame";
-import { useCurrentUser } from "../../../hooks/useCurrentUser";
 import { useBalance } from "../../../context/BalanceContext";
 import { getCoinPrice } from "../../../utils/tokenPrice";
 import toast from "react-hot-toast";
 import Control from "./Control";
+import LiveChart from "./LiveChart";
 const winAudio = new Audio("/audio/win.mp3");
 const loseAudio = new Audio("/audio/lose.mp3");
 
@@ -456,10 +456,10 @@ function GameInterface() {
 
   return (
     <div>
-      <div className="flex gap-8">
+      <div className="flex flex-col desktop:flex-row gap-8">
         <div className="flex-1 flex flex-col">
-          <div className="flex flex-1 border-b-4 border-[#4c3670]">
-            <div className="bg-[#4c3670] w-[24rem] h-[40rem]">
+          <div className="flex flex-col-reverse desktop:flex-row flex-1 border-b-4 border-[#4c3670]">
+            <div className="bg-[#4c3670] dark:bg-[#462f6b] w-full desktop:w-[24rem] h-[37rem] desktop:h-[38rem]">
               <TabHeader tab={tab} setTab={setTab} />
 
               {tab === "manual" ? (
@@ -489,7 +489,7 @@ function GameInterface() {
                 />
               )}
             </div>
-            <div className="bg-[#291f40] flex-1 px-6 py-4 w-[10rem] space-y-4">
+            <div className="bg-[#291f40] flex-1 px-2 desktop:px-6 py-4 w-full desktop:w-[10rem] space-y-4 rounded-t-xl desktop:rounded-tl-none desktop:rounded-tr-xl">
               <GameHistory histories={histories} isLoading={isHistoryLoading} />
               <GameCard
                 prediction={prediction}
@@ -515,7 +515,9 @@ function GameInterface() {
             stopRoll={stopRoll}
           />
         </div>
-        <div className="bg-[#3e325a] w-[16rem]">Live chart</div>
+        <div className="self-start bg-[#291f40] w-full desktop:w-[18rem] rounded-xl">
+          <LiveChart />
+        </div>
       </div>
     </div>
   );

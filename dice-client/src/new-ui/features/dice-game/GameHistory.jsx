@@ -14,7 +14,7 @@ function GameHistory({ histories, isLoading }) {
 
   return (
     <div
-      className="flex items-center gap-2 h-16 bg-[#332542] border-2 border-[#241b30] shadow-md rounded-xl shadow-[#2a1b5c] px-4 py-3 w-full overflow-y-hidden overflow-x-auto"
+      className="flex items-center gap-2 h-16 bg-[#332542] border-2 border-[#241b30] shadow-md rounded-xl shadow-[#2a1b5c] px-4 py-3 w-full tablet:w-[32rem] desktop:w-full overflow-y-hidden overflow-x-auto"
       ref={ref}
     >
       {histories &&
