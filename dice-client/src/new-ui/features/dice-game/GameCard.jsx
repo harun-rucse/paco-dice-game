@@ -106,7 +106,7 @@ function GameCard({
       <button
         className="self-center text-base desktop:text-lg uppercase button !bg-[#27c152] !border-[#158434] !px-8 desktop:!px-10 !py-2"
         onClick={handleClick}
-        disabled={isLoading2 || !isAuthenticated || betAmount === 0}
+        disabled={isLoading2 || !isAuthenticated || betAmount == 0}
       >
         {stopRoll ? "Stop" : "Roll"}
       </button>

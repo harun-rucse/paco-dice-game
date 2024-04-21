@@ -61,7 +61,7 @@ function LiveChart({ setShowLiveChart }) {
         <img
           src="/images/cross.png"
           alt=""
-          className="w-6"
+          className="w-6 cursor-pointer"
           onClick={() => setShowLiveChart((state) => !state)}
         />
       </div>

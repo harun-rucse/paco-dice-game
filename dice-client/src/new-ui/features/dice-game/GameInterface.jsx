@@ -63,7 +63,7 @@ function GameInterface() {
   const loopRef = useRef();
   const [prediction, setPrediction] = useState(50);
   const [result, setResult] = useState(0);
-  const [betAmount, setBetAmount] = useState(0);
+  const [betAmount, setBetAmount] = useState("");
   const [multiplier, setMultiplier] = useState("1.96X");
   const [payout, setPayout] = useState("0.00039200 BTC");
   const [rollType, setRollType] = useState("rollUnder");
@@ -491,7 +491,7 @@ function GameInterface() {
               )}
 
               {showLiveChart && (
-                <div className="absolute top-[12rem] left-0 bg-[#291f40] w-[95%] tablet:w-[15.3rem] laptop:w-[18rem] rounded-xl z-50 mx-2 my-4 laptop:m-4">
+                <div className="block desktop:hidden absolute top-[12rem] left-0 bg-[#291f40] w-[95%] tablet:w-[15.3rem] laptop:w-[18rem] rounded-xl z-50 mx-2 my-4 laptop:m-4">
                   <LiveChart setShowLiveChart={setShowLiveChart} />
                 </div>
               )}
@@ -524,9 +524,11 @@ function GameInterface() {
             setShowLiveChart={setShowLiveChart}
           />
         </div>
-        <div className="hidden desktop:block self-start bg-[#291f40] w-full desktop:w-[18rem] rounded-xl">
-          <LiveChart />
-        </div>
+        {!showLiveChart && (
+          <div className="hidden desktop:block self-start bg-[#291f40] w-full desktop:w-[18rem] rounded-xl">
+            <LiveChart setShowLiveChart={setShowLiveChart} />
+          </div>
+        )}
       </div>
     </div>
   );
