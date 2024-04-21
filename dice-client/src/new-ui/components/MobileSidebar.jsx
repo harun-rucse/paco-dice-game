@@ -46,14 +46,14 @@ function MobileSidebar({ open, setOpen }) {
     <div className="fixed top-0 left-0 w-full h-full bg-gray-500/20 backdrop-blur-sm z-[999999]">
       <aside
         ref={ref}
-        className="block tablet:hidden w-[14rem] h-max min-h-screen bg-[#24224a] dark:bg-[#1b152a] border-r border-[#444187] dark:border-[#40335f]"
+        className="block desktop:hidden w-[14rem] h-max min-h-screen bg-[#24224a] dark:bg-[#1b152a] border-r border-[#444187] dark:border-[#40335f]"
       >
         <div className="flex items-center gap-4">
           <img src="/images/sidebar-logo.png" alt="" className="w-16" />
           <div className="flex flex-col items-center uppercase text-sm">
             <span>Play Lottery</span>
             <span className="text-[#c475f5]">Hit The Jackpot</span>
-            <button className="bg-[#5b4675] rounded-xl px-4 py-1 uppercase mt-2">
+            <button className="bg-[#413e72] dark:bg-[#5b4675] rounded-xl px-4 py-1 uppercase mt-2">
               Buy a ticket
             </button>
           </div>

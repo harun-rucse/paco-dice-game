@@ -39,13 +39,13 @@ function Sidebar() {
   const { toggleDarkMode } = useDarkMode();
 
   return (
-    <aside className="hidden tablet:block w-[21rem] desktop:w-[19rem] bg-[#24224a] dark:bg-[#1b152a] border-r border-[#444187] dark:border-[#40335f]">
+    <aside className="hidden laptop:block w-[21rem] laptop:w-[18rem] bg-[#24224a] dark:bg-[#1b152a] border-r border-[#444187] dark:border-[#40335f]">
       <div className="flex items-center gap-4">
         <img src="/images/sidebar-logo.png" alt="" className="w-20" />
         <div className="flex flex-col items-center uppercase">
           <span>Play Lottery</span>
           <span className="text-[#c475f5]">Hit The Jackpot</span>
-          <button className="bg-[#5b4675] rounded-xl px-4 py-1 uppercase mt-2">
+          <button className="bg-[#413e72] dark:bg-[#5b4675] rounded-xl px-4 py-1 uppercase mt-2">
             Buy a ticket
           </button>
         </div>

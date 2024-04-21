@@ -5,7 +5,6 @@ import { numberFormat, currencyFormat } from "../../../utils/format";
 import { useGetUsdPricePaco } from "./useGetUsdPricePaco";
 import { getCoinPrice } from "../../../utils/tokenPrice";
 import LoadingSpinner from "../../components/LoadingSpinner";
-import { useCurrentUser } from "../../features/authentication/useCurrentUser";
 import { addition, multiply } from "../../../utils/decimal";
 import { cn } from "../../../utils";
 import useGetPayouts from "./useGetPayouts";
@@ -14,7 +13,7 @@ function SelectButton({ handleOnClick, children, activeTab }) {
   return (
     <button
       className={cn(
-        "text-sm lg:text-lg px-1 lg:px-8 py-1 rounded-lg transition hover:bg-[#413e72]",
+        "text-sm tablet:text-lg px-1 tablet:px-8 py-1 rounded-lg transition hover:bg-[#413e72]",
         activeTab && "bg-[#413e72]"
       )}
       onClick={handleOnClick}
@@ -41,7 +40,6 @@ function StakingCalculator() {
 
   const { isLoading: isFetching, calculator } = useGetStakeCalculator(paco);
   const { pacoUSD } = useGetUsdPricePaco(paco);
-  const { user: account } = useCurrentUser();
   const { isLoading: isFetching2, payouts } = useGetPayouts();
   const {
     rewardPaco = 0,
@@ -149,9 +147,9 @@ function StakingCalculator() {
   ];
 
   return (
-    <div className="text-white p-4 lg:p-8 space-y-4">
+    <div className="text-white p-4 tablet:p-8 space-y-4">
       <h4 className="text-2xl font-[Poppins]">Staking Calculator</h4>
-      <p className="text-xs desktop:text-sm font-[Poppins]">
+      <p className="text-xs tablet:text-sm font-[Poppins]">
         Calculate the potential earnings from your staked $PACO tokens! Simply
         input the quantity in the field to view estimated payouts in each
         cryptocurrencies over different timeframes. The greater the number of
@@ -197,7 +195,7 @@ function StakingCalculator() {
         </SelectButton>
       </div>
 
-      <div className="space-y-2 pt-4 lg:pt-8">
+      <div className="space-y-2 pt-4 tablet:pt-8">
         <span className="text-[#b4b3b3] text-xl">
           {currencyFormat(pacoUSD || 0)}
         </span>
@@ -229,7 +227,7 @@ function StakingCalculator() {
                   <img
                     src={row.icon}
                     alt=""
-                    className="h-6 lg:h-8 object-contain -mt-1"
+                    className="h-6 tablet:h-8 object-contain -mt-1"
                   />
                   <span>{numberFormat(row.daily)}</span>
                 </div>
@@ -244,7 +242,7 @@ function StakingCalculator() {
               <img
                 src="/icons/currency-icon.png"
                 alt=""
-                className="h-6 lg:h-8 object-contain"
+                className="h-6 tablet:h-8 object-contain"
               />
               <span className="text-[#b4b3b3] uppercase">TOTAL IN USD</span>
             </div>

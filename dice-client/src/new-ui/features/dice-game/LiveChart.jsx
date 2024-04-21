@@ -19,7 +19,7 @@ function TextBox({ title, value, color = "#fff" }) {
   );
 }
 
-function LiveChart() {
+function LiveChart({ setShowLiveChart }) {
   const data = [
     {
       name: "Page A",
@@ -52,17 +52,22 @@ function LiveChart() {
   ];
 
   return (
-    <div className="p-4">
+    <div className="p-4 h-full">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <span className="text-lg">Live Chart</span>
           <img src="/images/refresh.png" alt="" className="w-6" />
         </div>
-        <img src="/images/cross.png" alt="" className="w-6" />
+        <img
+          src="/images/cross.png"
+          alt=""
+          className="w-6"
+          onClick={() => setShowLiveChart((state) => !state)}
+        />
       </div>
 
-      <div className="bg-[#3e325a] py-2 rounded-xl mt-6">
-        <div className="space-y-6">
+      <div className="bg-[#3e325a] py-2 rounded-xl mt-2 desktop:mt-6">
+        <div className="space-y-3 desktop:space-y-6">
           <div className="flex justify-between items-center px-4">
             <TextBox title="Profit" value={"122.31$"} />
             <TextBox title="Wins" value={228} color="text-[#6bbb60]" />

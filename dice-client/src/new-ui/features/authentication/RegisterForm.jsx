@@ -1,8 +1,11 @@
 import { useForm } from "react-hook-form";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useRegister } from "./useRegister";
 import FormRow from "../../components/FormRow";
+import { useState } from "react";
 
 function RegisterForm({ setCurrent }) {
+  const [showPassword, setShowPassword] = useState(false);
   const { register, handleSubmit, reset, formState, getValues } = useForm();
   const { errors } = formState;
   const { isLoading, register: handleRegister } = useRegister();
@@ -47,16 +50,32 @@ function RegisterForm({ setCurrent }) {
           label="Password"
           error={errors?.password?.message}
         >
-          <input
-            type="password"
-            id="password"
-            placeholder="Password"
-            className="w-full bg-transparent focus:outline-none placeholder:text-sm font-extralight px-4 py-2 tablet:py-3 rounded-lg border border-gray-600"
-            disabled={isLoading}
-            {...register("password", {
-              required: "Password is required",
-            })}
-          />
+          <div className="self-stretch flex items-center justify-between relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              id="password"
+              placeholder="Password"
+              className="w-full bg-transparent focus:outline-none placeholder:uppercase placeholder:text-sm font-extralight px-4 py-2 tablet:py-3 rounded-lg border border-gray-600"
+              disabled={isLoading}
+              {...register("password", {
+                required: "Password is required",
+              })}
+            />
+            <div
+              className="absolute top-3 tablet:top-4 right-4"
+              onClick={() => setShowPassword((state) => !state)}
+            >
+              {showPassword ? (
+                <FaEyeSlash
+                  size={18}
+                  color="#504d8d"
+                  className="cursor-pointer"
+                />
+              ) : (
+                <FaEye size={18} color="#504d8d" className="cursor-pointer" />
+              )}
+            </div>
+          </div>
         </FormRow>
 
         <FormRow
@@ -64,18 +83,34 @@ function RegisterForm({ setCurrent }) {
           label="Confirm Password"
           error={errors?.passwordConfirm?.message}
         >
-          <input
-            type="password"
-            id="passwordConfirm"
-            placeholder="Confirm Password"
-            className="w-full bg-transparent focus:outline-none placeholder:text-sm font-extralight px-4 py-2 tablet:py-3 rounded-lg border border-gray-600"
-            disabled={isLoading}
-            {...register("passwordConfirm", {
-              required: "Repeat Password is required",
-              validate: (value) =>
-                value === getValues().password || "Password doesn't match",
-            })}
-          />
+          <div className="self-stretch flex items-center justify-between relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              id="passwordConfirm"
+              placeholder="Confirm Password"
+              className="w-full bg-transparent focus:outline-none placeholder:text-sm font-extralight px-4 py-2 tablet:py-3 rounded-lg border border-gray-600"
+              disabled={isLoading}
+              {...register("passwordConfirm", {
+                required: "Repeat Password is required",
+                validate: (value) =>
+                  value === getValues().password || "Password doesn't match",
+              })}
+            />
+            <div
+              className="absolute top-3 tablet:top-4 right-4"
+              onClick={() => setShowPassword((state) => !state)}
+            >
+              {showPassword ? (
+                <FaEyeSlash
+                  size={18}
+                  color="#504d8d"
+                  className="cursor-pointer"
+                />
+              ) : (
+                <FaEye size={18} color="#504d8d" className="cursor-pointer" />
+              )}
+            </div>
+          </div>
         </FormRow>
 
         <FormRow

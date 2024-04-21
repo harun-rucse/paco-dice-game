@@ -4,7 +4,7 @@ import StakingCalculator from "./StakingCalculator";
 
 function StakingControls() {
   return (
-    <div className="flex items-center gap-3 desktop:gap-6">
+    <div className="flex items-center gap-3 tablet:gap-5 desktop:gap-6">
       <Modal>
         <Modal.Open opens="about-staking">
           <button className="button !bg-[#413e72] dark:!bg-[#3a2354] !border-[#34325c] dark:!border-[#2f1c44] text-sm desktop:text-lg">
@@ -34,7 +34,7 @@ function StakingControls() {
         </Modal.Open>
         <Modal.Body
           name="staking-calculator"
-          className="bg-[#24224a] h-[35rem] desktop:h-full"
+          className="bg-[#24224a] h-[35rem] tablet:h-[50rem] desktop:h-full"
         >
           <StakingCalculator />
         </Modal.Body>

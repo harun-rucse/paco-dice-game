@@ -2,6 +2,21 @@ import { useEffect, useState } from "react";
 import { useBalance } from "../../../context/BalanceContext";
 import { getCoinPrice } from "../../../utils/tokenPrice";
 
+function Button({ selectedBtn, children, handleClick }) {
+  return (
+    <button
+      className={`${
+        selectedBtn === children
+          ? "bg-[#3b2451] border-[#573b73]"
+          : "bg-[#563b71] border-[#745395]"
+      } border-2 text-sm tablet:text-base px-6 tablet:px-7 py-1 tablet:py-2 rounded-2xl shadow-lg flex justify-center items-center uppercase`}
+      onClick={handleClick}
+    >
+      {children}
+    </button>
+  );
+}
+
 function ManualBet({
   betAmount,
   setBetAmount,
@@ -43,9 +58,9 @@ function ManualBet({
 
   return (
     <>
-      <div className="px-4 py-4">
+      <div className="px-2 laptop:px-4 py-4">
         <h2 className="text-base tablet:text-xl mb-2">Bet Amount</h2>
-        <div className="flex items-center gap-1 bg-[#271836] p-2 tablet:p-3 border-2 border-[#473459]">
+        <div className="flex items-center gap-1 bg-[#271836] p-2 tablet:p-3 border-2 border-[#473459] rounded-xl">
           <div className="space-y-1">
             <div className="flex gap-2 items-center">
               <img
@@ -71,14 +86,10 @@ function ManualBet({
               />
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-            <button
-              className={`${
-                selectedBtn === "1/2"
-                  ? "bg-[#3b2451] border-[#573b73]"
-                  : "bg-[#563b71] border-[#745395]"
-              } bg-[#563b71] border-2 text-sm tablet:text-base px-6 tablet:px-7 py-1 tablet:py-2 rounded-2xl shadow-lg flex justify-center items-center uppercase`}
-              onClick={() => {
+          <div className="grid tablet:hidden desktop:grid grid-cols-2 gap-x-4 gap-y-2">
+            <Button
+              selectedBtn={selectedBtn}
+              handleClick={() => {
                 if (parseFloat(betAmount / 2) < minBet) {
                   setBetAmount(parseFloat(minBet).toFixed(8));
                 } else {
@@ -88,14 +99,11 @@ function ManualBet({
               }}
             >
               1/2
-            </button>
-            <button
-              className={`${
-                selectedBtn === "x2"
-                  ? "bg-[#3b2451] border-[#573b73]"
-                  : "bg-[#563b71] border-[#745395]"
-              } bg-[#563b71] border-2 text-sm tablet:text-base border-[#745395] px-6 tablet:px-7 py-1 tablet:py-2 rounded-2xl shadow-lg flex justify-center items-center uppercase`}
-              onClick={() => {
+            </Button>
+
+            <Button
+              selectedBtn={selectedBtn}
+              handleClick={() => {
                 if (parseFloat(betAmount * 2) > maxBet) {
                   setBetAmount(parseFloat(maxBet).toFixed(8));
                 }
@@ -104,34 +112,76 @@ function ManualBet({
               }}
             >
               x2
-            </button>
-            <button
-              className={`${
-                selectedBtn === "Min"
-                  ? "bg-[#3b2451] border-[#573b73]"
-                  : "bg-[#563b71] border-[#745395]"
-              } bg-[#563b71] border-2 text-sm tablet:text-base border-[#745395] px-6 tablet:px-7 py-1 tablet:py-2 rounded-2xl shadow-lg flex justify-center items-center uppercase`}
-              onClick={() => {
+            </Button>
+
+            <Button
+              selectedBtn={selectedBtn}
+              handleClick={() => {
                 setBetAmount(parseFloat(minBet).toFixed(8));
                 setSelectedBtn("Min");
               }}
             >
               Min
-            </button>
-            <button
-              className={`${
-                selectedBtn === "Max"
-                  ? "bg-[#3b2451] border-[#573b73]"
-                  : "bg-[#563b71] border-[#745395]"
-              } bg-[#563b71] border-2 text-sm tablet:text-base border-[#745395] px-6 tablet:px-7 py-1 tablet:py-2 rounded-2xl shadow-lg flex justify-center items-center uppercase`}
-              onClick={() => {
+            </Button>
+
+            <Button
+              selectedBtn={selectedBtn}
+              handleClick={() => {
                 setBetAmount(parseFloat(maxBet).toFixed(8));
                 setSelectedBtn("Max");
               }}
             >
               Max
-            </button>
+            </Button>
           </div>
+        </div>
+        <div className="hidden tablet:grid desktop:hidden grid-cols-2 laptop:grid-cols-4 gap-x-4 laptop:gap-x-2 gap-y-2 mt-4">
+          <Button
+            selectedBtn={selectedBtn}
+            handleClick={() => {
+              if (parseFloat(betAmount / 2) < minBet) {
+                setBetAmount(parseFloat(minBet).toFixed(8));
+              } else {
+                setBetAmount(parseFloat(betAmount / 2).toFixed(8));
+              }
+              setSelectedBtn("1/2");
+            }}
+          >
+            1/2
+          </Button>
+
+          <Button
+            selectedBtn={selectedBtn}
+            handleClick={() => {
+              if (parseFloat(betAmount * 2) > maxBet) {
+                setBetAmount(parseFloat(maxBet).toFixed(8));
+              }
+              setBetAmount(parseFloat(betAmount * 2).toFixed(8));
+              setSelectedBtn("x2");
+            }}
+          >
+            x2
+          </Button>
+
+          <Button
+            selectedBtn={selectedBtn}
+            handleClick={() => {
+              setBetAmount(parseFloat(minBet).toFixed(8));
+              setSelectedBtn("Min");
+            }}
+          >
+            Min
+          </Button>
+
+          <Button
+            selectedBtn={selectedBtn}
+            handleClick={() => {
+              setBetAmount(parseFloat(maxBet).toFixed(8));
+              setSelectedBtn("Max");
+            }}
+          >
+            Max
+          </Button>
         </div>
       </div>
       <div className="px-4 py-4 space-y-2">

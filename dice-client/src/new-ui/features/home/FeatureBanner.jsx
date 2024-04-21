@@ -2,13 +2,13 @@ function FeatureBanner() {
   return (
     <div className="pt-8 tablet:pt-10 desktop:pt-20 pb-10 px-4 desktop:px-10">
       <h2 className="uppercase text-lg tablet:text-2xl">Featured</h2>
-      <div className="mt-4 tablet:mt-6">
+      <div className="mt-2 tablet:mt-6">
         <img
           src="/images/lottery-banner.jpeg"
           alt=""
           className="overflow-hidden h-[5rem] tablet:h-full object-contain rounded-xl tablet:rounded-2xl"
         />
-        <div className="flex gap-2 tablet:gap-6 desktop:gap-8 tablet:mt-6 desktop:mt-8">
+        <div className="flex gap-4 tablet:gap-6 desktop:gap-8 mt-2 tablet:mt-6 desktop:mt-8">
           <img
             src="/images/dice.jpeg"
             alt=""

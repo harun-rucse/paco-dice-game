@@ -2,8 +2,8 @@ import TextBox from "./TextBox";
 
 function AboutStaking() {
   return (
-    <div className="text-white font-[Poppins] p-4 lg:p-8 space-y-4">
-      <h4 className="text-xl lg:text-2xl text-center font-semibold">
+    <div className="text-white font-[Poppins] p-4 tablet:p-8 space-y-4">
+      <h4 className="text-xl tablet:text-2xl text-center font-semibold">
         Paco Staking Pools
       </h4>
 

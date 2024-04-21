@@ -3,14 +3,14 @@ import Authentication from "../authentication/Authentication";
 
 function MyStakeLogin() {
   return (
-    <div className="tablet:self-stretch bg-[#1e1c3a] dark:bg-[#31294c] rounded-2xl px-4 py-4 w-full desktop:w-[26rem] relative">
+    <div className="tablet:self-stretch bg-[#1e1c3a] dark:bg-[#31294c] rounded-2xl px-4 py-4 w-full laptop:w-[24rem] desktop:w-[26rem] relative">
       <img
         src="/icons/rocket-icon.png"
         alt=""
-        className="absolute -top-6 desktop:-top-10 -right-4 desktop:-right-6 w-20 desktop:w-24"
+        className="absolute -top-6 laptop:-top-10 -right-4 laptop:-right-6 w-20 laptop:w-24"
       />
 
-      <div className="flex flex-col items-center justify-center gap-4 desktop:pt-20">
+      <div className="flex flex-col items-center justify-center gap-4 laptop:pt-20">
         <img
           src="/icons/lock.png"
           alt=""

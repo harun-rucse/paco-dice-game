@@ -27,7 +27,7 @@ function GameCard({
 
   return (
     <div className="flex flex-col gap-5 desktop:gap-8">
-      <div className="bg-gradient-to-r from-[#32214a] via-[#422d73] to-[#3a275c] rounded-[20px] border-2 border-[#491b7f61] px-4 desktop:px-16 py-8 desktop:py-8 relative z-50 flex flex-col gap-6 desktop:gap-12 items-center">
+      <div className="bg-gradient-to-r from-[#32214a] via-[#422d73] to-[#3a275c] rounded-[20px] border-2 border-[#491b7f61] px-4 desktop:px-16 py-8 relative z-50 flex flex-col gap-6 tablet:gap-12 items-center">
         <div className="flex gap-2 desktop:gap-0 items-center justify-between w-full desktop:pt-2">
           <div className="flex flex-col justify-center items-center gap-1">
             <p className="uppercase text-white text-base desktop:text-xl">
@@ -39,8 +39,10 @@ function GameCard({
               </p>
             </span>
           </div>
-          <div className="hidden desktop:flex flex-col items-center gap-1">
-            <span className="uppercase text-xl">Win Chance</span>
+          <div className="hidden tablet:flex flex-col items-center gap-1">
+            <span className="uppercase tablet:text-lg desktop:text-xl">
+              Win Chance
+            </span>
             <span className="text-xl">{winChance}%</span>
           </div>
           <div className="flex flex-col justify-center items-center gap-1">
@@ -57,12 +59,12 @@ function GameCard({
           </div>
         </div>
 
-        <div className="flex desktop:hidden flex-col items-center pb-8">
+        <div className="flex tablet:hidden flex-col items-center pb-8">
           <span className="uppercase text-base">Win Chance</span>
           <span className="text-base">{winChance}%</span>
         </div>
 
-        <div className="w-full">
+        <div className="w-full pt-0 tablet:pt-10 desktop:pt-0">
           <ReactSlider
             className="customSlider"
             thumbClassName="customSlider-thumb"

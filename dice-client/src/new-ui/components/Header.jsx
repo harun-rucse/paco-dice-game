@@ -3,16 +3,19 @@ import { Link } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 import { FiLogOut, FiUser } from "react-icons/fi";
+import { IoMdMenu } from "react-icons/io";
 import Modal from "./Modal";
 import Transaction from "../features/transactions/Transaction";
 import Authentication from "../features/authentication/Authentication";
 import Balance from "./Balance";
 import { useCurrentUser } from "../features/authentication/useCurrentUser";
 import { useOutsideClick } from "../../hooks/useOutsideClick";
+import MobileSidebar from "./MobileSidebar";
 
 function Header() {
   const queryClient = useQueryClient();
   const [showMenu, setShowMenu] = useState(false);
+  const [open, setOpen] = useState(false);
   const { isAuthenticated, user, isLoading } = useCurrentUser();
   const ref = useOutsideClick(() => setShowMenu(false));
 
@@ -25,9 +28,17 @@ function Header() {
   return (
     <header className="p-0">
       <div className="flex h-[5rem] items-center justify-between bg-[#24224a] dark:bg-[#241c38] px-3 py-2 border-b-2 border-[#605e96] dark:border-[#5b4788]">
-        <Link to="/" className="hidden tablet:block">
-          <img src="/icon.png" alt="Paco Dice" className="h-12 tablet:h-16" />
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link to="/" className="hidden tablet:block">
+            <img src="/icon.png" alt="Paco Dice" className="h-12 tablet:h-16" />
+          </Link>
+          <IoMdMenu
+            size={26}
+            color="#9693e0"
+            onClick={() => setOpen((state) => !state)}
+            className="hidden tablet:block laptop:hidden"
+          />
+        </div>
 
         {!isLoading && isAuthenticated ? (
           <div className="flex tablet:hidden items-center justify-between gap-4 w-full">
@@ -191,6 +202,8 @@ function Header() {
           )}
         </div>
       </div>
+
+      <MobileSidebar open={open} setOpen={setOpen} />
     </header>
   );
 }

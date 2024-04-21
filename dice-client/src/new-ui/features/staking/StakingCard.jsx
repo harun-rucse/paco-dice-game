@@ -16,8 +16,8 @@ function StakingCard() {
   if (isFetching) return <Spinner />;
 
   return (
-    <div className="flex flex-col desktop:flex-row items-start justify-center gap-4">
-      <div className="w-full desktop:w-[50rem] flex flex-col gap-4">
+    <div className="flex flex-col laptop:flex-row items-start justify-center gap-4">
+      <div className="w-full tablet:w-[46rem] laptop:w-[40rem] desktop:w-[50rem] flex flex-col gap-4">
         <Stats totalNextPool={totalNextPool} totalBurn={pool?.burn} />
         <Pools
           totalPool={totalPool}

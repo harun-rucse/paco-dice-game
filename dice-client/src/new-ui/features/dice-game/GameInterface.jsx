@@ -58,6 +58,7 @@ async function checkMaxBetAmount(amount, coinName) {
 }
 
 function GameInterface() {
+  const [showLiveChart, setShowLiveChart] = useState(false);
   const [tab, setTab] = useState("manual");
   const loopRef = useRef();
   const [prediction, setPrediction] = useState(50);
@@ -458,8 +459,8 @@ function GameInterface() {
     <div>
       <div className="flex flex-col desktop:flex-row gap-8">
         <div className="flex-1 flex flex-col">
-          <div className="flex flex-col-reverse desktop:flex-row flex-1 border-b-4 border-[#4c3670]">
-            <div className="bg-[#4c3670] dark:bg-[#462f6b] w-full desktop:w-[24rem] h-[37rem] desktop:h-[38rem]">
+          <div className="flex flex-col-reverse tablet:flex-row flex-1 border-b-4 border-[#4c3670]">
+            <div className="bg-[#4c3670] dark:bg-[#462f6b] w-full laptop:w-[20rem] desktop:w-[24rem] h-[37rem] desktop:h-[38rem] relative">
               <TabHeader tab={tab} setTab={setTab} />
 
               {tab === "manual" ? (
@@ -488,8 +489,14 @@ function GameInterface() {
                   setAuto={setAuto}
                 />
               )}
+
+              {showLiveChart && (
+                <div className="absolute top-[12rem] left-0 bg-[#291f40] w-[95%] tablet:w-[15.3rem] laptop:w-[18rem] rounded-xl z-50 mx-2 my-4 laptop:m-4">
+                  <LiveChart setShowLiveChart={setShowLiveChart} />
+                </div>
+              )}
             </div>
-            <div className="bg-[#291f40] flex-1 px-2 desktop:px-6 py-4 w-full desktop:w-[10rem] space-y-4 rounded-t-xl desktop:rounded-tl-none desktop:rounded-tr-xl">
+            <div className="bg-[#291f40] flex-1 px-2 laptop:px-6 py-4 w-full laptop:w-[10rem] space-y-4 rounded-t-xl laptop:rounded-tl-none laptop:rounded-tr-xl">
               <GameHistory histories={histories} isLoading={isHistoryLoading} />
               <GameCard
                 prediction={prediction}
@@ -513,9 +520,11 @@ function GameInterface() {
             setPlayAudio={setPlayAudio}
             setCallTime={setCallTime}
             stopRoll={stopRoll}
+            showLiveChart={showLiveChart}
+            setShowLiveChart={setShowLiveChart}
           />
         </div>
-        <div className="self-start bg-[#291f40] w-full desktop:w-[18rem] rounded-xl">
+        <div className="hidden desktop:block self-start bg-[#291f40] w-full desktop:w-[18rem] rounded-xl">
           <LiveChart />
         </div>
       </div>

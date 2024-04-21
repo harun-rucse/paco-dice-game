@@ -18,7 +18,7 @@ export default {
       ...defaultTheme.screens,
       tablet: "640px",
       laptop: "1024px",
-      desktop: "1280px",
+      desktop: "1600px",
     },
   },
   plugins: [],

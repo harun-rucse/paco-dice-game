@@ -24,21 +24,21 @@ function Pools({ totalPool, setTotalPool, setTotalNextPool, pool }) {
         setTotalNextPool={setTotalNextPool}
       />
 
-      <div className="mt-8 flex flex-col desktop:flex-row items-center justify-between border-t border-[#797878] pt-4">
+      <div className="mt-8 flex flex-col laptop:flex-row items-center justify-between border-t border-[#797878] pt-4">
         <div className="flex items-center gap-4">
-          <h4 className="uppercase text-sm desktop:text-xl text-[#b4b3b3]">
+          <h4 className="uppercase text-sm laptop:text-xl text-[#b4b3b3]">
             TOTAL STAKED PACO
           </h4>
-          <p className="text-white text-sm desktop:text-xl">
+          <p className="text-white text-sm laptop:text-xl">
             {numberFormat(pool?.totalStakePaco || 0)}
           </p>
         </div>
         {!isLoading && !isAuthenticated && (
-          <div className="flex items-center gap-2 desktop:gap-4">
-            <h4 className="uppercase text-sm desktop:text-xl text-[#b4b3b3]">
+          <div className="flex items-center gap-2 laptop:gap-4">
+            <h4 className="uppercase text-sm laptop:text-xl text-[#b4b3b3]">
               YOUR SHARE
             </h4>
-            <p className="text-white text-sm desktop:text-xl">LOG IN TO SEE</p>
+            <p className="text-white text-sm laptop:text-xl">LOG IN TO SEE</p>
           </div>
         )}
       </div>

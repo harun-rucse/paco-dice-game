@@ -7,15 +7,15 @@ import { addition, multiply } from "../../../utils/decimal";
 function SinglePool({ icon, title, subTitle, name }) {
   return (
     <div className="flex gap-3 items-center">
-      <img src={icon} alt="" className="w-8 lg:w-10 object-contain" />
+      <img src={icon} alt="" className="w-8 tablet:w-10 object-contain" />
       <div className="flex flex-col">
-        <p className="text-white lg:text-xl">
+        <p className="text-white tablet:text-xl">
           {numberFormat(title)}
           <span className="text-[#b4b3b3] pl-3">{name}</span>
         </p>
         {subTitle && (
           <span
-            className={`text-[#b4b3b3] lg:text-lg -mt-1 cursor-pointer`}
+            className={`text-[#b4b3b3] tablet:text-lg -mt-1 cursor-pointer`}
             onClick={
               isNaN(subTitle)
                 ? () =>

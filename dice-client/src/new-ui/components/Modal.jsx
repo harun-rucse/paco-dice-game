@@ -18,11 +18,11 @@ function ModalBody({ children, name, className }) {
   if (name !== openName) return null;
 
   return createPortal(
-    <div className="fixed inset-0 bg-gray-200/20 flex items-start desktop:items-center backdrop-blur-sm justify-center z-[99999]">
+    <div className="fixed inset-0 bg-gray-200/20 flex items-start tablet:items-center backdrop-blur-sm justify-center z-[99999]">
       <div
         ref={ref}
         className={cn(
-          `mt-10 flex flex-col gap-4 bg-[#1e1c3a] rounded-2xl w-[22rem] md:min-w-[47rem] overflow-y-auto md:min-h-[36rem] md:overflow-hidden`,
+          `mt-10 tablet:mt-0 flex flex-col gap-4 bg-[#1e1c3a] rounded-2xl w-[22rem] md:min-w-[47rem] overflow-y-auto md:min-h-[36rem] md:overflow-hidden`,
           className
         )}
       >
