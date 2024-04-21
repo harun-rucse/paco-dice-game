@@ -21,12 +21,12 @@ function LoginForm({ setCurrent }) {
 
   return (
     <>
-      <div className="flex justify-center absolute top-10 tablet:top-1 desktop:top-36 left-[47%] tablet:left-[57%] desktop:left-[55%]">
-        <img src="/lock.png" alt="" className="h-16 object-cover" />
+      <div className="flex items-center justify-center gap-2">
+        <h2 className="text-2xl desktop:text-3xl uppercase text-center font-extralight text-white">
+          Login
+        </h2>
+        <img src="/lock.png" alt="" className="h-6 desktop:h-8 object-cover" />
       </div>
-      <h2 className="text-3xl uppercase text-center font-extralight text-white tablet:pt-4">
-        Login
-      </h2>
 
       <form
         onSubmit={handleSubmit(onSubmit)}
@@ -37,7 +37,7 @@ function LoginForm({ setCurrent }) {
             type="email"
             id="email"
             placeholder="Email"
-            className="w-full bg-[#1f1d22] focus:outline-none placeholder:text-sm font-extralight px-4 py-2 tablet:py-3 rounded-lg border border-gray-600"
+            className="w-full bg-transparent focus:outline-none placeholder:text-sm font-extralight px-4 py-2 tablet:py-3 rounded-lg border border-gray-600"
             disabled={isLoading}
             {...register("email", {
               required: "Email is required",
@@ -54,7 +54,7 @@ function LoginForm({ setCurrent }) {
             type="password"
             id="password"
             placeholder="Password"
-            className="w-full bg-[#1f1d22] focus:outline-none placeholder:uppercase placeholder:text-sm font-extralight px-4 py-2 tablet:py-3 rounded-lg border border-gray-600"
+            className="w-full bg-transparent focus:outline-none placeholder:uppercase placeholder:text-sm font-extralight px-4 py-2 tablet:py-3 rounded-lg border border-gray-600"
             disabled={isLoading}
             {...register("password", {
               required: "Password is required",
@@ -63,23 +63,23 @@ function LoginForm({ setCurrent }) {
         </FormRow>
 
         <button
-          className="self-center bg-[#2e2550] text-white uppercase text-sm font-extralight px-8 py-3 rounded-lg shadow-[0px_4px_4px_0px_#00000040]"
+          className="self-center bg-[#413e72] text-white uppercase text-sm font-extralight px-6 desktop:px-8 py-2 desktop:py-3 rounded-lg border border-[#605e96] shadow-[0px_4px_4px_0px_#00000040]"
           disabled={isLoading}
         >
           Login
         </button>
 
         <p
-          className="text-[#da8b2f] text-center font-extralight cursor-pointer"
+          className="text-gray-500 text-center font-extralight cursor-pointer"
           onClick={() => setCurrent("forgot")}
         >
           Forgot your password?
         </p>
 
-        <p className="text-white text-center font-extralight">
-          Don't have an account?{" "}
+        <p className="text-gray-300 text-center font-extralight">
+          Don't have an account?
           <span
-            className="underline cursor-pointer"
+            className="ml-2 text-white underline cursor-pointer"
             onClick={() => setCurrent("register")}
           >
             Join Now

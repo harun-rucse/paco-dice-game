@@ -52,7 +52,7 @@ function Header() {
 
               {showMenu && (
                 <div
-                  ref={ref}
+                  // ref={ref}
                   className="absolute w-[10rem] top-10 tablet:top-14 right-0 bg-[#413e72] dark:bg-[#3c2f61] p-2 rounded-2xl space-y-3 z-[999] shadow-md"
                 >
                   {user?.role === "admin" && (
@@ -120,7 +120,7 @@ function Header() {
 
           {/* Login/Register */}
           {!isLoading && isAuthenticated ? (
-            <div className="relative hidden tablet:block" ref={ref}>
+            <div className="relative hidden tablet:block">
               <button
                 onClick={() => setShowMenu((show) => !show)}
                 className="flex items-center text-white gap-2 bg-[#413e72] dark:bg-[#3a2354] border border-[#605e96] dark:border-transparent rounded-xl px-2 tablet:p-2 shadow-[0px_4px_4px_0px_#00000040]"
@@ -132,7 +132,10 @@ function Header() {
               </button>
 
               {showMenu && (
-                <div className="absolute w-[10rem] top-14 right-0 bg-[#413e72] dark:bg-[#3c2f61] p-2 rounded-2xl space-y-3 z-[999] shadow-md">
+                <div
+                  // ref={ref}
+                  className="absolute w-[10rem] top-14 right-0 bg-[#413e72] dark:bg-[#3c2f61] p-2 rounded-2xl space-y-3 z-[999] shadow-md"
+                >
                   {user?.role === "admin" && (
                     <Link
                       to="/admin"

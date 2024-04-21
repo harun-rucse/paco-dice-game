@@ -1,7 +1,10 @@
 function FormRow({ label, name, error, children }) {
   return (
     <div className="flex flex-col items-center gap-2 text-white">
-      <label htmlFor={name} className="uppercase text-sm font-extralight">
+      <label
+        htmlFor={name}
+        className="uppercase text-sm desktop:text-lg font-extralight"
+      >
         {label}
       </label>
       {children}
