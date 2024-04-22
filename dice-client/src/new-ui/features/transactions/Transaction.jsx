@@ -6,8 +6,8 @@ function Transaction() {
   const [current, setCurrent] = useState("deposite");
 
   return (
-    <div className="flex flex-col md:flex-row items-start h-[80vh] md:h-full mb-10 md:mb-0">
-      <div className="w-full md:w-[24rem] md:h-[36rem] bg-[#24224a] space-y-3 px-6 py-8">
+    <div className="flex flex-col tablet:flex-row items-start h-[80vh] tablet:h-full mb-10 tablet:mb-0">
+      <div className="w-full tablet:w-[24rem] tablet:h-[36rem] bg-[#24224a] space-y-3 px-6 py-8">
         <div
           onClick={() => setCurrent("deposite")}
           className="bg-[#413e72] border border-[#605e96] text-sm px-8 py-3 cursor-pointer rounded-lg uppercase font-extralight text-white shadow-[0px_4px_4px_0px_#00000040]"

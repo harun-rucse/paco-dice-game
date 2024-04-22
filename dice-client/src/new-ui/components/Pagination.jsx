@@ -25,7 +25,7 @@ function Pagination({ count, limit }) {
 
   return (
     <>
-      <p className="text-xs md:text-sm">
+      <p className="text-xs tablet:text-sm">
         Showing<span className="mx-1">{(currentPage - 1) * limit + 1}</span>
         to
         <span className="mx-1">

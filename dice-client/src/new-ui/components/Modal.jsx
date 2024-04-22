@@ -22,7 +22,7 @@ function ModalBody({ children, name, className }) {
       <div
         ref={ref}
         className={cn(
-          `mt-10 tablet:mt-0 flex flex-col gap-4 bg-[#1e1c3a] rounded-2xl w-[22rem] md:min-w-[47rem] overflow-y-auto md:min-h-[36rem] md:overflow-hidden`,
+          `mt-10 tablet:mt-0 flex flex-col gap-4 bg-[#1e1c3a] rounded-2xl w-[22rem] tablet:min-w-[47rem] overflow-y-auto tablet:min-h-[36rem] tablet:overflow-hidden`,
           className
         )}
       >

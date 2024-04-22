@@ -40,8 +40,8 @@ function Deposite() {
           onClick={handleCopy}
           readOnly
         />
-        <div className="flex flex-col md:flex-row items-center gap-3 pt-6 pb-6">
-          <div className="space-y-4 md:w-[70%]">
+        <div className="flex flex-col tablet:flex-row items-center gap-3 pt-6 pb-6">
+          <div className="space-y-4 tablet:w-[70%]">
             <div className="flex items-center gap-2 bg-[#413e72] px-4 py-2 rounded-xl text-white">
               <AiFillWarning color="#ffcc00" size={20} />
               <span className="text-sm uppercase font-extralight">

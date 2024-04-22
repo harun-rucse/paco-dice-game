@@ -65,7 +65,7 @@ function Withdraw() {
           </span>
         )}
 
-        <div className="flex flex-col md:flex-row md:items-center gap-4 mt-4">
+        <div className="flex flex-col tablet:flex-row tablet:items-center gap-4 mt-4">
           <div className="relative">
             <input
               type="number"
