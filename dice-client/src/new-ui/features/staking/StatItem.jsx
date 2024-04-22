@@ -1,7 +1,7 @@
 function StatItem({ title, subTitle, icon }) {
   return (
     <div className="space-y-1">
-      <h4 className="uppercase text-sm text-center desktop:text-xl text-[#b4b3b3]">
+      <h4 className="uppercase text-sm text-left tablet:text-center desktop:text-xl text-[#b4b3b3]">
         {title}
       </h4>
       <div className="flex items-center gap-1">
