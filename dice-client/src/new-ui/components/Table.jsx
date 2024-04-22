@@ -48,6 +48,19 @@ function TableRow({ children, className }) {
   );
 }
 
+function TableFooter({ children, className }) {
+  return (
+    <div
+      className={cn(
+        "bg-[#1e1c3a] dark:bg-[#161619] flex items-center justify-between px-6 py-3 footer border-t border-[#131230] dark:border-[#121115]",
+        className
+      )}
+    >
+      {children}
+    </div>
+  );
+}
+
 function Table({ columns, children, className }) {
   return (
     <TableContext.Provider value={{ columns }}>
@@ -69,5 +82,6 @@ function Table({ columns, children, className }) {
 Table.Header = TableHeader;
 Table.Body = TableBody;
 Table.Row = TableRow;
+Table.Footer = TableFooter;
 
 export default Table;
