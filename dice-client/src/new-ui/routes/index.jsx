@@ -1,6 +1,7 @@
 import { lazy } from "react";
-import { useRoutes } from "react-router-dom";
+import { Navigate, useRoutes } from "react-router-dom";
 import AppLayout from "../components/AppLayout";
+import AdminLayout from "../components/admin/AdminLayout";
 import ProtectedRoute from "../components/ProtectedRoute";
 
 // Lazy-loaded page components
@@ -9,6 +10,12 @@ const DiceGame = lazy(() => import("../pages/DiceGame"));
 const Staking = lazy(() => import("../pages/Staking"));
 const Lottery = lazy(() => import("../pages/Lottery"));
 const Profile = lazy(() => import("../pages/Profile"));
+const AdminDashboard = lazy(() => import("../pages/admin/Dashboard"));
+const AdminApproval = lazy(() => import("../pages/admin/Approval"));
+const AdminWithdrawable = lazy(() => import("../pages/admin/Withdrawable"));
+const AdminDeposit = lazy(() => import("../pages/admin/Deposit"));
+const AdminBurn = lazy(() => import("../pages/admin/Burn"));
+const AdminComingSoon = lazy(() => import("../pages/admin/ComingSoon"));
 const ComingSoon = lazy(() => import("../pages/ComingSoon"));
 const PageNotFound = lazy(() => import("../pages/PageNotFound"));
 
@@ -31,6 +38,51 @@ function Routes() {
               <Profile />
             </ProtectedRoute>
           ),
+        },
+      ],
+    },
+
+    {
+      path: "/admin",
+      element: (
+        <ProtectedRoute roles={["admin"]}>
+          <AdminLayout />
+        </ProtectedRoute>
+      ),
+      children: [
+        { index: true, element: <Navigate replace to="dashboard" /> },
+        { path: "dashboard", element: <AdminDashboard /> },
+        { path: "approval", element: <AdminApproval /> },
+        { path: "withdrawables", element: <AdminWithdrawable /> },
+        { path: "add-deposit", element: <AdminDeposit /> },
+        { path: "burn", element: <AdminBurn /> },
+        {
+          path: "profile",
+          element: (
+            <ProtectedRoute roles={["admin", "user"]}>
+              <Profile />
+            </ProtectedRoute>
+          ),
+        },
+        {
+          path: "staking",
+          element: <AdminComingSoon />,
+        },
+        {
+          path: "events",
+          element: <AdminComingSoon />,
+        },
+        {
+          path: "lottery",
+          element: <AdminComingSoon />,
+        },
+        {
+          path: "users",
+          element: <AdminComingSoon />,
+        },
+        {
+          path: "*",
+          element: <PageNotFound />,
         },
       ],
     },
