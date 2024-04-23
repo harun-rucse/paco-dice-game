@@ -3,6 +3,7 @@ import { Navigate, useRoutes } from "react-router-dom";
 import AppLayout from "../components/AppLayout";
 import AdminLayout from "../components/admin/AdminLayout";
 import ProtectedRoute from "../components/ProtectedRoute";
+import PublicRoute from "../components/PublicRoute";
 
 // Lazy-loaded page components
 const Homepage = lazy(() => import("../pages/Homepage"));
@@ -10,6 +11,7 @@ const DiceGame = lazy(() => import("../pages/DiceGame"));
 const Staking = lazy(() => import("../pages/Staking"));
 const Lottery = lazy(() => import("../pages/Lottery"));
 const Profile = lazy(() => import("../pages/Profile"));
+const ResetPassword = lazy(() => import("../pages/ResetPassword"));
 const AdminDashboard = lazy(() => import("../pages/admin/Dashboard"));
 const AdminApproval = lazy(() => import("../pages/admin/Approval"));
 const AdminWithdrawable = lazy(() => import("../pages/admin/Withdrawable"));
@@ -37,6 +39,14 @@ function Routes() {
             <ProtectedRoute roles={["admin", "user"]}>
               <Profile />
             </ProtectedRoute>
+          ),
+        },
+        {
+          path: "reset-password/:resetToken",
+          element: (
+            <PublicRoute>
+              <ResetPassword />
+            </PublicRoute>
           ),
         },
       ],

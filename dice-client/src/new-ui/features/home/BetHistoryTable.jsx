@@ -1,8 +1,20 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import Table from "../../components/Table";
+import useGetBetHistories from "./useGetBetHistories";
+import Pagination from "../../components/Pagination";
+import LoadingSpinner from "../../components/LoadingSpinner";
+import { formatTime } from "../../../utils";
 
 function BetHistoryTable() {
-  const [renderItem, setRenderItem] = useState(10);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [limit, setLimit] = useState(10);
+  const { isLoading, result, count } = useGetBetHistories(limit);
+
+  useEffect(() => {
+    searchParams.set("page", 1);
+    setSearchParams(searchParams);
+  }, []);
 
   function formatColorChangeOfLeadingZero(val) {
     const [wholePart, decimalPart] = val.split(".");
@@ -43,63 +55,86 @@ function BetHistoryTable() {
           <span className="px-4 py-2 rounded-3xl">
             <select
               className="bg-transparent focus:outline-none cursor-pointer"
-              onChange={(e) => setRenderItem(e.target.value)}
+              value={limit}
+              onChange={(e) => setLimit(parseInt(e.target.value))}
             >
-              <option value="10" className="bg-[#1c1a3e]">
+              <option value={10} className="bg-[#1c1a3e]">
                 10
               </option>
-              <option value="20" className="bg-[#1c1a3e]">
+              <option value={20} className="bg-[#1c1a3e]">
                 20
               </option>
-              <option value="30" className="bg-[#1c1a3e]">
+              <option value={30} className="bg-[#1c1a3e]">
                 30
               </option>
-              <option value="50" className="bg-[#1c1a3e]">
+              <option value={50} className="bg-[#1c1a3e]">
                 50
               </option>
             </select>
           </span>
         </Table.Header>
         <Table.Body className="max-h-[40rem] overflow-y-auto">
-          {Array.from({ length: renderItem }).map((_, i) => (
-            <Table.Row
-              key={i}
-              className="text-sm tablet:text-xs desktop:text-lg"
-            >
-              <span>Dice</span>
-              <span>11:21:32 PM</span>
-              <span className="flex items-center gap-2">
-                <div className="bg-[#d11f9f] w-8 tablet:w-6 desktop:w-8 h-8 tablet:h-6 desktop:h-8 rounded-full flex justify-center items-center">
+          {isLoading && <LoadingSpinner className="h-[34rem]" />}
+
+          {!isLoading &&
+            result?.map((item, i) => (
+              <Table.Row
+                key={i}
+                className="text-sm tablet:text-xs desktop:text-lg"
+              >
+                <span>{item?.game}</span>
+                <span>{formatTime(item?.time)}</span>
+                <span className="flex items-center gap-2">
+                  <div className="bg-[#d11f9f] w-8 tablet:w-6 desktop:w-8 h-8 tablet:h-6 desktop:h-8 rounded-full flex justify-center items-center">
+                    <img
+                      src="/images/user.png"
+                      alt=""
+                      className="w-6 tablet:w-4 desktop:w-6 h-6 tablet:h-4 desktop:h-6 object-contain"
+                    />
+                  </div>
+                  <span>{item?.user?.username}</span>
+                </span>
+                <span className="flex items-center gap-2">
                   <img
-                    src="/images/user.png"
+                    src="/images/paco.png"
                     alt=""
-                    className="w-6 tablet:w-4 desktop:w-6 h-6 tablet:h-4 desktop:h-6 object-contain"
+                    className="w-8 tablet:w-5 desktop:w-8 h-8 tablet:h-5 desktop:h-8"
                   />
-                </div>
-                <span>MightyBeast</span>
-              </span>
-              <span className="flex items-center gap-2">
-                <img
-                  src="/images/paco.png"
-                  alt=""
-                  className="w-8 tablet:w-5 desktop:w-8 h-8 tablet:h-5 desktop:h-8"
-                />
-                {formatColorChangeOfLeadingZero("258451.95400000")}
-              </span>
-              <span className="bg-[#353436] w-min h-min px-3 py-1 rounded-2xl text-[#12e50d]">
-                x10.8889X
-              </span>
-              <span className="flex items-center gap-2">
-                <img
-                  src="/images/paco.png"
-                  alt=""
-                  className="w-8 tablet:w-5 desktop:w-8 h-8 tablet:h-5 desktop:h-8"
-                />
-                {formatColorChangeOfLeadingZero("258451.95400000")}
-              </span>
-            </Table.Row>
-          ))}
+                  {formatColorChangeOfLeadingZero(
+                    parseFloat(item?.betAmount).toFixed(8).toString()
+                  )}
+                </span>
+                <span
+                  className={`${
+                    item?.status === "win"
+                      ? "bg-[#353436] text-[#12e50d]"
+                      : "bg-[#3a3948] text-[#69686a]"
+                  } w-min h-min px-3 py-1 rounded-2xl`}
+                >
+                  {`x${parseFloat(item?.multiplier).toFixed(4)}`}
+                </span>
+                <span className="flex items-center gap-2">
+                  <img
+                    src="/images/paco.png"
+                    alt=""
+                    className="w-8 tablet:w-5 desktop:w-8 h-8 tablet:h-5 desktop:h-8"
+                  />
+                  {item?.status === "win" ? (
+                    formatColorChangeOfLeadingZero(
+                      parseFloat(item?.payout).toFixed(8).toString()
+                    )
+                  ) : (
+                    <span className="text-[#69686a]">
+                      {parseFloat(item?.payout).toFixed(8).toString()}
+                    </span>
+                  )}
+                </span>
+              </Table.Row>
+            ))}
         </Table.Body>
+        <Table.Footer>
+          <Pagination count={count} limit={limit} />
+        </Table.Footer>
       </Table>
     </div>
   );

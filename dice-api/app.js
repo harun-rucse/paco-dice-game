@@ -6,6 +6,7 @@ const gameRoutes = require("./routes/gameRoutes");
 const accountRoutes = require("./routes/accountRoutes");
 const stakeRoutes = require("./routes/stakeRoutes");
 const ticketRoutes = require("./routes/ticketRoutes");
+const commonRoutes = require("./routes/commonRoutes");
 const globalErrorHandler = require("./controllers/error");
 const AppError = require("./utils/app-error");
 
@@ -34,6 +35,7 @@ app.use("/api/games", gameRoutes);
 app.use("/api/account", accountRoutes);
 app.use("/api/stakes", stakeRoutes);
 app.use("/api/tickets", ticketRoutes);
+app.use("/api/common", commonRoutes);
 
 app.all("*", (req, res, next) => {
   next(

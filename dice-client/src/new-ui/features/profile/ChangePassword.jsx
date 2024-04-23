@@ -5,8 +5,10 @@ import FormRow from "../../components/FormRow";
 import { useCurrentUser } from "../authentication/useCurrentUser";
 import Spinner from "../../../components/Spinner";
 import { useUpdateProfile } from "./useUpdateProfile";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 function ChangePassword() {
+  const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const { register, handleSubmit, reset, formState, getValues } = useForm();
   const { errors } = formState;
@@ -48,16 +50,32 @@ function ChangePassword() {
           label="Current Password"
           error={errors?.currentPassword?.message}
         >
-          <input
-            type="password"
-            id="currentPassword"
-            placeholder="Current Password"
-            className="w-full bg-transparent focus:outline-none placeholder:uppercase placeholder:text-sm font-extralight px-4 py-2 tablet:py-3 rounded-lg border border-gray-600"
-            disabled={isLoading}
-            {...register("currentPassword", {
-              required: "Current Password is required",
-            })}
-          />
+          <div className="self-stretch flex items-center justify-between relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              id="currentPassword"
+              placeholder="Current Password"
+              className="w-full bg-transparent focus:outline-none placeholder:uppercase placeholder:text-sm font-extralight px-4 py-2 tablet:py-3 rounded-lg border border-gray-600"
+              disabled={isLoading}
+              {...register("currentPassword", {
+                required: "Current Password is required",
+              })}
+            />
+            <div
+              className="absolute top-3 tablet:top-4 right-4"
+              onClick={() => setShowPassword((state) => !state)}
+            >
+              {showPassword ? (
+                <FaEyeSlash
+                  size={18}
+                  color="#504d8d"
+                  className="cursor-pointer"
+                />
+              ) : (
+                <FaEye size={18} color="#504d8d" className="cursor-pointer" />
+              )}
+            </div>
+          </div>
         </FormRow>
 
         <FormRow
@@ -65,16 +83,32 @@ function ChangePassword() {
           label="New Password"
           error={errors?.password?.message}
         >
-          <input
-            type="password"
-            id="password"
-            placeholder="Password"
-            className="w-full bg-transparent focus:outline-none placeholder:uppercase placeholder:text-sm font-extralight px-4 py-2 tablet:py-3 rounded-lg border border-gray-600"
-            disabled={isLoading}
-            {...register("password", {
-              required: "New Password is required",
-            })}
-          />
+          <div className="self-stretch flex items-center justify-between relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              id="password"
+              placeholder="Password"
+              className="w-full bg-transparent focus:outline-none placeholder:uppercase placeholder:text-sm font-extralight px-4 py-2 tablet:py-3 rounded-lg border border-gray-600"
+              disabled={isLoading}
+              {...register("password", {
+                required: "New Password is required",
+              })}
+            />
+            <div
+              className="absolute top-3 tablet:top-4 right-4"
+              onClick={() => setShowPassword((state) => !state)}
+            >
+              {showPassword ? (
+                <FaEyeSlash
+                  size={18}
+                  color="#504d8d"
+                  className="cursor-pointer"
+                />
+              ) : (
+                <FaEye size={18} color="#504d8d" className="cursor-pointer" />
+              )}
+            </div>
+          </div>
         </FormRow>
 
         <FormRow
@@ -82,18 +116,34 @@ function ChangePassword() {
           label="Repeat New Password"
           error={errors?.repeatPassword?.message}
         >
-          <input
-            type="password"
-            id="repeatPassword"
-            placeholder="Repeat New Password"
-            className="w-full bg-transparent focus:outline-none placeholder:text-sm font-extralight px-4 py-2 tablet:py-3 rounded-lg border border-gray-600"
-            disabled={isLoading}
-            {...register("repeatPassword", {
-              required: "Repeat Password is required",
-              validate: (value) =>
-                value === getValues().password || "Password doesn't match",
-            })}
-          />
+          <div className="self-stretch flex items-center justify-between relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              id="repeatPassword"
+              placeholder="Repeat New Password"
+              className="w-full bg-transparent focus:outline-none placeholder:text-sm font-extralight px-4 py-2 tablet:py-3 rounded-lg border border-gray-600"
+              disabled={isLoading}
+              {...register("repeatPassword", {
+                required: "Repeat Password is required",
+                validate: (value) =>
+                  value === getValues().password || "Password doesn't match",
+              })}
+            />
+            <div
+              className="absolute top-3 tablet:top-4 right-4"
+              onClick={() => setShowPassword((state) => !state)}
+            >
+              {showPassword ? (
+                <FaEyeSlash
+                  size={18}
+                  color="#504d8d"
+                  className="cursor-pointer"
+                />
+              ) : (
+                <FaEye size={18} color="#504d8d" className="cursor-pointer" />
+              )}
+            </div>
+          </div>
         </FormRow>
 
         <button

@@ -1,10 +1,11 @@
 const express = require("express");
 const gameController = require("../controllers/game");
-const { auth } = require("../middlewares/auth");
+const { auth, checkAuth } = require("../middlewares/auth");
 
 const router = express.Router();
 
 router.post("/", auth, gameController.createGame);
 router.get("/", auth, gameController.getGamesHistory);
+router.get("/bet-histories", checkAuth, gameController.getBetHistory);
 
 module.exports = router;
