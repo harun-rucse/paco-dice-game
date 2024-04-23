@@ -1,5 +1,5 @@
 import Pagination from "../../../components/Pagination";
-import Table from "../../../components/Table";
+import Table from "../../../components/admin/Table";
 import useWithdraws from "./useWithdrawables";
 import Spinner from "../../../../components/Spinner";
 import { useApprove } from "./useApprove";
