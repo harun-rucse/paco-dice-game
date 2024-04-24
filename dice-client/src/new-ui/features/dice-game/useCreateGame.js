@@ -9,6 +9,7 @@ export function useCreateGame() {
     mutationFn: createGameApi,
     onSuccess: (data) => {
       queryClient.invalidateQueries(["user"]);
+      queryClient.invalidateQueries(["live-chart"]);
       if (data.status === "lost") {
         queryClient.invalidateQueries(["stake-pool"]);
       }

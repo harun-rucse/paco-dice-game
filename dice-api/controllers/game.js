@@ -315,9 +315,108 @@ const getBetHistory = catchAsync(async (req, res) => {
   res.status(200).json({ result: histories, count });
 });
 
+/**
+ * @desc    Get live chart statistics
+ * @route   GET /api/games/live-chart
+ * @access  Public
+ */
+const getLiveChart = catchAsync(async (req, res) => {
+  const winStats = await Game.aggregate([
+    {
+      $match: { status: "win" },
+    },
+    {
+      $group: {
+        _id: null,
+        totalRewardAmount: {
+          $sum: {
+            $convert: {
+              input: "$rewardAmount",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        totalBetAmount: {
+          $sum: {
+            $convert: {
+              input: "$betAmount",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        win: { $sum: 1 },
+      },
+    },
+    {
+      $project: {
+        totalRewardAmount: { $toString: "$totalRewardAmount" },
+        totalBetAmount: { $toString: "$totalBetAmount" },
+        win: 1,
+      },
+    },
+  ]);
+
+  const lostStats = await Game.aggregate([
+    {
+      $match: { status: "lost" },
+    },
+    {
+      $group: {
+        _id: null,
+        totalBetAmount: {
+          $sum: {
+            $convert: {
+              input: "$betAmount",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        looses: { $sum: 1 },
+      },
+    },
+    {
+      $project: {
+        totalBetAmount: { $toString: "$totalBetAmount" },
+        looses: 1,
+      },
+    },
+  ]);
+
+  let profit = 0;
+  let win = 0;
+  let wager = 0;
+  let looses = 0;
+
+  const pacoPriceInUSD = await getCoinPrice("paco");
+
+  const winGame = winStats[0];
+  if (winStats.length) {
+    profit = decimal.multiply(
+      decimal.subtract(winGame.totalRewardAmount, winGame.totalBetAmount),
+      pacoPriceInUSD
+    );
+    win = winGame.win;
+  }
+
+  const lostGame = lostStats[0];
+  if (lostStats.length) {
+    wager = decimal.multiply(lostGame.totalBetAmount, pacoPriceInUSD);
+    looses = lostGame.looses;
+  }
+
+  res.status(200).json({ profit, win, wager, looses });
+});
+
 module.exports = {
   hello,
   createGame,
   getGamesHistory,
   getBetHistory,
+  getLiveChart,
 };

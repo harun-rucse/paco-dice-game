@@ -1,12 +1,13 @@
 import {
   AreaChart,
   Area,
-  XAxis,
-  YAxis,
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import useGetLiveChart from "./useGetLiveChart";
+import LoadingSpinner from "../../components/LoadingSpinner";
+import { useState } from "react";
 
 function TextBox({ title, value, color = "#fff" }) {
   return (
@@ -20,6 +21,9 @@ function TextBox({ title, value, color = "#fff" }) {
 }
 
 function LiveChart({ setShowLiveChart }) {
+  const [refresh, setRefresh] = useState(0);
+  const { isLoading, data: chartData } = useGetLiveChart(refresh);
+
   const data = [
     {
       name: "Page A",
@@ -56,7 +60,12 @@ function LiveChart({ setShowLiveChart }) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <span className="text-lg">Live Chart</span>
-          <img src="/images/refresh.png" alt="" className="w-6" />
+          <img
+            src="/images/refresh.png"
+            alt=""
+            className="w-6 cursor-pointer"
+            onClick={() => setRefresh((state) => state + 1)}
+          />
         </div>
         <img
           src="/images/cross.png"
@@ -67,31 +76,48 @@ function LiveChart({ setShowLiveChart }) {
       </div>
 
       <div className="bg-[#3e325a] py-2 rounded-xl mt-2 desktop:mt-6">
-        <div className="space-y-3 desktop:space-y-6">
-          <div className="flex justify-between items-center px-4">
-            <TextBox title="Profit" value={"122.31$"} />
-            <TextBox title="Wins" value={228} color="text-[#6bbb60]" />
-          </div>
-          <div className="flex justify-between items-center px-4">
-            <TextBox title="Wager" value={"1542.22$"} />
-            <TextBox title="Looses" value={532} color="text-[#df4850]" />
-          </div>
+        {isLoading && <LoadingSpinner className="h-[19rem]" />}
+        {!isLoading && (
+          <div className="space-y-3 desktop:space-y-6">
+            <div className="flex justify-between items-center px-4">
+              <TextBox
+                title="Profit"
+                value={`${Number(chartData?.profit).toFixed(8)}$`}
+              />
+              <TextBox
+                title="Wins"
+                value={chartData?.win}
+                color="text-[#6bbb60]"
+              />
+            </div>
+            <div className="flex justify-between items-center px-4">
+              <TextBox
+                title="Wager"
+                value={`${Number(chartData?.wager).toFixed(8)}$`}
+              />
+              <TextBox
+                title="Looses"
+                value={chartData?.looses}
+                color="text-[#df4850]"
+              />
+            </div>
 
-          <div style={{ width: "100%", height: 150 }} className="mt-8">
-            <ResponsiveContainer>
-              <AreaChart data={data}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <Tooltip />
-                <Area
-                  type="monotone"
-                  dataKey="uv"
-                  stroke="#4d905c"
-                  fill="#517261"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
+            <div style={{ width: "100%", height: 150 }} className="mt-8">
+              <ResponsiveContainer>
+                <AreaChart data={data}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <Tooltip />
+                  <Area
+                    type="monotone"
+                    dataKey="uv"
+                    stroke="#4d905c"
+                    fill="#517261"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

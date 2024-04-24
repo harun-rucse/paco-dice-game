@@ -41,3 +41,13 @@ export const getBetHistories = async (page, limit, type = "All Bets") => {
     throw new Error(err?.response?.data?.message);
   }
 };
+
+export const getLiveChart = async () => {
+  try {
+    const { data } = await api.get("/games/live-chart");
+
+    return data;
+  } catch (err) {
+    throw new Error(err?.response?.data?.message);
+  }
+};
