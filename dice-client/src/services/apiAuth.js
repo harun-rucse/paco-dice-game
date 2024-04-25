@@ -7,7 +7,6 @@ export const login = async ({ email, password }) => {
       password,
     });
 
-    localStorage.setItem("jwt-token", JSON.stringify(data));
     return data;
   } catch (err) {
     throw new Error(err?.response?.data?.message);
@@ -22,7 +21,16 @@ export const register = async ({ email, password, promoCode }) => {
       promoCode,
     });
 
-    localStorage.setItem("jwt-token", JSON.stringify(data));
+    return data;
+  } catch (err) {
+    throw new Error(err?.response?.data?.message);
+  }
+};
+
+export const logout = async () => {
+  try {
+    const { data } = await api.post("/auth/logout");
+
     return data;
   } catch (err) {
     throw new Error(err?.response?.data?.message);
@@ -57,8 +65,6 @@ export const resetPassword = async ({ password, resetToken }) => {
       password,
     });
 
-    localStorage.setItem("jwt-token", JSON.stringify(data));
-
     return data;
   } catch (err) {
     throw new Error(err?.response?.data?.message);
@@ -71,8 +77,6 @@ export const passwordChange = async ({ currentPassword, password }) => {
       currentPassword,
       password,
     });
-
-    localStorage.removeItem("jwt-token");
 
     return data;
   } catch (err) {

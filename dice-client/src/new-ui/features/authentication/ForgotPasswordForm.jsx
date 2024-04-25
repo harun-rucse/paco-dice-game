@@ -13,7 +13,6 @@ function ForgotPasswordForm() {
       {
         onSuccess: () => {
           reset();
-          // window.location.reload();
         },
       }
     );

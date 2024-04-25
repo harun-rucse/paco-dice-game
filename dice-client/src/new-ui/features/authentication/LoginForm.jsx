@@ -16,7 +16,6 @@ function LoginForm({ setCurrent }) {
       {
         onSuccess: () => {
           reset();
-          window.location.reload();
         },
       }
     );

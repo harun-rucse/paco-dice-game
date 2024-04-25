@@ -8,6 +8,26 @@ const AppError = require("../utils/app-error");
 
 const web3 = new Web3(process.env.RPC);
 
+const cookieOptions = {
+  maxAge: 1000 * 60 * 60 * 24 * 30,
+  httpOnly: true,
+  sameSite: "None",
+  secure: true,
+};
+
+const _generateAndSendTokens = async (statusCode, account, res) => {
+  const { accessToken, refreshToken } = tokenService.generateTokens({
+    id: account._id,
+  });
+  await tokenService.removeRefreshToken(account._id);
+  await tokenService.storeRefreshToken(refreshToken, account._id);
+
+  res.cookie("access_token", accessToken, cookieOptions);
+  res.cookie("refresh_token", refreshToken, cookieOptions);
+
+  res.status(statusCode).json({ success: true });
+};
+
 /**
  * @desc    Create new account
  * @route   GET /api/auth/register
@@ -43,9 +63,7 @@ const register = catchAsync(async (req, res, next) => {
 
   await newAccount.save();
 
-  const token = tokenService.generateJwtToken({ id: newAccount._id });
-
-  res.status(201).json(token);
+  _generateAndSendTokens(201, newAccount, res);
 });
 
 /**
@@ -67,11 +85,21 @@ const login = catchAsync(async (req, res, next) => {
     return next(new AppError("Invallid email or password", 400));
   }
 
-  const token = tokenService.generateJwtToken({ id: account._id });
+  _generateAndSendTokens(200, account, res);
+});
 
-  // Listen for events
+/**
+ * @desc    Logout user
+ * @route   POST /api/auth/logout
+ * @access  Private
+ */
+const logout = catchAsync(async (req, res, next) => {
+  await tokenService.removeRefreshToken(req.account._id);
 
-  res.status(200).json(token);
+  res.clearCookie("access_token", cookieOptions);
+  res.clearCookie("refresh_token", cookieOptions);
+
+  res.status(200).json("Logout successful");
 });
 
 /**
@@ -116,9 +144,7 @@ const updatePassword = catchAsync(async (req, res, next) => {
   account.password = password;
   await account.save();
 
-  const token = tokenService.generateJwtToken({ id: account._id });
-
-  res.status(200).json(token);
+  _generateAndSendTokens(200, account, res);
 });
 
 /**
@@ -186,9 +212,35 @@ const resetPassword = catchAsync(async (req, res, next) => {
   account.passwordResetExpired = undefined;
   account.save();
 
-  const token = tokenService.generateJwtToken({ id: account._id });
+  _generateAndSendTokens(200, account, res);
+});
 
-  res.status(200).json(token);
+/**
+ * @desc    Generate new access-token from refresh-token
+ * @route   GET /api/auth/refresh-token
+ * @access  Public
+ */
+const refreshAccessToken = catchAsync(async (req, res, next) => {
+  // Get refreshToken from cookie or req body
+  const refreshToken = req.cookies.refresh_token;
+  if (!refreshToken)
+    return next(new AppError("Refresh token is required", 400));
+
+  // Verify refreshToken
+  const decoded = await tokenService.verifyRefreshToken(refreshToken);
+
+  // Check it exits in db for this user
+  const account = await Account.findById(decoded.id);
+  if (!account)
+    return next(
+      new AppError("The user belonging to this token does no longer exist", 401)
+    );
+
+  const token = await tokenService.findRefreshToken(refreshToken, account._id);
+  if (!token) return next(new AppError("Invalid refresh token", 401));
+
+  // Generate new tokens and send
+  _generateAndSendTokens(200, account, res);
 });
 
 /**
@@ -219,4 +271,6 @@ module.exports = {
   forgotPassword,
   resetPassword,
   updateProfile,
+  refreshAccessToken,
+  logout,
 };

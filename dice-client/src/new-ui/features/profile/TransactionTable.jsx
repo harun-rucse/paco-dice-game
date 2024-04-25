@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import Table from "../../components/Table";
-import Spinner from "../../../components/Spinner";
 import useUserTransactions from "./useUserTransactions";
 import { formatDate } from "../../../utils";
 import Pagination from "../../components/Pagination";
+import LoadingSpinner from "../../components/LoadingSpinner";
 
 function TransactionTable() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -16,8 +16,6 @@ function TransactionTable() {
     searchParams.set("page", 1);
     setSearchParams(searchParams);
   }, [selectedType]);
-
-  if (isLoading) return <Spinner />;
 
   return (
     <div>
@@ -79,47 +77,51 @@ function TransactionTable() {
           </span>
         </Table.Header>
         <Table.Body className="max-h-[40rem] overflow-y-auto">
-          {result?.map((item, i) => (
-            <Table.Row
-              key={i}
-              className="text-sm tablet:text-xs laptop:text-base"
-            >
-              <span className="bg-[#353436] w-min h-min px-3 py-0 rounded-2xl text-[#c3a6e7]">
-                {item?._id?.substring(0, 5) +
-                  "..." +
-                  item?._id?.substring(
-                    item?._id?.length - 5,
-                    item?._id?.length
-                  )}
-              </span>
-              <span className="capitalize">{selectedType}</span>
-              <span className="uppercase">
-                {Number(item?.amount)
-                  .toFixed(8)
-                  .replace(/\.?0+$/, "")}{" "}
-                {item?.tokenName}
-              </span>
-              <span className="bg-[#353436] w-min h-min px-3 py-0 rounded-2xl text-[#52d650]">
-                {item?.receivedAddress ||
-                  item?.trxId?.substring(0, 16) +
-                    "........" +
-                    item?.trxId?.substring(
-                      item?.trxId?.length - 16,
-                      item?.trxId?.length
-                    )}
-              </span>
-              <span
-                className={`bg-[#353436] w-min h-min px-3 py-0 rounded-2xl ${
-                  item?.status === "success"
-                    ? "text-[#12e50d]"
-                    : "text-[#d11f1f]"
-                }`}
+          {isLoading ? (
+            <LoadingSpinner className="h-[30rem]" />
+          ) : (
+            result?.map((item, i) => (
+              <Table.Row
+                key={i}
+                className="text-sm tablet:text-xs laptop:text-base"
               >
-                {item?.status}
-              </span>
-              <span>{formatDate(item?.createdAt, "DD/MM/YYYY")}</span>
-            </Table.Row>
-          ))}
+                <span className="bg-[#353436] w-min h-min px-3 py-0 rounded-2xl text-[#c3a6e7]">
+                  {item?._id?.substring(0, 5) +
+                    "..." +
+                    item?._id?.substring(
+                      item?._id?.length - 5,
+                      item?._id?.length
+                    )}
+                </span>
+                <span className="capitalize">{selectedType}</span>
+                <span className="uppercase">
+                  {Number(item?.amount)
+                    .toFixed(8)
+                    .replace(/\.?0+$/, "")}{" "}
+                  {item?.tokenName}
+                </span>
+                <span className="bg-[#353436] w-min h-min px-3 py-0 rounded-2xl text-[#52d650]">
+                  {item?.receivedAddress ||
+                    item?.trxId?.substring(0, 16) +
+                      "........" +
+                      item?.trxId?.substring(
+                        item?.trxId?.length - 16,
+                        item?.trxId?.length
+                      )}
+                </span>
+                <span
+                  className={`bg-[#353436] w-min h-min px-3 py-0 rounded-2xl ${
+                    item?.status === "success"
+                      ? "text-[#12e50d]"
+                      : "text-[#d11f1f]"
+                  }`}
+                >
+                  {item?.status}
+                </span>
+                <span>{formatDate(item?.createdAt, "DD/MM/YYYY")}</span>
+              </Table.Row>
+            ))
+          )}
         </Table.Body>
         <Table.Footer>
           <Pagination count={count} limit={limit} />

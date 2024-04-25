@@ -5,24 +5,28 @@ import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 import { FiLogOut, FiUser } from "react-icons/fi";
 import { IoMdMenu } from "react-icons/io";
 import Modal from "./Modal";
-import Transaction from "../features/transactions/Transaction";
-import Authentication from "../features/authentication/Authentication";
 import Balance from "./Balance";
-import { useCurrentUser } from "../features/authentication/useCurrentUser";
-import { useOutsideClick } from "../../hooks/useOutsideClick";
 import MobileSidebar from "./MobileSidebar";
+import Authentication from "../features/authentication/Authentication";
+import Transaction from "../features/transactions/Transaction";
+import { useCurrentUser } from "../features/authentication/useCurrentUser";
+import { useLogout } from "../features/authentication/useLogout";
+import { useOutsideClick } from "../../hooks/useOutsideClick";
 
 function Header() {
   const queryClient = useQueryClient();
   const [showMenu, setShowMenu] = useState(false);
   const [open, setOpen] = useState(false);
   const { isAuthenticated, user, isLoading } = useCurrentUser();
+  const { logout } = useLogout();
   const ref = useOutsideClick(() => setShowMenu(false));
 
   function handleLogout() {
-    localStorage.removeItem("jwt-token");
+    logout();
     queryClient.removeQueries();
-    window.location.reload();
+    setTimeout(() => {
+      window.location.reload();
+    }, 500);
   }
 
   return (

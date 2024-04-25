@@ -10,6 +10,7 @@ export function useCreateGame() {
     onSuccess: (data) => {
       queryClient.invalidateQueries(["user"]);
       queryClient.invalidateQueries(["live-chart"]);
+      queryClient.invalidateQueries(["game-bet-histories"]);
       if (data.status === "lost") {
         queryClient.invalidateQueries(["stake-pool"]);
       }

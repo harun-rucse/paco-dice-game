@@ -74,9 +74,9 @@ function BetHistoryTable() {
           </span>
         </Table.Header>
         <Table.Body className="max-h-[40rem] overflow-y-auto">
-          {isLoading && <LoadingSpinner className="h-[34rem]" />}
-
-          {!isLoading &&
+          {isLoading ? (
+            <LoadingSpinner className="h-[34rem]" />
+          ) : (
             result?.map((item, i) => (
               <Table.Row
                 key={i}
@@ -130,7 +130,8 @@ function BetHistoryTable() {
                   )}
                 </span>
               </Table.Row>
-            ))}
+            ))
+          )}
         </Table.Body>
         <Table.Footer>
           <Pagination count={count} limit={limit} />

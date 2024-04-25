@@ -6,10 +6,31 @@ const api = axios.create({
   headers: {
     "Content-type": "application/json",
     Accept: "application/json",
-    Authorization: `Bearer ${
-      JSON.parse(localStorage.getItem("jwt-token")) || ""
-    }`,
   },
 });
+
+// Interceptors
+api.interceptors.response.use(
+  (config) => config,
+  async (error) => {
+    const originalRequest = error.config;
+    if (error.response.status === 401 && !originalRequest?._isRetry) {
+      originalRequest.isRetry = true;
+      try {
+        await axios.get(
+          `${import.meta.env.VITE_BASE_API_URL}/auth/refresh-token`,
+          {
+            withCredentials: true,
+          }
+        );
+
+        return api.request(originalRequest);
+      } catch (err) {
+        console.log(err.message);
+      }
+    }
+    throw error;
+  }
+);
 
 export default api;

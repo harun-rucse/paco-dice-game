@@ -16,7 +16,6 @@ function RegisterForm({ setCurrent }) {
       {
         onSuccess: () => {
           reset();
-          window.location.reload();
         },
       }
     );
