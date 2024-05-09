@@ -1,14 +1,18 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { FiLogOut } from "react-icons/fi";
 import { HiBars3 } from "react-icons/hi2";
+import { useLogout } from "../../features/authentication/useLogout";
 
 function Header({ setShowSidebar }) {
   const queryClient = useQueryClient();
+  const { logout } = useLogout();
 
   function handleLogout() {
-    localStorage.removeItem("jwt-token");
+    logout();
     queryClient.removeQueries();
-    window.location.reload();
+    setTimeout(() => {
+      window.location.reload();
+    }, 500);
   }
 
   return (
