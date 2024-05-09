@@ -72,3 +72,15 @@ export const resetBurn = async () => {
     throw new Error(err?.response?.data?.message);
   }
 };
+
+export const getStakeHistories = async (page, limit, date) => {
+  try {
+    const { data } = await api.get(
+      `/stakes/stake-histories?page=${page}&limit=${limit}&date=${date}`
+    );
+
+    return data;
+  } catch (err) {
+    throw new Error(err?.response?.data?.message);
+  }
+};

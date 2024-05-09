@@ -130,6 +130,7 @@ const createGame = catchAsync(async (req, res, next) => {
     publicKey,
     prediction,
     betAmount,
+    betCoin: paymentType,
     winNumber: number,
     randomSeed,
     hashRound: hashedValue,
@@ -261,8 +262,163 @@ const getGamesHistory = catchAsync(async (req, res) => {
   res.json(games);
 });
 
+/**
+ * @desc    Get all bet histories
+ * @route   GET /api/games/bet-histories
+ * @access  Public/Private
+ */
+const getBetHistory = catchAsync(async (req, res) => {
+  const page = Number(req.query.page) || 1;
+  const limit = Number(req.query.limit) || 10;
+  const type = req.query.type;
+
+  const filter =
+    type === "My Bets" ? { publicKey: req.account?.publicKey } : {};
+
+  const count = await Game.countDocuments(filter);
+  const betHistories = await Game.find(filter)
+    .sort({
+      createdAt: -1,
+    })
+    .limit(limit)
+    .skip(limit * (page - 1));
+
+  const histories = await Promise.all(
+    betHistories.map(async (betHistory) => {
+      const user = await Account.findOne({ publicKey: betHistory.publicKey });
+
+      const history = betHistory._doc;
+      const rollType =
+        history.prediction > history.winNumber === "win"
+          ? "rollUnder"
+          : "rollOver";
+
+      const dto = {
+        game: "Dice",
+        time: history.createdAt,
+        user: {
+          username: user.username,
+          avatar: user.avatar,
+        },
+        betAmount: history.betAmount,
+        betCoin: history.betCoin,
+        multiplier:
+          rollType === "rollUnder"
+            ? (100 / Number(history.prediction)) * (1 - 0.02)
+            : (100 / (100 - Number(history.prediction) - 1)) * (1 - 0.02),
+        payout: history.rewardAmount,
+        status: history.status,
+      };
+
+      return dto;
+    })
+  );
+
+  res.status(200).json({ result: histories, count });
+});
+
+/**
+ * @desc    Get live chart statistics
+ * @route   GET /api/games/live-chart
+ * @access  Public
+ */
+const getLiveChart = catchAsync(async (req, res) => {
+  const winStats = await Game.aggregate([
+    {
+      $match: { status: "win" },
+    },
+    {
+      $group: {
+        _id: null,
+        totalRewardAmount: {
+          $sum: {
+            $convert: {
+              input: "$rewardAmount",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        totalBetAmount: {
+          $sum: {
+            $convert: {
+              input: "$betAmount",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        win: { $sum: 1 },
+      },
+    },
+    {
+      $project: {
+        totalRewardAmount: { $toString: "$totalRewardAmount" },
+        totalBetAmount: { $toString: "$totalBetAmount" },
+        win: 1,
+      },
+    },
+  ]);
+
+  const lostStats = await Game.aggregate([
+    {
+      $match: { status: "lost" },
+    },
+    {
+      $group: {
+        _id: null,
+        totalBetAmount: {
+          $sum: {
+            $convert: {
+              input: "$betAmount",
+              to: "decimal",
+              onError: 0,
+              onNull: 0,
+            },
+          },
+        },
+        looses: { $sum: 1 },
+      },
+    },
+    {
+      $project: {
+        totalBetAmount: { $toString: "$totalBetAmount" },
+        looses: 1,
+      },
+    },
+  ]);
+
+  let profit = 0;
+  let win = 0;
+  let wager = 0;
+  let looses = 0;
+
+  const pacoPriceInUSD = await getCoinPrice("paco");
+
+  const winGame = winStats[0];
+  if (winStats.length) {
+    profit = decimal.multiply(
+      decimal.subtract(winGame.totalRewardAmount, winGame.totalBetAmount),
+      pacoPriceInUSD
+    );
+    win = winGame.win;
+  }
+
+  const lostGame = lostStats[0];
+  if (lostStats.length) {
+    wager = decimal.multiply(lostGame.totalBetAmount, pacoPriceInUSD);
+    looses = lostGame.looses;
+  }
+
+  res.status(200).json({ profit, win, wager, looses });
+});
+
 module.exports = {
   hello,
   createGame,
   getGamesHistory,
+  getBetHistory,
+  getLiveChart,
 };

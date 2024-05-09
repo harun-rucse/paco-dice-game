@@ -1,11 +1,13 @@
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
+const cookieParser = require("cookie-parser");
 const authRoutes = require("./routes/authRoutes");
 const gameRoutes = require("./routes/gameRoutes");
 const accountRoutes = require("./routes/accountRoutes");
 const stakeRoutes = require("./routes/stakeRoutes");
 const ticketRoutes = require("./routes/ticketRoutes");
+const commonRoutes = require("./routes/commonRoutes");
 const globalErrorHandler = require("./controllers/error");
 const AppError = require("./utils/app-error");
 
@@ -28,12 +30,16 @@ app.use(helmet());
 // Body parser, reading data from body into req.body
 app.use(express.json({ limit: "10kb" }));
 
+// Serve cookie in request object
+app.use(cookieParser());
+
 // routes
 app.use("/api/auth", authRoutes);
 app.use("/api/games", gameRoutes);
 app.use("/api/account", accountRoutes);
 app.use("/api/stakes", stakeRoutes);
 app.use("/api/tickets", ticketRoutes);
+app.use("/api/common", commonRoutes);
 
 app.all("*", (req, res, next) => {
   next(

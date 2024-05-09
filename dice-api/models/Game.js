@@ -11,6 +11,10 @@ const gameSchema = new Schema(
       type: String,
       required: true,
     },
+    betCoin: {
+      type: String,
+      required: true,
+    },
     rewardAmount: {
       type: String,
       required: true,

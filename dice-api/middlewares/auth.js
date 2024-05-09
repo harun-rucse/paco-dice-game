@@ -6,8 +6,8 @@ const catchAsync = require("../utils/catch-async");
 const auth = catchAsync(async (req, res, next) => {
   // 1) Getting token and check of it's there
   let token;
-  if (req.headers.authorization?.startsWith("Bearer")) {
-    token = req.headers.authorization.split(" ")[1];
+  if (req.cookies?.access_token) {
+    token = req.cookies?.access_token;
   }
 
   if (!token) {
@@ -17,7 +17,7 @@ const auth = catchAsync(async (req, res, next) => {
   }
 
   // 2) Verification token
-  const decoded = await tokenService.verifyJwtToken(token);
+  const decoded = await tokenService.verifyAccessToken(token);
 
   // 3) Check if user still exists
   const currentAccount = await Account.findOne({ _id: decoded.id });
@@ -43,6 +43,31 @@ const auth = catchAsync(async (req, res, next) => {
   next();
 });
 
+const checkAuth = catchAsync(async (req, res, next) => {
+  // 1) Getting token and check of it's there
+  let token;
+  if (req.cookies?.access_token) {
+    token = req.cookies?.access_token;
+  }
+
+  if (!token) return next();
+
+  // 2) Verification token
+  const decoded = await tokenService.verifyAccessToken(token);
+
+  // 3) Check if user still exists
+  const currentAccount = await Account.findOne({ _id: decoded.id });
+  if (!currentAccount) return next();
+
+  // 4) Check if user changed password after the token was issued
+  if (currentAccount.passwordChangeAfter(decoded.iat)) return next();
+
+  // ACCESS TO PROTECTED ROUTE
+  req.account = currentAccount;
+
+  next();
+});
+
 const restrictTo = (...roles) => {
   return catchAsync(async (req, res, next) => {
     if (roles.includes(req.account.role)) {
@@ -55,4 +80,4 @@ const restrictTo = (...roles) => {
   });
 };
 
-module.exports = { auth, restrictTo };
+module.exports = { auth, restrictTo, checkAuth };

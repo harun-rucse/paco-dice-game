@@ -9,7 +9,7 @@ const scheduleLotteryJob = require("./utils/scheduleLotteryJob");
 
 // database connection
 db()
-  .then(() => console.log("DB Connect successfull"))
+  .then(() => console.log("DB Connect successful"))
   .catch((err) => console.log("DB Connect failed!", err));
 
 // Schedule automatic transfer stake pool to stake holder

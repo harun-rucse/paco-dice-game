@@ -1,5 +1,8 @@
+import defaultTheme from "tailwindcss/defaultTheme";
+
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: "class",
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
@@ -10,6 +13,12 @@ export default {
       fontFamily: {
         baloo: ["Baloo"],
       },
+    },
+    screens: {
+      ...defaultTheme.screens,
+      tablet: "640px",
+      laptop: "1024px",
+      desktop: "1600px",
     },
   },
   plugins: [],

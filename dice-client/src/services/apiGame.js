@@ -6,7 +6,6 @@ export const createGame = async ({
   prediction,
   rollType,
 }) => {
-  console.log(betAmount);
   try {
     const { data } = await api.post("/games", {
       paymentType,
@@ -24,6 +23,28 @@ export const createGame = async ({
 export const getGamesHistory = async () => {
   try {
     const { data } = await api.get("/games");
+
+    return data;
+  } catch (err) {
+    throw new Error(err?.response?.data?.message);
+  }
+};
+
+export const getBetHistories = async (page, limit, type = "All Bets") => {
+  try {
+    const { data } = await api.get(
+      `/games/bet-histories?page=${page}&limit=${limit}&type=${type}`
+    );
+
+    return data;
+  } catch (err) {
+    throw new Error(err?.response?.data?.message);
+  }
+};
+
+export const getLiveChart = async () => {
+  try {
+    const { data } = await api.get("/games/live-chart");
 
     return data;
   } catch (err) {

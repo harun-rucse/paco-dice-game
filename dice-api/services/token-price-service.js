@@ -64,7 +64,7 @@ const getCoinPrice = async (name = "btc") => {
     } else if (name === "usdt") {
       return 1;
     } else if (name === "paco") {
-      return 0;
+      return 0.0000000392;
     } else if (name === "eth") {
       const priceFeed = new web3.eth.Contract(PRICE_FEED_ABI, ETH_PRICE_FEED);
       const { answer } = await priceFeed.methods.latestRoundData().call();
