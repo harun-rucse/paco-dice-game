@@ -15,7 +15,7 @@ function BalanceItem({ name, value, imgUrl, onSelect, onHide }) {
       <div className="flex items-center gap-2 text-sm tablet:text-base">
         <img src={imgUrl} alt="" className="h-7" />
         <strong className="text-gray-300 hidden tablet:block font-extralight">
-          {name == "BNB" ? "WBNB" : name}
+          {name == "BNB" ? "WBNB" : name === "BTC" ? "WBTC" : name}
         </strong>
       </div>
       <strong className="text-white font-extralight text-sm tablet:text-base">
@@ -44,11 +44,11 @@ function Balance({ className }) {
           alt=""
           className="h-6 tablet:h-7"
         />
-        <span className="hidden tablet:block uppercase font-extralight text-sm tablet:text-base">
+        {/* <span className="hidden tablet:block uppercase font-extralight text-sm tablet:text-base">
           {Number(currentBalance.value)?.toFixed(8) ||
             Number(account?.btc).toFixed(8)}
-        </span>
-        <span className="block tablet:hidden uppercase font-extralight text-sm tablet:text-base">
+        </span> */}
+        <span className="block uppercase font-extralight text-sm tablet:text-base">
           {currentBalance?.value && currentBalance.value.toString()?.length > 6
             ? currentBalance.value.substring(0, 6)
             : Number(currentBalance.value)?.toFixed(4)}
@@ -59,7 +59,7 @@ function Balance({ className }) {
       {showBalance && (
         <div className="absolute min-w-[13rem] tablet:w-[20rem] top-12 tablet:top-14 left-0 bg-[#413e72] dark:bg-[#3a2354] p-2 rounded-2xl space-y-2 z-[999] shadow-md">
           <BalanceItem
-            name="WBTC"
+            name="BTC"
             value={account?.btc}
             imgUrl="/tokens/btc.png"
             onHide={setShowBalance}

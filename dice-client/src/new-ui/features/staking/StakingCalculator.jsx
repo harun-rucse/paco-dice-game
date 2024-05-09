@@ -3,11 +3,11 @@ import Table from "../../components/TableClient";
 import useGetStakeCalculator from "./useGetStakeCalculator";
 import { numberFormat, currencyFormat } from "../../../utils/format";
 import { useGetUsdPricePaco } from "./useGetUsdPricePaco";
-import { getCoinPrice } from "../../../utils/tokenPrice";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { addition, multiply } from "../../../utils/decimal";
 import { cn } from "../../../utils";
 import useGetPayouts from "./useGetPayouts";
+import useGetCoinPrice from "../../../hooks/useGetCoinPrice";
 
 function SelectButton({ handleOnClick, children, activeTab }) {
   return (
@@ -29,18 +29,13 @@ function StakingCalculator() {
   const [monthlyUSD, setMonthlyUSD] = useState("");
   const [perQuarterUSD, setPerQuarterUSD] = useState("");
   const [perYearUSD, setPerYearUSD] = useState("");
-  const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("1M");
-
-  const [btcPrice, setBtcPrice] = useState(0);
-  const [pacoPrice, setPacoPrice] = useState(0);
-  const [ethPrice, setEthPrice] = useState(0);
-  const [bnbPrice, setBnbPrice] = useState(0);
-  const [usdtPrice, setUsdtPrice] = useState(0);
 
   const { isLoading: isFetching, calculator } = useGetStakeCalculator(paco);
   const { pacoUSD } = useGetUsdPricePaco(paco);
   const { isLoading: isFetching2, payouts } = useGetPayouts();
+  const { price, isLoading } = useGetCoinPrice();
+
   const {
     rewardPaco = 0,
     rewardBtc = 0,
@@ -50,56 +45,21 @@ function StakingCalculator() {
   } = calculator || {};
 
   useEffect(() => {
-    const convertInUSDPrice = async () => {
-      setLoading(true);
-
-      const btcPrice = await getCoinPrice("btc");
-      const pacoPrice = await getCoinPrice("paco");
-      const ethPrice = await getCoinPrice("eth");
-      const bnbPrice = await getCoinPrice("bnb");
-      const usdtPrice = await getCoinPrice("usdt");
-
-      setBtcPrice(btcPrice);
-      setPacoPrice(pacoPrice);
-      setEthPrice(ethPrice);
-      setBnbPrice(bnbPrice);
-      setUsdtPrice(usdtPrice);
-
-      setLoading(false);
-    };
-
-    convertInUSDPrice();
-  }, []);
-
-  useEffect(() => {
-    const btcUSD = multiply(btcPrice, rewardBtc);
-    const pacoUSD = multiply(pacoPrice, rewardPaco);
-    const ethUSD = multiply(ethPrice, rewardEth);
-    const bnbUSD = multiply(bnbPrice, rewardBnb);
-    const usdtUSD = multiply(usdtPrice, rewardUsdt);
+    const btcUSD = multiply(price?.btc, rewardBtc);
+    const pacoUSD = multiply(price?.paco, rewardPaco);
+    const ethUSD = multiply(price?.eth, rewardEth);
+    const bnbUSD = multiply(price?.bnb, rewardBnb);
+    const usdtUSD = multiply(price?.usdt, rewardUsdt);
 
     const dailyTotalUSD = addition(btcUSD, pacoUSD, ethUSD, bnbUSD, usdtUSD);
     setDailyUSD(dailyTotalUSD);
     setMonthlyUSD(multiply(dailyTotalUSD, 30));
     setPerQuarterUSD(multiply(dailyTotalUSD, 90));
     setPerYearUSD(multiply(dailyTotalUSD, 365));
-  }, [
-    btcPrice,
-    pacoPrice,
-    ethPrice,
-    bnbPrice,
-    usdtPrice,
-    rewardBtc,
-    rewardPaco,
-    rewardEth,
-    rewardBnb,
-    rewardUsdt,
-  ]);
+  }, [isLoading, rewardBtc, rewardPaco, rewardEth, rewardBnb, rewardUsdt]);
 
   const handleChange = (e) => {
     const { value } = e.target;
-    // if (!value) return;
-
     setPaco(Number(value));
   };
 
@@ -210,7 +170,7 @@ function StakingCalculator() {
         </div>
       </div>
 
-      {isFetching || loading || isFetching2 ? (
+      {isFetching || isLoading || isFetching2 ? (
         <LoadingSpinner className="h-[25rem]" />
       ) : (
         <Table columns="grid-cols-[1fr_1fr_1fr_1fr]">

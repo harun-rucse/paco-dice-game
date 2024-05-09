@@ -1,20 +1,21 @@
 import { useEffect, useState } from "react";
-import { getCoinPrice } from "../../../utils/tokenPrice";
 import { multiply } from "../../../utils/decimal";
+import useGetCoinPrice from "../../../hooks/useGetCoinPrice";
 
 export function useGetUsdPricePaco(value = 0) {
   const [pacoUSD, setPacoUSD] = useState(0);
+  const { price, isLoading } = useGetCoinPrice();
 
   useEffect(() => {
     const convertInUSDPrice = async () => {
-      const pacoPrice = await getCoinPrice("paco");
+      const pacoPrice = await price["paco"];
       const pacoUSD = multiply(pacoPrice, value);
 
       setPacoUSD(pacoUSD);
     };
 
-    convertInUSDPrice();
-  }, [value]);
+    if (price) convertInUSDPrice();
+  }, [value, isLoading]);
 
   return { pacoUSD };
 }

@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { numberFormat, currencyFormat } from "../../../utils/format";
-import { getCoinPrice } from "../../../utils/tokenPrice";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { addition, multiply } from "../../../utils/decimal";
+import useGetCoinPrice from "../../../hooks/useGetCoinPrice";
 
 function SinglePool({ icon, title, subTitle, name }) {
   return (
@@ -43,81 +43,44 @@ function PoolCard({
   setTotalPool = () => {},
   setTotalNextPool = () => {},
 }) {
-  const [loading, setLoading] = useState(false);
-  const [btcPrice, setBtcPrice] = useState(0);
-  const [pacoPrice, setPacoPrice] = useState(0);
-  const [ethPrice, setEthPrice] = useState(0);
-  const [bnbPrice, setBnbPrice] = useState(0);
-  const [usdtPrice, setUsdtPrice] = useState(0);
-
   const [usdBtc, setUsdBtc] = useState(0);
   const [usdPaco, setUsdPaco] = useState(0);
   const [usdEth, setUsdEth] = useState(0);
   const [usdBnb, setUsdBnb] = useState(0);
   const [usdUsdt, setUsdUsdt] = useState(0);
 
-  useEffect(() => {
-    const convertInUSDPrice = async () => {
-      setLoading(true);
-
-      const btcPrice = await getCoinPrice("btc");
-      const pacoPrice = await getCoinPrice("paco");
-      const ethPrice = await getCoinPrice("eth");
-      const bnbPrice = await getCoinPrice("bnb");
-      const usdtPrice = await getCoinPrice("usdt");
-
-      setBtcPrice(btcPrice);
-      setPacoPrice(pacoPrice);
-      setEthPrice(ethPrice);
-      setBnbPrice(bnbPrice);
-      setUsdtPrice(usdtPrice);
-
-      setLoading(false);
-    };
-
-    convertInUSDPrice();
-  }, []);
+  const { price, isLoading } = useGetCoinPrice();
 
   useEffect(() => {
-    const btcUSD = multiply(btcPrice, btc);
-    const pacoUSD = multiply(pacoPrice, paco);
-    const ethUSD = multiply(ethPrice, eth);
-    const bnbUSD = multiply(bnbPrice, bnb);
-    const usdtUSD = multiply(usdtPrice, usdt);
+    if (price) {
+      const btcUSD = multiply(price?.btc, btc);
+      const pacoUSD = multiply(price?.paco, paco);
+      const ethUSD = multiply(price?.eth, eth);
+      const bnbUSD = multiply(price?.bnb, bnb);
+      const usdtUSD = multiply(price?.usdt, usdt);
 
-    setTotalPool(addition(btcUSD, pacoUSD, ethUSD, bnbUSD, usdtUSD));
-    setTotalNextPool(
-      addition(
-        btcUSD < 0 ? 0 : btcUSD,
-        pacoUSD < 0 ? 0 : pacoUSD,
-        ethUSD < 0 ? 0 : ethUSD,
-        bnbUSD < 0 ? 0 : bnbUSD,
-        usdtUSD < 0 ? 0 : usdtUSD
-      )
-    );
+      setTotalPool(addition(btcUSD, pacoUSD, ethUSD, bnbUSD, usdtUSD));
+      setTotalNextPool(
+        addition(
+          btcUSD < 0 ? 0 : btcUSD,
+          pacoUSD < 0 ? 0 : pacoUSD,
+          ethUSD < 0 ? 0 : ethUSD,
+          bnbUSD < 0 ? 0 : bnbUSD,
+          usdtUSD < 0 ? 0 : usdtUSD
+        )
+      );
 
-    setUsdBtc(btcUSD);
-    setUsdPaco(pacoUSD);
-    setUsdEth(ethUSD);
-    setUsdBnb(bnbUSD);
-    setUsdUsdt(usdtUSD);
-  }, [
-    btcPrice,
-    pacoPrice,
-    ethPrice,
-    bnbPrice,
-    usdtPrice,
-    btc,
-    paco,
-    eth,
-    bnb,
-    usdt,
-    setTotalPool,
-  ]);
+      setUsdBtc(btcUSD);
+      setUsdPaco(pacoUSD);
+      setUsdEth(ethUSD);
+      setUsdBnb(bnbUSD);
+      setUsdUsdt(usdtUSD);
+    }
+  }, [isLoading, btc, paco, eth, bnb, usdt, setTotalPool]);
 
   return (
     <div className="pt-6 space-y-5">
-      {loading ? (
+      {isLoading ? (
         <LoadingSpinner />
       ) : (
         <>
@@ -130,7 +93,7 @@ function PoolCard({
           <SinglePool
             icon="/tokens/paco.png"
             title={paco}
-            subTitle={"$paco"}
+            subTitle={usdPaco}
             name="PACO"
           />
           <SinglePool

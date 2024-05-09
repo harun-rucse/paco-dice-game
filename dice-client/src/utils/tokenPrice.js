@@ -77,6 +77,6 @@ export const getCoinPrice = async (name = "btc") => {
     }
   } catch (err) {
     console.log(err);
-    throw new Error("Error of geeting token price from api");
+    throw new Error("Error of getting token price from api");
   }
 };

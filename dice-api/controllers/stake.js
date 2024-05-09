@@ -1,5 +1,6 @@
 const Account = require("../models/Account");
 const Stake = require("../models/Stake");
+const StakeHistory = require("../models/StakeHistory");
 const StakePool = require("../models/StakePool");
 const getCoinPrice = require("../services/token-price-service");
 const AppError = require("../utils/app-error");
@@ -45,6 +46,14 @@ const createStake = catchAsync(async (req, res, next) => {
     stake.amount = decimal.addition(stake.amount, amount);
     await stake.save();
   }
+
+  // Save stake history
+  const stakeHistory = new StakeHistory();
+  stakeHistory.account = req.account._id;
+  stakeHistory.amount = amount;
+  stakeHistory.tokenName = "paco";
+
+  await stakeHistory.save();
 
   // Reduce paco amount from account
   const account = await Account.findById(req.account._id);
@@ -250,7 +259,7 @@ const getStakeHistories = catchAsync(async (req, res) => {
   const skip = (page - 1) * limit;
 
   // Get totalStakePaco
-  const result = await Stake.aggregate([
+  const result = await StakeHistory.aggregate([
     {
       $group: {
         _id: null,
@@ -280,8 +289,8 @@ const getStakeHistories = catchAsync(async (req, res) => {
     },
   };
 
-  const count = await Stake.countDocuments(query);
-  const stakeHistories = await Stake.aggregate([
+  const count = await StakeHistory.countDocuments(query);
+  const stakeHistories = await StakeHistory.aggregate([
     {
       $match: query,
     },
@@ -315,6 +324,9 @@ const getStakeHistories = catchAsync(async (req, res) => {
       $limit: limit,
     },
   ]);
+
+  console.log("count", count);
+  console.log("stakeHistories", stakeHistories);
 
   const resData = await Promise.all(
     stakeHistories.map(async (stakeHolder) => {

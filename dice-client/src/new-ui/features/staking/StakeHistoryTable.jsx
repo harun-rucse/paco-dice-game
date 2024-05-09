@@ -14,7 +14,7 @@ function StakeHistoryTable() {
   const [date, setDate] = useState(todaysDay());
   const { isLoading, result, count } = useGetStakeHistories(
     limit,
-    formatDate(date, "YYYY-MM-DD").toString()
+    formatDate(subtractDay(date, 1), "YYYY-MM-DD").toString()
   );
 
   useEffect(() => {

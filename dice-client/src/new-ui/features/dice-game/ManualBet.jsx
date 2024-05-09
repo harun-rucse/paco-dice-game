@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useBalance } from "../../../context/BalanceContext";
-import { getCoinPrice } from "../../../utils/tokenPrice";
+import useGetCoinPrice from "../../../hooks/useGetCoinPrice";
 
 function Button({ selectedBtn, children, handleClick }) {
   return (
@@ -29,12 +29,14 @@ function ManualBet({
   const [maxBet, setMaxBet] = useState(0);
   const [selectedBtn, setSelectedBtn] = useState("");
   const { currentBalance } = useBalance();
+  const { price, isLoading } = useGetCoinPrice();
 
   useEffect(() => {
-    if (currentBalance) {
+    if (currentBalance && price) {
       const getCoinPriceData = async () => {
-        const _price = await getCoinPrice(currentBalance?.name?.toLowerCase());
-        const _maxBet = 100 / _price;
+        const _price = await price[currentBalance?.name?.toLowerCase()];
+        const _maxBet = 99.99 / _price;
+        console.log(_price, _maxBet);
 
         setMaxBet(
           Number(currentBalance?.value) > _maxBet
@@ -44,7 +46,7 @@ function ManualBet({
       };
       getCoinPriceData();
     }
-  }, [currentBalance]);
+  }, [currentBalance, isLoading]);
 
   function handleBetAmountChange(e) {
     const { value } = e.target;
@@ -69,7 +71,11 @@ function ManualBet({
                 className="w-6 tablet:w-8"
               />
               <span className="text-lg tablet:text-xl text-[#aa8fc6]">
-                {currentBalance.name}
+                {currentBalance?.name == "BNB"
+                  ? "WBNB"
+                  : currentBalance?.name === "BTC"
+                  ? "WBTC"
+                  : currentBalance?.name}
               </span>
             </div>
             <div

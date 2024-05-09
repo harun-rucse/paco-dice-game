@@ -1,6 +1,18 @@
 const Game = require("../models/Game");
 const Account = require("../models/Account");
 const catchAsync = require("../utils/catch-async");
+const coinPrice = require("../services/token-price-service");
+
+// Function to fetch coin prices
+const fetchCoinPrices = async () => {
+  const btc = await coinPrice("btc");
+  const paco = await coinPrice("paco");
+  const eth = await coinPrice("eth");
+  const bnb = await coinPrice("bnb");
+  const usdt = await coinPrice("usdt");
+
+  return { btc, paco, eth, bnb, usdt };
+};
 
 /**
  * @desc    Get all bet histories
@@ -52,4 +64,15 @@ const getBetHistory = catchAsync(async (req, res) => {
   res.status(200).json({ result: histories, count });
 });
 
-module.exports = { getBetHistory };
+/**
+ * @desc    Get coin price
+ * @route   GET /api/common/coin-price
+ * @access  Public
+ */
+const getCoinPrice = catchAsync(async (req, res) => {
+  const prices = await fetchCoinPrices();
+
+  res.status(200).json(prices);
+});
+
+module.exports = { getBetHistory, getCoinPrice };

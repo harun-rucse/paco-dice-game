@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import toast from "react-hot-toast";
 import ManualBet from "./ManualBet";
 import AutoBet from "./AutoBet";
 import GameHistory from "./GameHistory";
@@ -7,53 +8,33 @@ import TabHeader from "./TabHeader";
 import useGamesHistory from "./useGamesHistory";
 import { useCreateGame } from "./useCreateGame";
 import { useBalance } from "../../../context/BalanceContext";
-import { getCoinPrice } from "../../../utils/tokenPrice";
-import toast from "react-hot-toast";
 import Control from "./Control";
 import LiveChart from "./LiveChart";
+import useGetCoinPrice from "../../../hooks/useGetCoinPrice";
 const winAudio = new Audio("/audio/win.mp3");
 const loseAudio = new Audio("/audio/lose.mp3");
 
-async function checkMaxBetAmount(amount, coinName) {
-  // console.log("coinName", coinName);
+async function checkMaxBetAmount(amount, coinName, price) {
+  // console.log("coinName", coinName, amount);
   if (coinName === "btc") {
-    const _btcPrice = await getCoinPrice("btc");
-    const _betedUsd = amount * _btcPrice;
-    if (_betedUsd > 100) {
-      return false;
-    } else {
-      return true;
-    }
+    const _btcPrice = price[coinName];
+    const _betedUsd = parseFloat(amount) * _btcPrice;
+
+    return _betedUsd > 100 ? false : true;
   } else if (coinName === "usdt") {
-    if (amount > 100) {
-      return false;
-    } else {
-      return true;
-    }
+    return parseFloat(amount) > 100 ? false : true;
   } else if (coinName === "eth") {
-    const _ethPrice = await getCoinPrice("eth");
-    const _betedUsd = amount * _ethPrice;
-    // console.log("_betedUsd", _betedUsd);
-    if (_betedUsd > 100) {
-      // console.log("false");
-      return false;
-    } else {
-      return true;
-    }
+    const _ethPrice = price[coinName];
+    const _betedUsd = parseFloat(amount) * _ethPrice;
+
+    return _betedUsd > 100 ? false : true;
   } else if (coinName === "bnb") {
-    const _bnbPrice = await getCoinPrice("bnb");
-    const _betedUsd = amount * _bnbPrice;
-    if (_betedUsd > 100) {
-      return false;
-    } else {
-      return true;
-    }
+    const _bnbPrice = price[coinName];
+    const _betedUsd = parseFloat(amount) * _bnbPrice;
+
+    return _betedUsd > 100 ? false : true;
   } else if (coinName === "paco") {
-    if (amount > 100000000) {
-      return false;
-    } else {
-      return true;
-    }
+    return parseFloat(amount) > 100000000 ? false : true;
   }
 }
 
@@ -82,7 +63,8 @@ function GameInterface() {
   const [auto, setAuto] = useState(false);
   const [stopRoll, setStopRoll] = useState(false);
   const [playAudio, setPlayAudio] = useState(true);
-  const [callTime, setCallTime] = useState(3000);
+  const [boost, setBoost] = useState(false);
+  const [callTime, setCallTime] = useState(800);
   const [histories, setHistories] = useState([]);
 
   const { create, isLoading } = useCreateGame();
@@ -91,6 +73,8 @@ function GameInterface() {
   const rollRef = useRef(stopRoll);
   const payoutRef = useRef(payout);
   const { games, isLoading: isHistoryLoading } = useGamesHistory();
+
+  const { price, isLoading: isFetchingPrice } = useGetCoinPrice();
 
   useEffect(() => {
     if (games) {
@@ -153,7 +137,8 @@ function GameInterface() {
             }
             const check = await checkMaxBetAmount(
               betAmount,
-              currentBalance?.name?.toLowerCase()
+              currentBalance?.name?.toLowerCase(),
+              price
             );
             // console.log("check", check);
             if (!check) {
@@ -211,7 +196,8 @@ function GameInterface() {
               }
               const check = await checkMaxBetAmount(
                 betAmount,
-                currentBalance?.name?.toLowerCase()
+                currentBalance?.name?.toLowerCase(),
+                price
               );
               if (!check) {
                 setStopRoll(false);
@@ -315,7 +301,8 @@ function GameInterface() {
               }
               const check = await checkMaxBetAmount(
                 betAmount,
-                currentBalance?.name?.toLowerCase()
+                currentBalance?.name?.toLowerCase(),
+                price
               );
               // console.log("check", check);
               if (!check) {
@@ -506,7 +493,7 @@ function GameInterface() {
                 onStopRoll={handleStopRoll}
                 rollType={rollType}
                 setRollType={handleChangeOfRoll}
-                isLoading={isLoading}
+                isLoading={isLoading || isFetchingPrice}
                 betStatus={betStatus}
                 stopRoll={stopRoll}
                 setStopRoll={setStopRoll}
@@ -518,6 +505,8 @@ function GameInterface() {
           <Control
             playAudio={playAudio}
             setPlayAudio={setPlayAudio}
+            boost={boost}
+            setBoost={setBoost}
             setCallTime={setCallTime}
             stopRoll={stopRoll}
             showLiveChart={showLiveChart}

@@ -124,11 +124,13 @@ function BetHistoryTable() {
                   <span>{item?.user?.username}</span>
                 </span>
                 <span className="flex items-center gap-2">
-                  <img
-                    src="/images/paco.png"
-                    alt=""
-                    className="w-8 tablet:w-5 desktop:w-8 h-8 tablet:h-5 desktop:h-8"
-                  />
+                  {item?.betCoin && (
+                    <img
+                      src={`/tokens/${item?.betCoin}.png`}
+                      alt=""
+                      className="w-8 tablet:w-5 desktop:w-8 h-8 tablet:h-5 desktop:h-8"
+                    />
+                  )}
                   {formatColorChangeOfLeadingZero(
                     parseFloat(item?.betAmount).toFixed(8).toString()
                   )}
@@ -143,11 +145,14 @@ function BetHistoryTable() {
                   {`x${parseFloat(item?.multiplier).toFixed(4)}`}
                 </span>
                 <span className="flex items-center gap-2">
-                  <img
-                    src="/images/paco.png"
-                    alt=""
-                    className="w-8 tablet:w-5 desktop:w-8 h-8 tablet:h-5 desktop:h-8"
-                  />
+                  {item?.betCoin && (
+                    <img
+                      src={`/tokens/${item?.betCoin}.png`}
+                      alt=""
+                      className="w-8 tablet:w-5 desktop:w-8 h-8 tablet:h-5 desktop:h-8"
+                    />
+                  )}
+
                   {item?.status === "win" ? (
                     formatColorChangeOfLeadingZero(
                       parseFloat(item?.payout).toFixed(8).toString()

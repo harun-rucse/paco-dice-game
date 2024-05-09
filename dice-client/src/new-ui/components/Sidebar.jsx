@@ -45,9 +45,11 @@ function Sidebar() {
         <div className="flex flex-col items-center uppercase">
           <span>Play Lottery</span>
           <span className="text-[#c475f5]">Hit The Jackpot</span>
-          <button className="bg-[#413e72] dark:bg-[#5b4675] rounded-xl px-4 py-1 uppercase mt-2">
-            Buy a ticket
-          </button>
+          <Link to="/lottery">
+            <button className="bg-[#413e72] dark:bg-[#5b4675] rounded-xl px-4 py-1 uppercase mt-2">
+              Buy a ticket
+            </button>
+          </Link>
         </div>
       </div>
 

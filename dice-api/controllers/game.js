@@ -130,6 +130,7 @@ const createGame = catchAsync(async (req, res, next) => {
     publicKey,
     prediction,
     betAmount,
+    betCoin: paymentType,
     winNumber: number,
     randomSeed,
     hashRound: hashedValue,
@@ -300,6 +301,7 @@ const getBetHistory = catchAsync(async (req, res) => {
           avatar: user.avatar,
         },
         betAmount: history.betAmount,
+        betCoin: history.betCoin,
         multiplier:
           rollType === "rollUnder"
             ? (100 / Number(history.prediction)) * (1 - 0.02)
