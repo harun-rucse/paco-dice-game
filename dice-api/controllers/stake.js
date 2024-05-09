@@ -325,9 +325,6 @@ const getStakeHistories = catchAsync(async (req, res) => {
     },
   ]);
 
-  console.log("count", count);
-  console.log("stakeHistories", stakeHistories);
-
   const resData = await Promise.all(
     stakeHistories.map(async (stakeHolder) => {
       const stakePercentage = _calcStakePercentage(
