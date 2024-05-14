@@ -34,7 +34,8 @@ function StakingCalculator() {
   const { isLoading: isFetching, calculator } = useGetStakeCalculator(paco);
   const { pacoUSD } = useGetUsdPricePaco(paco);
   const { isLoading: isFetching2, payouts } = useGetPayouts();
-  const { price, isLoading } = useGetCoinPrice();
+  const { price = { btc: 0, paco: 0, eth: 0, bnb: 0, usdt: 0 }, isLoading } =
+    useGetCoinPrice();
 
   const {
     rewardPaco = 0,
@@ -72,7 +73,7 @@ function StakingCalculator() {
     {
       icon: "/tokens/paco.png",
       daily: rewardPaco,
-      monthly: multiply(rewardPaco, 3),
+      monthly: multiply(rewardPaco, 30),
       perQuarter: multiply(rewardPaco, 90),
       perYear: multiply(rewardPaco, 365),
     },

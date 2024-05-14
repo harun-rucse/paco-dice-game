@@ -36,14 +36,14 @@ function InputBox({ price, label, type, total, icon }) {
             </p>
           )}
         </div>
-        <div className="flex items-center gap-2 laptop:gap-3 bg-[#1e132d] border border-[#743da1] rounded-xl px-3 py-0">
+        <div className="flex items-center gap-2 laptop:gap-3 bg-[#333061] dark:bg-[#1e132d] border-2 border-[#3e3b73] dark:border-[#743da1] rounded-xl px-3 py-0">
           <img src={icon} alt="" className="w-9 tablet:w-12" />
           <input
             type="number"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             placeholder="Input amount of tickets"
-            className="w-[10rem] tablet:w-[12rem] laptop:w-[20rem] bg-transparent text-sm laptop:text-base text-white focus:outline-none placeholder:text-[#534b5c]"
+            className="w-[10rem] tablet:w-[12rem] laptop:w-[20rem] bg-transparent text-sm laptop:text-base text-white focus:outline-none placeholder:text-[#605e7e] placeholder:dark:text-[#534b5c]"
             disabled={!isAuthLoading && !isAuthenticated}
           />
         </div>

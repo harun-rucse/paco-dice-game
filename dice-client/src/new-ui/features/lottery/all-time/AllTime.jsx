@@ -12,7 +12,7 @@ function AllBets() {
   return (
     <div className="text-white">
       <div className="flex flex-col tablet:flex-row mb-6 tablet:mb-0 tablet:justify-end gap-6 tablet:gap-10">
-        <div className="tablet:self-end text-sm tablet:text-base desktop:text-lg text-center bg-[#753d89] border border-[#955997] rounded-2xl px-8 py-2">
+        <div className="tablet:self-end text-sm tablet:text-base desktop:text-lg text-center bg-[#53508d] dark:bg-[#753d89] border border-[#53508d] dark:border-[#955997] rounded-2xl px-8 py-2">
           <h4 className="uppercase">Total Tickets Purchased</h4>
           <p className="flex text-sm desktop:text-base items-center text-left uppercase gap-2">
             <span className="w-[130px] tablet:w-[180px]">Standard tickets</span>
@@ -30,7 +30,7 @@ function AllBets() {
           </p>
         </div>
         <div className="flex flex-col gap-2">
-          <div className="text-sm desktop:text-lg text-center bg-[#753d89] border border-[#955997] rounded-2xl px-8 py-2 space-y-2 tablet:space-y-0">
+          <div className="text-sm desktop:text-lg text-center bg-[#53508d] dark:bg-[#753d89] border border-[#53508d] dark:border-[#955997] rounded-2xl px-8 py-2 space-y-2 tablet:space-y-0">
             <h4 className="uppercase">Total Paco won from lottery tickets</h4>
             <p className="flex items-center justify-center uppercase gap-2">
               <span>{numberFormat(stats.totalPacoWon)}</span>
@@ -38,7 +38,7 @@ function AllBets() {
             </p>
           </div>
 
-          <div className="text-sm desktop:text-lg text-center bg-[#753d89] border border-[#955997] rounded-2xl px-8 py-2 space-y-2 tablet:space-y-0">
+          <div className="text-sm desktop:text-lg text-center bg-[#53508d] dark:bg-[#753d89] border border-[#53508d] dark:border-[#955997] rounded-2xl px-8 py-2 space-y-2 tablet:space-y-0">
             <h4 className="uppercase">Total Paco spent on lottery tickets</h4>
             <p className="flex items-center justify-center uppercase gap-2">
               <span>{numberFormat(stats.totalPacoSpent)}</span>
@@ -57,7 +57,7 @@ function AllBets() {
         columns="grid-cols-[0.5fr_0.7fr_0.5fr_0.5fr_0.5fr_0.1fr] tablet:grid-cols-[0.5fr_0.4fr_0.3fr_0.5fr_0.3fr_0.1fr]"
         className="min-w-[40rem]"
       >
-        <Table.Header>
+        <Table.Header className="bg-[#34325c] dark:bg-[#7a3f85] border-[#34325c] dark:border-[#582861]">
           <span>Tier</span>
           <span>Prize</span>
           <span />
@@ -65,9 +65,12 @@ function AllBets() {
           <span>Total Winnings</span>
           <span />
         </Table.Header>
-        <Table.Body>
+        <Table.Body className="bg-[#4f4c7d] dark:bg-[#794079]">
           {allTime?.map((ticket, i) => (
-            <Table.Row key={i}>
+            <Table.Row
+              key={i}
+              className="border-[#4b4877] dark:border-[#582861]"
+            >
               <span>{ticket.tier}</span>
               <span>{i <= 10 ? numberFormat(ticket.prize) : ticket.prize}</span>
               <img src="/tokens/paco.png" alt="" className="w-6" />

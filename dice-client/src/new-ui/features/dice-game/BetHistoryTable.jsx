@@ -49,8 +49,8 @@ function BetHistoryTable() {
           <button
             className={`${
               selectedType === "All Bets"
-                ? "bg-[#8562b1] z-10"
-                : "bg-[#442c62] z-0"
+                ? "bg-[#433f85] dark:bg-[#8562b1] z-10"
+                : "bg-[#2a2759] dark:bg-[#442c62] z-0"
             } px-5 py-[0.2rem] uppercase focus:outline-none border-none text-sm tablet:text-lg rounded-xl`}
             onClick={() => setSelectedType("All Bets")}
           >
@@ -60,8 +60,8 @@ function BetHistoryTable() {
             <button
               className={`-ml-3 ${
                 selectedType === "My Bets"
-                  ? "bg-[#8562b1] z-10"
-                  : "bg-[#442c62] z-0"
+                  ? "bg-[#433f85] dark:bg-[#8562b1] z-10"
+                  : "bg-[#2a2759] dark:bg-[#442c62] z-0"
               } px-5 py-[0.2rem] uppercase focus:outline-none border-none text-sm tablet:text-lg rounded-xl`}
               onClick={() => setSelectedType("My Bets")}
             >

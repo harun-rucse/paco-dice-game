@@ -40,7 +40,7 @@ function MyTickets() {
             </p>
           </div>
 
-          <span className="w-full h-[2px] bg-[#ba7bbd] my-4" />
+          <span className="w-full h-[2px] bg-[#3a3777] dark:bg-[#ba7bbd] my-4" />
 
           <div className="text-center">
             <h4 className="uppercase md:text-lg font-normal mb-2">
@@ -54,7 +54,7 @@ function MyTickets() {
             </p>
           </div>
 
-          <span className="w-full h-[2px] bg-[#ba7bbd] my-4" />
+          <span className="w-full h-[2px] bg-[#3a3777] dark:bg-[#ba7bbd] my-4" />
 
           <div className="text-center">
             <h4 className="uppercase md:text-lg font-normal mb-2">

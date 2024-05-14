@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import Draggable from "react-draggable";
 import toast from "react-hot-toast";
 import ManualBet from "./ManualBet";
 import AutoBet from "./AutoBet";
@@ -66,6 +67,13 @@ function GameInterface() {
   const [boost, setBoost] = useState(false);
   const [callTime, setCallTime] = useState(800);
   const [histories, setHistories] = useState([]);
+  const [totalWins, setTotalWins] = useState(0);
+  const [totalLosses, setTotalLosses] = useState(0);
+
+  const [defaultPosition, setDefaultPosition] = useState({
+    x: 0,
+    y: 0,
+  });
 
   const { create, isLoading } = useCreateGame();
   const { currentBalance } = useBalance();
@@ -166,10 +174,12 @@ function GameInterface() {
                     // stop win audio if loss
                     winAudio.pause();
                     loseAudio.play();
+                    setTotalLosses((prev) => prev + 1);
                   } else {
                     // stop loss audio if win
                     loseAudio.pause();
                     winAudio.play();
+                    setTotalWins((prev) => prev + 1);
                   }
 
                   setStopRoll(false);
@@ -244,6 +254,7 @@ function GameInterface() {
                       // play audio
                       winAudio.pause();
                       loseAudio.play();
+                      setTotalLosses((prev) => prev + 1);
 
                       lossAmount += Number(betAmountRef.current);
                       // console.log("lossAmount", lossAmount);
@@ -264,6 +275,7 @@ function GameInterface() {
                       // play audio
                       loseAudio.pause();
                       winAudio.play();
+                      setTotalWins((prev) => prev + 1);
 
                       winAmount +=
                         Number(payoutRef.current) -
@@ -356,6 +368,7 @@ function GameInterface() {
                       // play audio
                       winAudio.pause();
                       loseAudio.play();
+                      setTotalLosses((prev) => prev + 1);
 
                       lossAmount += betAmountRef.current;
 
@@ -375,6 +388,7 @@ function GameInterface() {
                       // play audio
                       loseAudio.pause();
                       winAudio.play();
+                      setTotalWins((prev) => prev + 1);
 
                       winAmount +=
                         Number(payoutRef.current) -
@@ -424,6 +438,27 @@ function GameInterface() {
     }
   }, [playAudio]);
 
+  // Set auto bet
+  useEffect(() => {
+    if (tab === "auto") {
+      setAuto(true);
+      setBetAmount("");
+      setNumberOfBet("");
+      setOnWinReset("");
+      setOnLossIncrease("");
+      setStopToWin("");
+      setStopToLoss("");
+    } else {
+      setAuto(false);
+      setBetAmount("");
+      setNumberOfBet("");
+      setOnWinReset("");
+      setOnLossIncrease("");
+      setStopToWin("");
+      setStopToLoss("");
+    }
+  }, [tab]);
+
   async function handleChangeOfRoll(type = "rollUnder") {
     setRollType(type);
     if (type === "rollUnder" && prediction > 95) {
@@ -442,12 +477,18 @@ function GameInterface() {
     // console.log("stop roll");
   }
 
+  const handleDrag = (e, ui) => {
+    const { x, y } = defaultPosition;
+
+    setDefaultPosition({ x: x + ui.deltaX, y: y + ui.deltaY });
+  };
+
   return (
     <div>
       <div className="flex flex-col desktop:flex-row gap-8">
         <div className="flex-1 flex flex-col">
-          <div className="flex flex-col-reverse tablet:flex-row flex-1 border-b-4 border-[#4c3670]">
-            <div className="bg-[#4c3670] dark:bg-[#462f6b] w-full laptop:w-[20rem] desktop:w-[24rem] h-[37rem] desktop:h-[38rem] relative">
+          <div className="flex flex-col-reverse tablet:flex-row flex-1 border-b-4 border-[#38346d] dark:border-[#4c3670]">
+            <div className="bg-[#38346d] dark:bg-[#462f6b] w-full laptop:w-[20rem] desktop:w-[24rem] h-[37rem] desktop:h-[38rem] relative">
               <TabHeader tab={tab} setTab={setTab} />
 
               {tab === "manual" ? (
@@ -473,17 +514,35 @@ function GameInterface() {
                   setOnWinReset={setOnWinReset}
                   onLossIncrease={onLossIncrease}
                   setOnLossIncrease={setOnLossIncrease}
-                  setAuto={setAuto}
+                  betAmount={betAmount}
+                  setBetAmount={setBetAmount}
+                  showError={showError}
+                  setShowError={setShowError}
+                  payout={payout}
+                  setPayout={setPayout}
                 />
               )}
 
               {showLiveChart && (
-                <div className="block desktop:hidden absolute top-[12rem] left-0 bg-[#291f40] w-[95%] tablet:w-[15.3rem] laptop:w-[18rem] rounded-xl z-50 mx-2 my-4 laptop:m-4">
-                  <LiveChart setShowLiveChart={setShowLiveChart} />
-                </div>
+                <Draggable
+                  defaultPosition={defaultPosition}
+                  grid={[25, 25]}
+                  scale={1}
+                  onDrag={handleDrag}
+                >
+                  <div className="block desktop:hidden absolute top-[12rem] left-0 bg-[#24224a] dark:bg-[#291f40] w-[95%] tablet:w-[15.3rem] laptop:w-[18rem] rounded-xl mx-2 my-4 laptop:m-4 z-[50] cursor-pointer">
+                    <LiveChart
+                      setShowLiveChart={setShowLiveChart}
+                      totalWins={totalWins}
+                      setTotalWins={setTotalWins}
+                      totalLosses={totalLosses}
+                      setTotalLosses={setTotalLosses}
+                    />
+                  </div>
+                </Draggable>
               )}
             </div>
-            <div className="bg-[#291f40] flex-1 px-2 laptop:px-6 py-4 w-full laptop:w-[10rem] space-y-4 rounded-t-xl laptop:rounded-tl-none laptop:rounded-tr-xl">
+            <div className="bg-[#24224a] dark:bg-[#291f40] flex-1 px-2 laptop:px-6 py-4 w-full laptop:w-[10rem] space-y-4 rounded-t-xl laptop:rounded-tl-none laptop:rounded-tr-xl">
               <GameHistory histories={histories} isLoading={isHistoryLoading} />
               <GameCard
                 prediction={prediction}
@@ -514,9 +573,22 @@ function GameInterface() {
           />
         </div>
         {!showLiveChart && (
-          <div className="hidden desktop:block self-start bg-[#291f40] w-full desktop:w-[18rem] rounded-xl">
-            <LiveChart setShowLiveChart={setShowLiveChart} />
-          </div>
+          <Draggable
+            defaultPosition={defaultPosition}
+            grid={[25, 25]}
+            scale={1}
+            onDrag={handleDrag}
+          >
+            <div className="hidden desktop:block self-start bg-[#24224a] dark:bg-[#291f40] w-full desktop:w-[18rem] rounded-xl z-[50] cursor-pointer">
+              <LiveChart
+                setShowLiveChart={setShowLiveChart}
+                totalWins={totalWins}
+                setTotalWins={setTotalWins}
+                totalLosses={totalLosses}
+                setTotalLosses={setTotalLosses}
+              />
+            </div>
+          </Draggable>
         )}
       </div>
     </div>
