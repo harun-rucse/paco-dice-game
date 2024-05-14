@@ -3,10 +3,12 @@ import { useSearchParams } from "react-router-dom";
 import LoadingSpinner from "../../../components/LoadingSpinner";
 import useGetTicketSetting from "../useGetTicketSetting";
 import InputBox from "./InputBox";
+import { useDarkMode } from "../../../../context/DarkModeContext";
 
 function LobbyCard() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { isLoading, ticketSetting } = useGetTicketSetting();
+  const { isDarkMode } = useDarkMode();
 
   // delete round and page params from useSearchParams hook
   useEffect(() => {
@@ -37,7 +39,13 @@ function LobbyCard() {
         />
       </div>
 
-      <div className="lottery-divider mt-6 mb-2" />
+      <div
+        className={
+          isDarkMode
+            ? "lottery-divider-dark mt-6 mb-2"
+            : "lottery-divider mt-6 mb-2"
+        }
+      />
 
       <div className="flex flex-col md:flex-row text-white items-start gap-8">
         <div className="w-full">

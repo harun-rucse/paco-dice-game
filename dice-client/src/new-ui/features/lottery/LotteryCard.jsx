@@ -15,13 +15,13 @@ function LotteryCard() {
 
   return (
     <div>
-      <div className="gradient-lottery-card rounded-2xl px-4 md:px-8 py-4 space-y-8 relative">
+      <div className="bg-gradient-to-b from-[#302d5a] dark:from-[#532856] via-[#25234c] dark:via-[#341c3b] to-[#1d1b3f] dark:to-[#150f22] shadow-[0px_4px_4px_0px_#00000040] border-2 border-[#1c1a3e] dark:border-[#1f1329] rounded-2xl px-4 md:px-8 py-4 space-y-8 relative">
         <div className="flex flex-col md:flex-row gap-4 md:gap-0 items-center md:items-start justify-between">
           <div className="lottery flex text-xs md:text-base space-x-1">
             <button
               className={cn(
-                "transition text-white border border-transparent hover:bg-[#90558e] hover:border-black rounded-3xl px-2 md:px-4 py-1",
-                tab === "lobby" && "active"
+                "transition text-white border border-transparent hover:bg-[#53508d] hover:dark:bg-[#90558e] hover:border-black rounded-3xl px-2 md:px-4 py-1",
+                tab === "lobby" && "bg-[#53508d] dark:bg-[#90558e] border-black"
               )}
               onClick={() => setTab("lobby")}
             >
@@ -33,8 +33,9 @@ function LotteryCard() {
                   <Modal.Open opens="my-tickets">
                     <button
                       className={cn(
-                        "transition text-white border border-transparent hover:bg-[#90558e] hover:border-black rounded-3xl px-2 md:px-4 py-1",
-                        tab === "my-tickets" && "active"
+                        "transition text-white border border-transparent hover:bg-[#53508d] hover:dark:bg-[#90558e] hover:border-black rounded-3xl px-2 md:px-4 py-1",
+                        tab === "my-tickets" &&
+                          "bg-[#53508d] dark:bg-[#90558e] border-black"
                       )}
                     >
                       My Tickets
@@ -42,7 +43,7 @@ function LotteryCard() {
                   </Modal.Open>
                   <Modal.Body
                     name="my-tickets"
-                    className="bg-[#753d89] border border-[#955997] min-h-[26rem] md:min-h-[30rem] md:min-w-[36rem]"
+                    className="bg-[#24224a] dark:bg-[#753d89] border border-[#24224a] dark:border-[#955997] min-h-[26rem] md:min-h-[30rem] md:min-w-[36rem]"
                   >
                     <MyTickets />
                   </Modal.Body>
@@ -50,8 +51,9 @@ function LotteryCard() {
 
                 <button
                   className={cn(
-                    "transition text-white border border-transparent hover:bg-[#90558e] hover:border-black rounded-3xl px-2 md:px-4 py-1",
-                    tab === "my-history" && "active"
+                    "transition text-white border border-transparent hover:bg-[#53508d] hover:dark:bg-[#90558e] hover:border-black rounded-3xl px-2 md:px-4 py-1",
+                    tab === "my-history" &&
+                      "bg-[#53508d] dark:bg-[#90558e] border-black"
                   )}
                   onClick={() => setTab("my-history")}
                 >
@@ -62,8 +64,9 @@ function LotteryCard() {
 
             <button
               className={cn(
-                "transition text-white border border-transparent hover:bg-[#90558e] hover:border-black rounded-3xl px-2 md:px-4 py-1",
-                tab === "all-bets" && "active"
+                "transition text-white border border-transparent hover:bg-[#53508d] hover:dark:bg-[#90558e] hover:border-black rounded-3xl px-2 md:px-4 py-1",
+                tab === "all-bets" &&
+                  "bg-[#53508d] dark:bg-[#90558e] border-black"
               )}
               onClick={() => setTab("all-bets")}
             >
@@ -72,8 +75,9 @@ function LotteryCard() {
 
             <button
               className={cn(
-                "transition text-white border border-transparent hover:bg-[#90558e] hover:border-black rounded-3xl px-2 md:px-4 py-1",
-                tab === "all-time" && "active"
+                "transition text-white border border-transparent hover:bg-[#53508d] hover:dark:bg-[#90558e] hover:border-black rounded-3xl px-2 md:px-4 py-1",
+                tab === "all-time" &&
+                  "bg-[#53508d] dark:bg-[#90558e] border-black"
               )}
               onClick={() => setTab("all-time")}
             >

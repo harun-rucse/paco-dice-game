@@ -440,6 +440,7 @@ const createTicket = async () => {
   } catch (error) {
     // Post message to parent thread with error response
     // console.log(error);
-    parentPort.postMessage(error.message);
+    // parentPort.postMessage(error.message);
+    throw error;
   }
 };

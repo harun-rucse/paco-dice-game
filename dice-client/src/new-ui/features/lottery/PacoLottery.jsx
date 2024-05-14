@@ -43,7 +43,7 @@ function PacoLottery() {
         />
       </div>
 
-      <div className="text-white gradient-lottery-info rounded-2xl px-6 py-3 flex items-center justify-between gap-4 flex-wrap">
+      <div className="text-white bg-gradient-to-b from-[#302d5a] dark:from-[#532856] via-[#25234c] dark:via-[#341c3b] to-[#1d1b3f] dark:to-[#150f22] shadow-[0px_4px_4px_0px_#00000040] border-2 border-[#1c1a3e] dark:border-[#1f1329] rounded-2xl px-6 py-3 flex items-center justify-between gap-4 flex-wrap">
         <InfoCard
           title="Minor Jackpot"
           subTitle={numberFormat(ticketStatistics.minorJackpot)}

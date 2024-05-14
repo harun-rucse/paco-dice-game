@@ -7,8 +7,8 @@ function Button({ selectedBtn, children, handleClick }) {
     <button
       className={`${
         selectedBtn === children
-          ? "bg-[#3b2451] border-[#573b73]"
-          : "bg-[#563b71] border-[#745395]"
+          ? "bg-[#221f48] dark:bg-[#281838] border-[#302e5a] dark:border-[#39274b]"
+          : "bg-[#2f2b65] dark:bg-[#3b2451] border-[#454183] dark:border-[#573b73]"
       } border-2 text-sm tablet:text-base px-6 tablet:px-7 py-1 tablet:py-2 rounded-2xl shadow-lg flex justify-center items-center uppercase`}
       onClick={handleClick}
     >
@@ -62,7 +62,7 @@ function ManualBet({
     <>
       <div className="px-2 laptop:px-4 py-4">
         <h2 className="text-base tablet:text-xl mb-2">Bet Amount</h2>
-        <div className="flex items-center gap-1 bg-[#271836] p-2 tablet:p-3 border-2 border-[#473459] rounded-xl">
+        <div className="flex items-center gap-1 bg-[#1d1b3b] dark:bg-[#271836] p-2 tablet:p-3 border-2 border-[#464192] dark:border-[#473459] rounded-xl">
           <div className="space-y-1">
             <div className="flex gap-2 items-center">
               <img
@@ -70,7 +70,7 @@ function ManualBet({
                 alt=""
                 className="w-6 tablet:w-8"
               />
-              <span className="text-lg tablet:text-xl text-[#aa8fc6]">
+              <span className="text-lg tablet:text-xl text-[#7571b5] dark:text-[#aa8fc6]">
                 {currentBalance?.name == "BNB"
                   ? "WBNB"
                   : currentBalance?.name === "BTC"
@@ -85,7 +85,7 @@ function ManualBet({
             >
               <input
                 type="number"
-                className="w-full bg-transparent text-xl tablet:text-2xl text-[#aa8fc6] focus:outline-none px-2"
+                className="w-full bg-transparent text-xl tablet:text-2xl text-[#7571b5] dark:text-[#aa8fc6] focus:outline-none px-2"
                 value={betAmount}
                 onChange={handleBetAmountChange}
                 placeholder="0"
@@ -194,7 +194,7 @@ function ManualBet({
         <label htmlFor="profit" className="text-base tablet:text-xl">
           Profit
         </label>
-        <div className="flex items-center justify-between bg-[#43295c] border border-[#7f5ea0] rounded-xl px-4 py-2">
+        <div className="flex items-center justify-between bg-[#2f2c58] dark:bg-[#43295c] border border-[#4f49a5] dark:border-[#7f5ea0] rounded-xl px-4 py-2">
           <div className="flex items-center gap-2">
             <img
               src={currentBalance.imgUrl}
@@ -204,28 +204,32 @@ function ManualBet({
             <input
               type="number"
               id="profit"
-              className="bg-transparent w-full focus:outline-none text-xl text-[#aa8fc6]"
+              className="bg-transparent w-full focus:outline-none text-xl text-[#7571b5] dark:text-[#aa8fc6] py-1"
               value={Number(payout) ? Number(payout - betAmount).toFixed(8) : 0}
               readOnly
             />
           </div>
-          <img src="/images/dollar.png" alt="" className="w-4" />
+          <span className="text-xl font-bold text-[#7571b5] dark:text-[#aa8fc6]">
+            $
+          </span>
         </div>
       </div>
       <div className="px-4 pt-1 pb-4 space-y-2">
         <label htmlFor="payout" className="text-base tablet:text-xl">
           Payout
         </label>
-        <div className="flex items-center justify-between bg-[#43295c] border border-[#7f5ea0] rounded-xl px-4 py-2">
+        <div className="flex items-center justify-between bg-[#2f2c58] dark:bg-[#43295c] border border-[#4f49a5] dark:border-[#7f5ea0] rounded-xl px-4 py-2">
           <input
             type="number"
             id="payout"
-            className="bg-transparent w-full focus:outline-none text-xl text-[#aa8fc6]"
+            className="bg-transparent w-full focus:outline-none text-xl text-[#7571b5] dark:text-[#aa8fc6] py-1"
             value={Number(payout) ? Number(payout).toFixed(8) : 0}
             onChange={(e) => setPayout(e.target.value)}
             readOnly
           />
-          <img src="/images/close.png" alt="" className="w-4" />
+          <span className="text-xl font-bold text-[#7571b5] dark:text-[#aa8fc6]">
+            X
+          </span>
         </div>
       </div>
     </>
