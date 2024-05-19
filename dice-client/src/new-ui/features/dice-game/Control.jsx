@@ -1,6 +1,7 @@
 import { useDarkMode } from "../../../context/DarkModeContext";
 import Modal from "../../components/Modal";
 import Fairness from "../fairness/Fairness";
+import Rules from "./Rules";
 
 function Control({
   playAudio,
@@ -59,13 +60,26 @@ function Control({
           alt=""
           className="w-6"
         />
-        <img
-          src={
-            isDarkMode ? "/images/document-dark.png" : "/images/document.png"
-          }
-          alt=""
-          className="w-7"
-        />
+
+        <Modal>
+          <Modal.Open opens="wallet">
+            <img
+              src={
+                isDarkMode
+                  ? "/images/document-dark.png"
+                  : "/images/document.png"
+              }
+              alt=""
+              className="w-7 cursor-pointer"
+            />
+          </Modal.Open>
+          <Modal.Body
+            name="wallet"
+            className="rounded-2xl w-[25rem] tablet:min-w-[40rem] h-[38rem] tablet:min-h-[30rem] bg-transparent"
+          >
+            <Rules />
+          </Modal.Body>
+        </Modal>
 
         <Modal>
           <Modal.Open opens="wallet">
