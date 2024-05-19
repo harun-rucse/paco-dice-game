@@ -16,7 +16,7 @@ function AppLayout() {
     >
       <Header />
 
-      <div className="flex gap-10 mt-20">
+      <div className="flex gap-10 mt-20 mb-[28rem] tablet:mb-0">
         <MobileNavbar />
         <div className="flex-1 mx-auto overflow-hidden flex h-full min-h-[calc(100vh_-_15rem)]">
           <Sidebar />
