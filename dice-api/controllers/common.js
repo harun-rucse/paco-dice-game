@@ -2,6 +2,7 @@ const Game = require("../models/Game");
 const Account = require("../models/Account");
 const catchAsync = require("../utils/catch-async");
 const coinPrice = require("../services/token-price-service");
+const redisClient = require("../config/redis-client");
 
 // Function to fetch coin prices
 const fetchCoinPrices = async () => {
@@ -70,7 +71,14 @@ const getBetHistory = catchAsync(async (req, res) => {
  * @access  Public
  */
 const getCoinPrice = catchAsync(async (req, res) => {
+  const cacheValue = await redisClient.get("coin-price");
+  if (cacheValue) {
+    return res.status(200).json(JSON.parse(cacheValue));
+  }
+
   const prices = await fetchCoinPrices();
+  await redisClient.set("coin-price", JSON.stringify(prices));
+  await redisClient.expire("coin-price", process.env.REDIS_EXPIRES_IN);
 
   res.status(200).json(prices);
 });

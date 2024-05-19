@@ -6,7 +6,7 @@ function Rules() {
   const { isDarkMode } = useDarkMode();
 
   return (
-    <div className="w-full h-full rounded-2xl_">
+    <div className="w-full h-full">
       <Carousel
         className="w-full h-full rounded-2xl"
         showStatus={false}

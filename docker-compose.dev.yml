@@ -1,6 +1,15 @@
 version: "3.3"
 
 services:
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - C:/databases/mongodb/paco-dice:/data/db
+
   dice-api:
     build:
       dockerfile: Dockerfile.dev
@@ -14,6 +23,9 @@ services:
     volumes:
       - ./dice-api:/dice-api
       - /dice-api/node_modules
+    depends_on:
+      - mongodb
+      - redis
 
   dice-client:
     build:
@@ -31,3 +43,13 @@ services:
       - CHOKIDAR_USEPOLLING=true
     depends_on:
       - dice-api
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+
+volumes:
+  mongo-data:
