@@ -43,7 +43,7 @@ function LotteryCard() {
                   </Modal.Open>
                   <Modal.Body
                     name="my-tickets"
-                    className="bg-[#24224a] dark:bg-[#753d89] border border-[#24224a] dark:border-[#955997] min-h-[26rem] md:min-h-[30rem] md:min-w-[36rem]"
+                    className="bg-gradient-to-b from-[#39366f] dark:from-[#8b4da1] via-[#2a2857] dark:via-[#69367b] to-[#24224a] dark:to-[#50285f] border border-[#24224a] dark:border-[#955997] min-h-[26rem] md:min-h-[30rem] md:min-w-[36rem]"
                   >
                     <MyTickets />
                   </Modal.Body>

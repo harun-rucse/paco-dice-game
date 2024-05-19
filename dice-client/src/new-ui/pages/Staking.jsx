@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import StakingCard from "../features/staking/StakingCard";
 import StakingControls from "../features/staking/StakingControls";
 import { useCurrentUser } from "../../hooks/useCurrentUser";
@@ -5,6 +6,10 @@ import StakeHistoryTable from "../features/staking/StakeHistoryTable";
 
 function Staking() {
   const { isAuthenticated, isLoading } = useCurrentUser();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  });
 
   return (
     <div className="bg-[#120e1f] w-full h-full px-4 desktop:px-12 py-8 tablet:py-16 pb-36 tablet:pb-60 space-y-20">

@@ -65,7 +65,7 @@ function GameInterface() {
   const [stopRoll, setStopRoll] = useState(false);
   const [playAudio, setPlayAudio] = useState(true);
   const [boost, setBoost] = useState(false);
-  const [callTime, setCallTime] = useState(800);
+  const [callTime, setCallTime] = useState(300);
   const [histories, setHistories] = useState([]);
   const [totalWins, setTotalWins] = useState(0);
   const [totalLosses, setTotalLosses] = useState(0);
@@ -488,7 +488,7 @@ function GameInterface() {
       <div className="flex flex-col desktop:flex-row gap-8">
         <div className="flex-1 flex flex-col">
           <div className="flex flex-col-reverse tablet:flex-row flex-1 border-b-4 border-[#38346d] dark:border-[#4c3670]">
-            <div className="bg-[#38346d] dark:bg-[#462f6b] w-full laptop:w-[20rem] desktop:w-[24rem] h-[37rem] desktop:h-[38rem] relative">
+            <div className="bg-[#38346d] dark:bg-[#462f6b] w-full laptop:w-[20rem] desktop:w-[24rem] h-[37rem] tablet:h-[40rem] desktop:h-[38rem] relative">
               <TabHeader tab={tab} setTab={setTab} />
 
               {tab === "manual" ? (

@@ -16,11 +16,11 @@ function AppLayout() {
     >
       <Header />
 
-      <div className="flex gap-10">
+      <div className="flex gap-10 mt-20">
         <MobileNavbar />
         <div className="flex-1 mx-auto overflow-hidden flex h-full min-h-[calc(100vh_-_15rem)]">
           <Sidebar />
-          <main className="w-full min-h-screen bg-[#1c1a3e] dark:bg-[#120e1f]">
+          <main className="pl-0 laptop:pl-72 w-full min-h-screen bg-[#1c1a3e] dark:bg-[#120e1f]">
             <Outlet />
           </main>
         </div>

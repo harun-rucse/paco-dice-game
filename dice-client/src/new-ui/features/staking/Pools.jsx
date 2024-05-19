@@ -10,8 +10,8 @@ function Pools({ totalPool, setTotalPool, setTotalNextPool, pool }) {
     <div className="bg-[#1e1c3a] dark:bg-[#31294c] rounded-2xl px-6 py-6">
       <div className="flex items-center gap-8 desktop:gap-16 border-b border-[#797878] w-full pb-2">
         <StatItem title="Total pool" subTitle={currencyFormat(totalPool)} />
-        <StatItem title="Gaming pool" subTitle={currencyFormat(totalPool)} />
-        <StatItem title="Lottery pool" subTitle={currencyFormat(totalPool)} />
+        {/* <StatItem title="Gaming pool" subTitle={currencyFormat(totalPool)} /> */}
+        {/* <StatItem title="Lottery pool" subTitle={currencyFormat(totalPool)} /> */}
       </div>
 
       <PoolCard

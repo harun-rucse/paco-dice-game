@@ -61,7 +61,7 @@ function ManualBet({
   return (
     <>
       <div className="px-2 laptop:px-4 py-4">
-        <h2 className="text-base tablet:text-xl mb-2">Bet Amount</h2>
+        <h2 className="text-base laptop:text-xl mb-2">Bet Amount</h2>
         <div className="flex items-center gap-1 bg-[#1d1b3b] dark:bg-[#271836] p-2 tablet:p-3 border-2 border-[#464192] dark:border-[#473459] rounded-xl">
           <div className="space-y-1">
             <div className="flex gap-2 items-center">
@@ -70,7 +70,7 @@ function ManualBet({
                 alt=""
                 className="w-6 tablet:w-8"
               />
-              <span className="text-lg tablet:text-xl text-[#7571b5] dark:text-[#aa8fc6]">
+              <span className="text-lg laptop:text-xl text-[#7571b5] dark:text-[#aa8fc6]">
                 {currentBalance?.name == "BNB"
                   ? "WBNB"
                   : currentBalance?.name === "BTC"
@@ -191,7 +191,7 @@ function ManualBet({
         </div>
       </div>
       <div className="px-4 py-4 space-y-2">
-        <label htmlFor="profit" className="text-base tablet:text-xl">
+        <label htmlFor="profit" className="text-base laptop:text-xl">
           Profit
         </label>
         <div className="flex items-center justify-between bg-[#2f2c58] dark:bg-[#43295c] border border-[#4f49a5] dark:border-[#7f5ea0] rounded-xl px-4 py-2">
@@ -215,7 +215,7 @@ function ManualBet({
         </div>
       </div>
       <div className="px-4 pt-1 pb-4 space-y-2">
-        <label htmlFor="payout" className="text-base tablet:text-xl">
+        <label htmlFor="payout" className="text-base laptop:text-xl">
           Payout
         </label>
         <div className="flex items-center justify-between bg-[#2f2c58] dark:bg-[#43295c] border border-[#4f49a5] dark:border-[#7f5ea0] rounded-xl px-4 py-2">

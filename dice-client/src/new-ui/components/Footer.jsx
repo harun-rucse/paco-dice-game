@@ -52,40 +52,40 @@ function Footer() {
       <div className="flex items-start gap-8 laptop:gap-24">
         <ul className="space-y-2">
           <li className="text-white">Features</li>
-          <li className="text-[#745b97]">
+          <li className="font-semibold text-[#4f4b92] dark:text-[#745b97]">
             <Link to="/dice">Dice</Link>
           </li>
-          <li className="text-[#745b97]">
+          <li className="font-semibold text-[#4f4b92] dark:text-[#745b97]">
             <Link to="/staking">Staking</Link>
           </li>
-          <li className="text-[#745b97]">
+          <li className="font-semibold text-[#4f4b92] dark:text-[#745b97]">
             <Link to="/lottery">Lottery</Link>
           </li>
         </ul>
 
         <ul className="space-y-2">
           <li className="text-white">Bonuses</li>
-          <li className="text-[#745b97]">
+          <li className="font-semibold text-[#4f4b92] dark:text-[#745b97]">
             <Link to="/referral">Referral</Link>
           </li>
-          <li className="text-[#745b97]">
+          <li className="font-semibold text-[#4f4b92] dark:text-[#745b97]">
             <Link to="/paco-faucet">Paco Faucet</Link>
           </li>
         </ul>
 
         <ul className="space-y-2">
           <li className="text-white">Socials</li>
-          <li className="text-[#745b97]">
+          <li className="font-semibold text-[#4f4b92] dark:text-[#745b97]">
             <Link to="https://t.me/PacoDeLlama" target="_blank">
               Telegram
             </Link>
           </li>
-          <li className="text-[#745b97]">
+          <li className="font-semibold text-[#4f4b92] dark:text-[#745b97]">
             <Link to="https://twitter.com/pacodellamadefi" target="_blank">
               Twitter
             </Link>
           </li>
-          <li className="text-[#745b97]">
+          <li className="font-semibold text-[#4f4b92] dark:text-[#745b97]">
             <Link to="https://discord.com/invite/HpCG9rDz7X" target="_blank">
               Discord
             </Link>
@@ -94,10 +94,10 @@ function Footer() {
 
         <ul className="space-y-2">
           <li className="text-white">About</li>
-          <li className="text-[#745b97]">
+          <li className="font-semibold text-[#4f4b92] dark:text-[#745b97]">
             <Link to="/whitepaper">Whitepaper</Link>
           </li>
-          <li className="text-[#745b97]">
+          <li className="font-semibold text-[#4f4b92] dark:text-[#745b97]">
             <Link to="/support">Support</Link>
           </li>
         </ul>

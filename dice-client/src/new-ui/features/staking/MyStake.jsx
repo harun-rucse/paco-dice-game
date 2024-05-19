@@ -136,7 +136,7 @@ function MyStake() {
 
       <button
         className={cn(
-          `button self-center mt-12 laptop:mt-6 desktop:mt-12 !bg-[#413e72] dark:!bg-[#3a2354] !border-[#34325c] dark:!border-[#2f1c44] !px-12 !py-2`,
+          `button self-center mt-12 laptop:mt-6 desktop:mt-12 !bg-[#d11f1f] dark:!bg-[#d11f1f] !border-[#34325c] dark:!border-[#2f1c44] !px-12 !py-2`,
           totalReward == 0 &&
             "!bg-[#333143] dark:!bg-[#292735] !border-[#434057] dark:!border-[#383549]"
         )}

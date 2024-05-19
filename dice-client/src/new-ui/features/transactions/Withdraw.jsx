@@ -53,7 +53,7 @@ function Withdraw() {
         <input
           type="text"
           placeholder="Enter Address"
-          className="bg-transparent focus:outline-none placeholder:uppercase font-extralight px-4 py-3 rounded-lg border border-gray-600"
+          className="bg-transparent dark:bg-[#1f1d22] focus:outline-none placeholder:uppercase font-extralight px-4 py-3 rounded-lg border border-gray-600"
           disabled={isLoading}
           {...register("address", {
             required: "Wallet address is required",
@@ -71,7 +71,7 @@ function Withdraw() {
               type="number"
               step="any"
               placeholder="Enter Amount"
-              className="bg-transparent focus:outline-none placeholder:uppercase font-extralight px-4 py-3 rounded-lg border border-gray-600"
+              className="bg-transparent dark:bg-[#1f1d22] focus:outline-none placeholder:uppercase font-extralight px-4 py-3 rounded-lg border border-gray-600"
               disabled={isLoading}
               {...register("amount", {
                 required: "Amount is required",
@@ -79,13 +79,13 @@ function Withdraw() {
             />
             <span
               onClick={handleAll}
-              className="absolute right-1 top-2 cursor-pointer uppercase text-white text-sm bg-[#413e72] border border-[#605e96] rounded-xl p-2"
+              className="absolute right-1 top-2 cursor-pointer uppercase text-white text-sm bg-[#413e72] dark:bg-[#2e2550] border border-[#605e96] dark:border-[#2e2550] rounded-xl p-2"
             >
               All
             </span>
           </div>
 
-          <div className="relative w-full flex items-center gap-2 bg-transparent px-4 py-2 rounded-lg border border-gray-600">
+          <div className="relative w-full flex items-center gap-2 bg-transparent dark:bg-[#1f1d22] px-4 py-2 rounded-lg border border-gray-600">
             <img src={currentBalance.imgUrl} alt="" className="h-7" />
             <div className="flex flex-col ">
               <span className="uppercase text-gray-400 font-extralight text-xs">
@@ -104,7 +104,7 @@ function Withdraw() {
           </span>
         )}
 
-        <div className="flex items-center gap-2 bg-[#413e72] px-4 py-2 rounded-xl text-white mt-6">
+        <div className="flex items-center gap-2 bg-[#413e72] dark:bg-[#323232] px-4 py-2 rounded-xl text-white mt-6">
           <AiFillWarning color="#ffcc00" size={20} />
           <span className="text-sm uppercase font-extralight">
             MINIMUM WITHDRAWAL AMOUNT IS{" "}

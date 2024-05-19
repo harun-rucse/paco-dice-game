@@ -1,4 +1,6 @@
 import { useDarkMode } from "../../../context/DarkModeContext";
+import Modal from "../../components/Modal";
+import Fairness from "../fairness/Fairness";
 
 function Control({
   playAudio,
@@ -13,7 +15,7 @@ function Control({
   const { isDarkMode } = useDarkMode();
 
   function handleBoost() {
-    boost ? setCallTime(800) : setCallTime(200);
+    boost ? setCallTime(300) : setCallTime(100);
     setBoost((prev) => !prev);
   }
 
@@ -64,11 +66,19 @@ function Control({
           alt=""
           className="w-7"
         />
-        <img
-          src={isDarkMode ? "/images/scale-dark.png" : "/images/scale.png"}
-          alt=""
-          className="w-7"
-        />
+
+        <Modal>
+          <Modal.Open opens="wallet">
+            <img
+              src={isDarkMode ? "/images/scale-dark.png" : "/images/scale.png"}
+              alt=""
+              className="w-7 cursor-pointer"
+            />
+          </Modal.Open>
+          <Modal.Body name="wallet">
+            <Fairness />
+          </Modal.Body>
+        </Modal>
       </div>
     </div>
   );

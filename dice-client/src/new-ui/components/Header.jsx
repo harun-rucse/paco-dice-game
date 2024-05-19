@@ -31,7 +31,7 @@ function Header() {
 
   return (
     <header className="p-0">
-      <div className="flex h-[5rem] items-center justify-between bg-[#24224a] dark:bg-[#241c38] px-3 py-2 border-b-2 border-[#605e96] dark:border-[#5b4788]">
+      <div className="fixed w-full flex h-[5rem] items-center justify-between bg-[#24224a] dark:bg-[#241c38] px-3 py-2 border-b-2 border-[#605e96] dark:border-[#5b4788] z-[999]">
         <div className="flex items-center gap-2">
           <Link to="/" className="hidden tablet:block">
             <img src="/icon.png" alt="Paco Dice" className="h-12 tablet:h-16" />

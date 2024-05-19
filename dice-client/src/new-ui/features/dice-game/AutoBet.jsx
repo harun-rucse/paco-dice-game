@@ -7,7 +7,7 @@ import useGetCoinPrice from "../../../hooks/useGetCoinPrice";
 function Input({ label, id, icon, ...rest }) {
   return (
     <div className="space-y-2">
-      <label htmlFor={id} className="text-base tablet:text-xl">
+      <label htmlFor={id} className="text-base laptop:text-xl">
         {label}
       </label>
       <div className="flex items-center justify-between bg-[#2f2c58] dark:bg-[#43295c] border border-[#4f49a5] dark:border-[#7f5ea0] rounded-xl px-4 py-2">
@@ -98,7 +98,7 @@ function AutoBet({
   return (
     <>
       <div className="px-2 laptop:px-4 py-0 pt-4">
-        <h2 className="text-base tablet:text-xl mb-2">Bet Amount</h2>
+        <h2 className="text-base laptop:text-xl mb-2">Bet Amount</h2>
         <div className="flex items-center gap-1 bg-[#1d1b3b] dark:bg-[#271836] p-2 tablet:p-3 border-2 border-[#464192] dark:border-[#473459] rounded-xl">
           <div className="space-y-1">
             <div className="flex gap-2 items-center">
@@ -107,7 +107,7 @@ function AutoBet({
                 alt=""
                 className="w-6 tablet:w-8"
               />
-              <span className="text-lg tablet:text-xl text-[#7571b5] dark:text-[#aa8fc6]">
+              <span className="text-lg laptop:text-xl text-[#7571b5] dark:text-[#aa8fc6]">
                 {currentBalance?.name == "BNB"
                   ? "WBNB"
                   : currentBalance?.name === "BTC"
@@ -178,7 +178,7 @@ function AutoBet({
             </Button>
           </div>
         </div>
-        <div className="hidden tablet:grid desktop:hidden grid-cols-2 laptop:grid-cols-4 gap-x-4 laptop:gap-x-2 gap-y-2 mt-4">
+        <div className="hidden tablet:grid desktop:hidden grid-cols-4 laptop:grid-cols-4 gap-x-2 laptop:gap-x-2 gap-y-2 mt-4">
           <Button
             selectedBtn={selectedBtn}
             handleClick={() => {
@@ -229,7 +229,7 @@ function AutoBet({
       </div>
 
       <div className="px-4 py-2 space-y-2">
-        <label htmlFor="profit" className="text-base tablet:text-xl">
+        <label htmlFor="profit" className="text-base laptop:text-xl">
           Profit
         </label>
         <div className="flex items-center justify-between bg-[#2f2c58] dark:bg-[#43295c] border border-[#4f49a5] dark:border-[#7f5ea0] rounded-xl px-4 py-2">
@@ -298,7 +298,6 @@ function AutoBet({
           placeholder="0.00"
           value={stopToWin}
           onChange={(e) => setStopToWin(e.target.value)}
-          icon="%"
         />
         <Input
           label="Stop on loss"
@@ -306,7 +305,6 @@ function AutoBet({
           placeholder="0.00"
           value={stopToLoss}
           onChange={(e) => setStopToLoss(e.target.value)}
-          icon="%"
         />
       </div>
     </>
