@@ -14,6 +14,7 @@ import LiveChart from "./LiveChart";
 import useGetCoinPrice from "../../../hooks/useGetCoinPrice";
 const winAudio = new Audio("/audio/win.mp3");
 const loseAudio = new Audio("/audio/lose.mp3");
+import * as decimal from "../../../utils/decimal";
 
 async function checkMaxBetAmount(amount, coinName, price) {
   // console.log("coinName", coinName, amount);
@@ -68,7 +69,21 @@ function GameInterface() {
   const [callTime, setCallTime] = useState(300);
   const [histories, setHistories] = useState([]);
   const [totalWins, setTotalWins] = useState(0);
-  const [totalLosses, setTotalLosses] = useState(0);
+  const [totalProfit, setTotalProfit] = useState({
+    btc: 0,
+    usdt: 0,
+    paco: 0,
+    eth: 0,
+    bnb: 0,
+  });
+  const [totalLoss, setTotalLoss] = useState(0);
+  const [totalWager, setTotalWager] = useState({
+    btc: 0,
+    usdt: 0,
+    paco: 0,
+    eth: 0,
+    bnb: 0,
+  });
 
   const [defaultPosition, setDefaultPosition] = useState({
     x: 0,
@@ -174,12 +189,26 @@ function GameInterface() {
                     // stop win audio if loss
                     winAudio.pause();
                     loseAudio.play();
-                    setTotalLosses((prev) => prev + 1);
+                    setTotalLoss((prev) => prev + 1);
+                    setTotalWager((prev) => ({
+                      ...prev,
+                      [currentBalance?.name?.toLowerCase()]: decimal.addition(
+                        prev[currentBalance?.name?.toLowerCase()],
+                        data.betAmount
+                      ),
+                    }));
                   } else {
                     // stop loss audio if win
                     loseAudio.pause();
                     winAudio.play();
                     setTotalWins((prev) => prev + 1);
+                    setTotalProfit((prev) => ({
+                      ...prev,
+                      [currentBalance?.name?.toLowerCase()]: decimal.addition(
+                        prev[currentBalance?.name?.toLowerCase()],
+                        data.rewardAmount
+                      ),
+                    }));
                   }
 
                   setStopRoll(false);
@@ -254,7 +283,14 @@ function GameInterface() {
                       // play audio
                       winAudio.pause();
                       loseAudio.play();
-                      setTotalLosses((prev) => prev + 1);
+                      setTotalLoss((prev) => prev + 1);
+                      setTotalWager((prev) => ({
+                        ...prev,
+                        [currentBalance?.name?.toLowerCase()]: decimal.addition(
+                          prev[currentBalance?.name?.toLowerCase()],
+                          data.betAmount
+                        ),
+                      }));
 
                       lossAmount += Number(betAmountRef.current);
                       // console.log("lossAmount", lossAmount);
@@ -276,6 +312,13 @@ function GameInterface() {
                       loseAudio.pause();
                       winAudio.play();
                       setTotalWins((prev) => prev + 1);
+                      setTotalProfit((prev) => ({
+                        ...prev,
+                        [currentBalance?.name?.toLowerCase()]: decimal.addition(
+                          prev[currentBalance?.name?.toLowerCase()],
+                          data.rewardAmount
+                        ),
+                      }));
 
                       winAmount +=
                         Number(payoutRef.current) -
@@ -368,7 +411,14 @@ function GameInterface() {
                       // play audio
                       winAudio.pause();
                       loseAudio.play();
-                      setTotalLosses((prev) => prev + 1);
+                      setTotalLoss((prev) => prev + 1);
+                      setTotalWager((prev) => ({
+                        ...prev,
+                        [currentBalance?.name?.toLowerCase()]: decimal.addition(
+                          prev[currentBalance?.name?.toLowerCase()],
+                          data.betAmount
+                        ),
+                      }));
 
                       lossAmount += betAmountRef.current;
 
@@ -389,6 +439,13 @@ function GameInterface() {
                       loseAudio.pause();
                       winAudio.play();
                       setTotalWins((prev) => prev + 1);
+                      setTotalProfit((prev) => ({
+                        ...prev,
+                        [currentBalance?.name?.toLowerCase()]: decimal.addition(
+                          prev[currentBalance?.name?.toLowerCase()],
+                          data.rewardAmount
+                        ),
+                      }));
 
                       winAmount +=
                         Number(payoutRef.current) -
@@ -533,10 +590,15 @@ function GameInterface() {
                   <div className="block desktop:hidden absolute top-[12rem] left-0 bg-[#24224a] dark:bg-[#291f40] w-[95%] tablet:w-[15.3rem] laptop:w-[18rem] rounded-xl mx-2 my-4 laptop:m-4 z-[50] cursor-pointer">
                     <LiveChart
                       setShowLiveChart={setShowLiveChart}
+                      totalProfit={totalProfit}
+                      setTotalProfit={setTotalProfit}
                       totalWins={totalWins}
                       setTotalWins={setTotalWins}
-                      totalLosses={totalLosses}
-                      setTotalLosses={setTotalLosses}
+                      totalWager={totalWager}
+                      setTotalWager={setTotalWager}
+                      totalLoss={totalLoss}
+                      setTotalLoss={setTotalLoss}
+                      tokenPrice={price}
                     />
                   </div>
                 </Draggable>
@@ -582,10 +644,15 @@ function GameInterface() {
             <div className="hidden desktop:block self-start bg-[#24224a] dark:bg-[#291f40] w-full desktop:w-[18rem] rounded-xl z-[50] cursor-pointer">
               <LiveChart
                 setShowLiveChart={setShowLiveChart}
+                totalProfit={totalProfit}
+                setTotalProfit={setTotalProfit}
                 totalWins={totalWins}
                 setTotalWins={setTotalWins}
-                totalLosses={totalLosses}
-                setTotalLosses={setTotalLosses}
+                totalWager={totalWager}
+                setTotalWager={setTotalWager}
+                totalLoss={totalLoss}
+                setTotalLoss={setTotalLoss}
+                tokenPrice={price}
               />
             </div>
           </Draggable>
