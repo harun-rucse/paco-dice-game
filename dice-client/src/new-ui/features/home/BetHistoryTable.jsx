@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import Table from "../../components/Table";
-import useGetBetHistories from "./useGetBetHistories";
 import Pagination from "../../components/Pagination";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { formatTime } from "../../../utils";
+import useGetBetHistories from "../dice-game/useGetBetHistories";
 
 function BetHistoryTable() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [limit, setLimit] = useState(10);
-  const { isLoading, result, count } = useGetBetHistories(limit);
+  // const { isLoading, result, count } = useGetBetHistories(limit);
+  const { isLoading, result, count } = useGetBetHistories(limit, "All Bets");
 
   useEffect(() => {
     searchParams.set("page", 1);
@@ -95,11 +96,13 @@ function BetHistoryTable() {
                   <span>{item?.user?.username}</span>
                 </span>
                 <span className="flex items-center gap-2">
-                  <img
-                    src="/images/paco.png"
-                    alt=""
-                    className="w-8 tablet:w-5 desktop:w-8 h-8 tablet:h-5 desktop:h-8"
-                  />
+                  {item?.betCoin && (
+                    <img
+                      src={`/tokens/${item?.betCoin}.png`}
+                      alt=""
+                      className="w-8 tablet:w-5 desktop:w-8 h-8 tablet:h-5 desktop:h-8"
+                    />
+                  )}
                   {formatColorChangeOfLeadingZero(
                     parseFloat(item?.betAmount).toFixed(8).toString()
                   )}

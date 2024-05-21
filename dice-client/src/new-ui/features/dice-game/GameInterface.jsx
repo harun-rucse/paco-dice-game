@@ -214,7 +214,7 @@ function GameInterface() {
                   setStopRoll(false);
                 },
                 onError: (error) => {
-                  console.log(error);
+                  // console.log(error);
                   setStopRoll(false);
                 },
               }
@@ -515,6 +515,10 @@ function GameInterface() {
       setStopToLoss("");
     }
   }, [tab]);
+
+  useEffect(() => {
+    if (!stopRoll) setNumberOfBet(0);
+  }, [stopRoll]);
 
   async function handleChangeOfRoll(type = "rollUnder") {
     setRollType(type);
