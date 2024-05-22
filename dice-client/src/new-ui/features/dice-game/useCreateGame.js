@@ -11,6 +11,7 @@ export function useCreateGame() {
       queryClient.invalidateQueries(["user"]);
       queryClient.invalidateQueries(["live-chart"]);
       queryClient.invalidateQueries(["game-bet-histories"]);
+      queryClient.invalidateQueries(["all-bet-histories"]);
       if (data.status === "lost") {
         queryClient.invalidateQueries(["stake-pool"]);
       }

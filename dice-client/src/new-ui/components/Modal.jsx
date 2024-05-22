@@ -1,6 +1,7 @@
 import { cloneElement, createContext, useContext, useState } from "react";
 import { createPortal } from "react-dom";
 import { useOutsideClick } from "../../hooks/useOutsideClick";
+import { useDarkMode } from "../../context/DarkModeContext";
 import { cn } from "../../utils";
 
 const ModalContext = createContext();
@@ -12,13 +13,17 @@ function ModalOpen({ children, opens: opensWindowName }) {
 }
 
 function ModalBody({ children, name, className }) {
-  const { openName, close } = useContext(ModalContext);
+  const { openName, close, isDarkMode } = useContext(ModalContext);
   const ref = useOutsideClick(close);
 
   if (name !== openName) return null;
 
   return createPortal(
-    <div className="fixed inset-0 bg-gray-200/20 flex items-start tablet:items-center backdrop-blur-sm justify-center z-[99999]">
+    <div
+      className={`${
+        isDarkMode ? "dark" : "light"
+      } fixed inset-0 bg-gray-200/20 flex items-start tablet:items-center backdrop-blur-sm justify-center z-[99999]`}
+    >
       <div
         ref={ref}
         className={cn(
@@ -35,12 +40,13 @@ function ModalBody({ children, name, className }) {
 
 function Modal({ children }) {
   const [openName, setOpenName] = useState("");
+  const { isDarkMode } = useDarkMode();
 
   const close = () => setOpenName("");
   const open = setOpenName;
 
   return (
-    <ModalContext.Provider value={{ openName, open, close }}>
+    <ModalContext.Provider value={{ openName, open, close, isDarkMode }}>
       {children}
     </ModalContext.Provider>
   );

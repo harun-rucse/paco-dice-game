@@ -5,6 +5,7 @@ import Balance from "../../components/Balance";
 import { useCurrentUser } from "../authentication/useCurrentUser";
 import Spinner from "../../../components/Spinner";
 import { useBalance } from "../../../context/BalanceContext";
+import { IoClipboard } from "react-icons/io5";
 
 function Deposite() {
   const { user: account, isLoading } = useCurrentUser();
@@ -33,16 +34,31 @@ function Deposite() {
           COPY THE ADDRESS:
         </strong>
 
-        <input
+        <div className="mt-3 flex items-center justify-between gap-2 bg-[#1d1b3d] dark:bg-[#1e132d] border border-[#333062] dark:border-[#4c498b] px-3 md:px-4 py-1 rounded-xl">
+          <input
+            type="text"
+            className="w-full bg-transparent dark:bg-[#1f1d22] focus:outline-none text-sm md:text-base"
+            value={account?.publicKey}
+            readOnly
+          />
+          <div
+            className="bg-[#2e2c54] w-8 md:w-8 h-8 md:h-8 flex items-center justify-center rounded-lg cursor-pointer"
+            onClick={handleCopy}
+          >
+            <IoClipboard color="#ffff" className="md:text-xl" />
+          </div>
+        </div>
+
+        {/* <input
           type="text"
           value={account?.publicKey}
-          className="bg-transparent pt-4 focus:outline-none font-extralight cursor-pointer p-2 rounded-lg border border-gray-600"
+          className="bg-transparent dark:bg-[#1f1d22] pt-4 focus:outline-none font-extralight cursor-pointer p-2 rounded-lg border border-gray-600"
           onClick={handleCopy}
           readOnly
-        />
+        /> */}
         <div className="flex flex-col tablet:flex-row items-center gap-3 pt-6 pb-6">
           <div className="space-y-4 tablet:w-[70%]">
-            <div className="flex items-center gap-2 bg-[#413e72] px-4 py-2 rounded-xl text-white">
+            <div className="flex items-center gap-2 bg-[#413e72] dark:bg-[#323232] px-4 py-2 rounded-xl text-white">
               <AiFillWarning color="#ffcc00" size={20} />
               <span className="text-sm uppercase font-extralight">
                 MINIMUM DEPOSIT IS{" "}

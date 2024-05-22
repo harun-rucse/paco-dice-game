@@ -113,16 +113,19 @@ function MyHistory() {
           columns="grid-cols-[0.5fr_0.5fr_0.5fr_0.5fr_0.1fr] tablet:grid-cols-[0.5fr_0.5fr_0.5fr_0.5fr_0.1fr]"
           className="min-w-[40rem]"
         >
-          <Table.Header>
+          <Table.Header className="bg-[#34325c] dark:bg-[#7a3f85] border-[#34325c] dark:border-[#582861]">
             <span>Ticket Type</span>
             <span>Round</span>
             <span>Number of losing tickets</span>
             <span>Total Paco Spent</span>
             <span />
           </Table.Header>
-          <Table.Body>
+          <Table.Body className="bg-[#4f4c7d] dark:bg-[#794079]">
             {histories?.map((ticket, i) => (
-              <Table.Row key={i}>
+              <Table.Row
+                key={i}
+                className="border-[#4b4877] dark:border-[#582861]"
+              >
                 <span>{ticket.ticketType}</span>
                 <span>{ticket.round}</span>
                 <span>{numberFormat(ticket.loosingTickets)}</span>

@@ -39,7 +39,7 @@ function Sidebar() {
   const { toggleDarkMode } = useDarkMode();
 
   return (
-    <aside className="hidden laptop:block w-[21rem] laptop:w-[18rem] bg-[#24224a] dark:bg-[#1b152a] border-r border-[#444187] dark:border-[#40335f]">
+    <aside className="hidden laptop:block fixed w-[21rem] h-full laptop:w-[18rem] bg-[#24224a] dark:bg-[#1b152a] border-r border-[#444187] dark:border-[#40335f]">
       <div className="flex items-center gap-4">
         <img src="/images/sidebar-logo.png" alt="" className="w-20" />
         <div className="flex flex-col items-center uppercase">

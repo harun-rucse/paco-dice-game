@@ -11,7 +11,10 @@ function StakingControls() {
             About Staking
           </button>
         </Modal.Open>
-        <Modal.Body name="about-staking" className="bg-[#24224a]">
+        <Modal.Body
+          name="about-staking"
+          className="bg-gradient-to-b from-[#39366f] dark:from-[#752c83] via-[#24224a] dark:via-[#5d2c83] to-[#24224a] dark:to-[#522c83]"
+        >
           <AboutStaking />
         </Modal.Body>
       </Modal>
@@ -34,7 +37,7 @@ function StakingControls() {
         </Modal.Open>
         <Modal.Body
           name="staking-calculator"
-          className="bg-[#24224a] h-[35rem] tablet:h-[50rem] desktop:h-full"
+          className="bg-gradient-to-b from-[#39366f] dark:from-[#752c83] via-[#24224a] dark:via-[#5d2c83] to-[#24224a] dark:to-[#522c83] h-[35rem] tablet:h-[50rem] desktop:h-[95vh]"
         >
           <StakingCalculator />
         </Modal.Body>

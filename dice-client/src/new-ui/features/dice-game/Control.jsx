@@ -1,4 +1,8 @@
 import { useDarkMode } from "../../../context/DarkModeContext";
+import Modal from "../../components/Modal";
+import Fairness from "../fairness/Fairness";
+import Limit from "./Limit";
+import Rules from "./Rules";
 
 function Control({
   playAudio,
@@ -13,7 +17,7 @@ function Control({
   const { isDarkMode } = useDarkMode();
 
   function handleBoost() {
-    boost ? setCallTime(800) : setCallTime(200);
+    boost ? setCallTime(300) : setCallTime(100);
     setBoost((prev) => !prev);
   }
 
@@ -52,23 +56,56 @@ function Control({
         />
       </div>
       <div className="flex items-center gap-8">
-        <img
-          src={isDarkMode ? "/images/search-dark.png" : "/images/search.png"}
-          alt=""
-          className="w-6"
-        />
-        <img
-          src={
-            isDarkMode ? "/images/document-dark.png" : "/images/document.png"
-          }
-          alt=""
-          className="w-7"
-        />
-        <img
-          src={isDarkMode ? "/images/scale-dark.png" : "/images/scale.png"}
-          alt=""
-          className="w-7"
-        />
+        <Modal>
+          <Modal.Open opens="limit">
+            <img
+              src={
+                isDarkMode ? "/images/search-dark.png" : "/images/search.png"
+              }
+              alt=""
+              className="w-6 cursor-pointer"
+            />
+          </Modal.Open>
+          <Modal.Body
+            name="limit"
+            className="rounded-2xl w-[25rem] tablet:min-w-[40rem] h-[38rem] tablet:min-h-[30rem] bg-transparent"
+          >
+            <Limit />
+          </Modal.Body>
+        </Modal>
+
+        <Modal>
+          <Modal.Open opens="rules">
+            <img
+              src={
+                isDarkMode
+                  ? "/images/document-dark.png"
+                  : "/images/document.png"
+              }
+              alt=""
+              className="w-7 cursor-pointer"
+            />
+          </Modal.Open>
+          <Modal.Body
+            name="rules"
+            className="rounded-2xl w-[25rem] tablet:min-w-[40rem] h-[38rem] tablet:min-h-[30rem] bg-transparent"
+          >
+            <Rules />
+          </Modal.Body>
+        </Modal>
+
+        <Modal>
+          <Modal.Open opens="fairness">
+            <img
+              src={isDarkMode ? "/images/scale-dark.png" : "/images/scale.png"}
+              alt=""
+              className="w-7 cursor-pointer"
+            />
+          </Modal.Open>
+          <Modal.Body name="fairness">
+            <Fairness />
+          </Modal.Body>
+        </Modal>
       </div>
     </div>
   );

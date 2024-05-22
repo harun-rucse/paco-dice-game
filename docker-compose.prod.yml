@@ -14,6 +14,8 @@ services:
     volumes:
       - ./dice-api:/dice-api
       - /dice-api/node_modules
+    depends_on:
+      - redis
 
   dice-client:
     build:
@@ -30,3 +32,10 @@ services:
       - /var/certs/etc-letsencrypt:/etc/letsencrypt
     depends_on:
       - dice-api
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"

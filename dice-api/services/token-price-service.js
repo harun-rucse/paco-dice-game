@@ -1,4 +1,5 @@
 const Web3 = require("web3");
+const TokenPrice = require("../models/TokenPrice");
 const BTC_PRICE_FEED = process.env.BTC_PRICE_FEED;
 const ETH_PRICE_FEED = process.env.ETH_PRICE_FEED;
 const BNB_PRICE_FEED = process.env.BNB_PRICE_FEED;
@@ -55,30 +56,50 @@ const PRICE_FEED_ABI = [
 // from chainlink with the pricefeed address
 const getCoinPrice = async (name = "btc") => {
   const web3 = new Web3(process.env.RPC);
+
+  let tokenPrice = await TokenPrice.findOne();
+  if (!tokenPrice) tokenPrice = new TokenPrice();
+
   try {
     if (name === "btc") {
       const priceFeed = new web3.eth.Contract(PRICE_FEED_ABI, BTC_PRICE_FEED);
       const { answer } = await priceFeed.methods.latestRoundData().call();
 
-      return Number(answer / 10 ** 8).toFixed(3);
+      const price = Number(answer / 10 ** 8).toFixed(3);
+      tokenPrice[name] = price;
+      await tokenPrice.save();
+
+      return price;
     } else if (name === "usdt") {
       return 1;
     } else if (name === "paco") {
-      return 0.0000000392;
+      const price = 0.0000000392;
+      tokenPrice[name] = price;
+      await tokenPrice.save();
+
+      return price;
     } else if (name === "eth") {
       const priceFeed = new web3.eth.Contract(PRICE_FEED_ABI, ETH_PRICE_FEED);
       const { answer } = await priceFeed.methods.latestRoundData().call();
 
-      return answer / 10 ** 8;
+      const price = answer / 10 ** 8;
+      tokenPrice[name] = price;
+      await tokenPrice.save();
+
+      return price;
     } else if (name === "bnb") {
       const priceFeed = new web3.eth.Contract(PRICE_FEED_ABI, BNB_PRICE_FEED);
       const { answer } = await priceFeed.methods.latestRoundData().call();
 
-      return answer / 10 ** 8;
+      const price = answer / 10 ** 8;
+      tokenPrice[name] = price;
+      await tokenPrice.save();
+
+      return price;
     }
   } catch (err) {
-    console.log(err);
-    throw new Error("Error of geeting token price from api");
+    console.log("Error of getting token price from api");
+    return tokenPrice[name] || 0;
   }
 };
 module.exports = getCoinPrice;

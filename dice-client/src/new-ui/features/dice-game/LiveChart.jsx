@@ -5,8 +5,9 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { useGetUsdPricePaco } from "../staking/useGetUsdPricePaco";
 import { useDarkMode } from "../../../context/DarkModeContext";
+import { useEffect, useState } from "react";
+import * as decimal from "../../../utils/decimal";
 
 function TextBox({ title, value, color = "#fff" }) {
   return (
@@ -23,13 +24,19 @@ function TextBox({ title, value, color = "#fff" }) {
 
 function LiveChart({
   setShowLiveChart,
+  totalProfit,
+  setTotalProfit,
   totalWins,
   setTotalWins,
-  totalLosses,
-  setTotalLosses,
+  totalWager,
+  setTotalWager,
+  totalLoss,
+  setTotalLoss,
+  tokenPrice,
 }) {
-  const { pacoUSD: totalWinsUSD } = useGetUsdPricePaco(totalWins);
-  const { pacoUSD: totalLossesUSD } = useGetUsdPricePaco(totalLosses);
+  const [totalWinsUSD, setTotalWinsUSD] = useState(0);
+  const [totalLossesUSD, setTotalLossesUSD] = useState(0);
+
   const { isDarkMode } = useDarkMode();
 
   const data = [
@@ -63,9 +70,51 @@ function LiveChart({
     },
   ];
 
+  useEffect(() => {
+    if (!tokenPrice) return;
+
+    const _totalWinsUSD = decimal.addition(
+      decimal.multiply(totalProfit.btc, tokenPrice.btc),
+      decimal.multiply(totalProfit.usdt, tokenPrice.usdt),
+      decimal.multiply(totalProfit.paco, tokenPrice.paco),
+      decimal.multiply(totalProfit.eth, tokenPrice.eth),
+      decimal.multiply(totalProfit.bnb, tokenPrice.bnb)
+    );
+
+    setTotalWinsUSD(_totalWinsUSD);
+  }, [totalProfit, tokenPrice]);
+
+  useEffect(() => {
+    if (!tokenPrice) return;
+
+    const _totalLossesUSD = decimal.addition(
+      decimal.multiply(totalWager.btc, tokenPrice.btc),
+      decimal.multiply(totalWager.usdt, tokenPrice.usdt),
+      decimal.multiply(totalWager.paco, tokenPrice.paco),
+      decimal.multiply(totalWager.eth, tokenPrice.eth),
+      decimal.multiply(totalWager.bnb, tokenPrice.bnb)
+    );
+
+    setTotalLossesUSD(_totalLossesUSD);
+  }, [totalWager, tokenPrice]);
+
   function handleRefresh() {
     setTotalWins(0);
-    setTotalLosses(0);
+    setTotalLoss(0);
+    setTotalProfit({
+      btc: 0,
+      usdt: 0,
+      paco: 0,
+      eth: 0,
+      bnb: 0,
+    });
+    setTotalWager({
+      btc: 0,
+      usdt: 0,
+      paco: 0,
+      eth: 0,
+      bnb: 0,
+    });
   }
 
   return (
@@ -104,11 +153,7 @@ function LiveChart({
               title="Wager"
               value={`${Number(totalLossesUSD).toFixed(8)}$`}
             />
-            <TextBox
-              title="Looses"
-              value={totalLosses}
-              color="text-[#df4850]"
-            />
+            <TextBox title="Looses" value={totalLoss} color="text-[#df4850]" />
           </div>
 
           <div style={{ width: "100%", height: 150 }} className="mt-8">
