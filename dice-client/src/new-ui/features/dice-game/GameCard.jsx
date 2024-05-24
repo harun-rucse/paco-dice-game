@@ -14,6 +14,7 @@ function GameCard({
   winChance,
   setRollType,
   betAmount,
+  multiplier,
 }) {
   const { isLoading: isLoading2, isAuthenticated } = useCurrentUser();
 
@@ -39,11 +40,15 @@ function GameCard({
               </p>
             </span>
           </div>
-          <div className="hidden tablet:flex flex-col items-center gap-1">
-            <span className="uppercase tablet:text-lg desktop:text-xl">
-              Win Chance
-            </span>
-            <span className="text-xl">{winChance}%</span>
+          <div className="hidden laptop:flex items-center gap-4">
+            <div className="bg-[#2a2955] p-4 rounded-3xl shadow-2xl flex flex-col items-center gap-1">
+              <span className="uppercase tablet:text-lg">Win Chance</span>
+              <span className="text-lg">{winChance}%</span>
+            </div>
+            <div className="bg-[#2a2955] p-4 rounded-3xl shadow-2xl flex flex-col items-center gap-1">
+              <span className="uppercase tablet:text-lg">Multiplier</span>
+              <span className="text-lg">x{Number(multiplier).toFixed(4)}</span>
+            </div>
           </div>
           <div className="flex flex-col justify-center items-center gap-1">
             <p className="uppercase text-white text-xl">Result</p>
@@ -59,9 +64,15 @@ function GameCard({
           </div>
         </div>
 
-        <div className="flex tablet:hidden flex-col items-center pb-8">
-          <span className="uppercase text-base">Win Chance</span>
-          <span className="text-base">{winChance}%</span>
+        <div className="laptop:hidden flex items-center gap-4 mb-8 tablet:mb-2">
+          <div className="bg-[#2a2955] p-4 rounded-3xl shadow-2xl flex flex-col items-center">
+            <span className="uppercase text-base">Win Chance</span>
+            <span className="text-base">{winChance}%</span>
+          </div>
+          <div className="bg-[#2a2955] p-4 rounded-3xl shadow-2xl flex flex-col items-center">
+            <span className="uppercase text-base">Multiplier</span>
+            <span className="text-base">x{Number(multiplier).toFixed(4)}</span>
+          </div>
         </div>
 
         <div className="w-full pt-0 tablet:pt-10 desktop:pt-0">

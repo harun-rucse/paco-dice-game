@@ -35,6 +35,10 @@ const gameSchema = new Schema(
       type: String,
       required: true,
     },
+    multiplier: {
+      type: Number,
+      required: true,
+    },
     status: {
       type: String,
       enum: ["lost", "win"],

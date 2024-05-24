@@ -17,7 +17,7 @@ function Control({
   const { isDarkMode } = useDarkMode();
 
   function handleBoost() {
-    boost ? setCallTime(300) : setCallTime(100);
+    boost ? setCallTime(500) : setCallTime(300);
     setBoost((prev) => !prev);
   }
 
@@ -68,7 +68,7 @@ function Control({
           </Modal.Open>
           <Modal.Body
             name="limit"
-            className="rounded-2xl w-[25rem] tablet:min-w-[40rem] h-[38rem] tablet:min-h-[30rem] bg-transparent"
+            className="rounded-2xl w-[22rem] tablet:min-w-[35rem] h-[30rem] tablet:min-h-[36rem] bg-transparent"
           >
             <Limit />
           </Modal.Body>

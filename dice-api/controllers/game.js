@@ -135,6 +135,7 @@ const createGame = catchAsync(async (req, res, next) => {
     randomSeed,
     hashRound: hashedValue,
     rewardAmount: 0,
+    multiplier,
     status:
       rollType === "rollUnder"
         ? prediction > number
@@ -187,7 +188,8 @@ const createGame = catchAsync(async (req, res, next) => {
       if (newStakePool["burn"] < 0) {
         newStakePool["burn"] = 0;
       }
-      await newStakePool.save();
+      // await newStakePool.save();
+      newStakePool.save();
     } else {
       // Reduce 60% from the stake pool
       stakePool[paymentType] = decimal.subtract(
@@ -205,7 +207,8 @@ const createGame = catchAsync(async (req, res, next) => {
         stakePool["burn"] = 0;
       }
 
-      await stakePool.save();
+      // await stakePool.save();
+      stakePool.save();
     }
   }
 
@@ -228,7 +231,8 @@ const createGame = catchAsync(async (req, res, next) => {
         decimal.multiply(betAmount, 0.02)
       );
 
-      await newStakePool.save();
+      // await newStakePool.save();
+      newStakePool.save();
     } else {
       stakePool[paymentType] = decimal.addition(stakePool[paymentType], amount);
 
@@ -237,12 +241,15 @@ const createGame = catchAsync(async (req, res, next) => {
         stakePool["burn"],
         decimal.multiply(betAmount, 0.02)
       );
-      await stakePool.save();
+      // await stakePool.save();
+      stakePool.save();
     }
   }
 
-  await account.save();
-  await game.save();
+  // await account.save();
+  account.save();
+  // await game.save();
+  game.save();
 
   res.json(game);
 });
@@ -286,12 +293,7 @@ const getBetHistory = catchAsync(async (req, res) => {
   const histories = await Promise.all(
     betHistories.map(async (betHistory) => {
       const user = await Account.findOne({ publicKey: betHistory.publicKey });
-
       const history = betHistory._doc;
-      const rollType =
-        history.prediction > history.winNumber === "win"
-          ? "rollUnder"
-          : "rollOver";
 
       const dto = {
         game: "Dice",
@@ -302,10 +304,7 @@ const getBetHistory = catchAsync(async (req, res) => {
         },
         betAmount: history.betAmount,
         betCoin: history.betCoin,
-        multiplier:
-          rollType === "rollUnder"
-            ? (100 / Number(history.prediction)) * (1 - 0.02)
-            : (100 / (100 - Number(history.prediction) - 1)) * (1 - 0.02),
+        multiplier: history.multiplier,
         payout: history.rewardAmount,
         status: history.status,
       };
