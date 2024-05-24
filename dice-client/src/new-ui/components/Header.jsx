@@ -34,7 +34,11 @@ function Header() {
       <div className="fixed w-full flex h-[5rem] items-center justify-between bg-[#24224a] dark:bg-[#241c38] px-3 py-2 border-b-2 border-[#605e96] dark:border-[#5b4788] z-[999]">
         <div className="flex items-center gap-2">
           <Link to="/" className="hidden tablet:block">
-            <img src="/icon.png" alt="Paco Dice" className="h-12 tablet:h-16" />
+            <img
+              src="/images/logo.png"
+              alt="Paco Dice"
+              className="h-12 tablet:h-14"
+            />
           </Link>
           <IoMdMenu
             size={26}
@@ -50,7 +54,7 @@ function Header() {
               <img
                 src="/images/logo-mini.png"
                 alt="Paco Dice"
-                className="h-12 tablet:h-16"
+                className="h-11 tablet:h-16"
               />
             </Link>
             <Balance />

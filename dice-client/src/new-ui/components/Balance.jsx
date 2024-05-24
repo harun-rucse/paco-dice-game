@@ -44,15 +44,17 @@ function Balance({ className }) {
           alt=""
           className="h-6 tablet:h-7"
         />
-        {/* <span className="hidden tablet:block uppercase font-extralight text-sm tablet:text-base">
-          {Number(currentBalance.value)?.toFixed(8) ||
-            Number(account?.btc).toFixed(8)}
-        </span> */}
-        <span className="block uppercase font-extralight text-sm tablet:text-base">
+        <span className="uppercase font-extralight text-sm tablet:text-base">
+          {currentBalance?.name === "PACO"
+            ? Number(currentBalance.value)?.toFixed(2)
+            : Number(currentBalance.value)?.toFixed(8) ||
+              Number(account?.btc).toFixed(8)}
+        </span>
+        {/* <span className="block uppercase font-extralight text-sm tablet:text-base">
           {currentBalance?.value && currentBalance.value.toString()?.length > 6
             ? currentBalance.value.substring(0, 6)
             : Number(currentBalance.value)?.toFixed(4)}
-        </span>
+        </span> */}
         <MdOutlineKeyboardArrowDown size={28} color="#ffff" />
       </button>
 

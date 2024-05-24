@@ -142,7 +142,9 @@ function BetHistoryTable() {
                       : "bg-[#3a3948] text-[#69686a]"
                   } w-min h-min px-3 py-1 rounded-2xl`}
                 >
-                  {`x${parseFloat(item?.multiplier).toFixed(4)}`}
+                  {item?.multiplier
+                    ? `x${parseFloat(item?.multiplier).toFixed(4)}`
+                    : "N/A"}
                 </span>
                 <span className="flex items-center gap-2">
                   {item?.betCoin && (

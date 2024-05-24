@@ -8,6 +8,7 @@ import {
 import { useDarkMode } from "../../../context/DarkModeContext";
 import { useEffect, useState } from "react";
 import * as decimal from "../../../utils/decimal";
+import { useBalance } from "../../../context/BalanceContext";
 
 function TextBox({ title, value, color = "#fff" }) {
   return (
@@ -36,39 +37,11 @@ function LiveChart({
 }) {
   const [totalWinsUSD, setTotalWinsUSD] = useState(0);
   const [totalLossesUSD, setTotalLossesUSD] = useState(0);
+  const [data, setData] = useState([]);
+  const [isRefresh, setIsRefresh] = useState(false);
 
   const { isDarkMode } = useDarkMode();
-
-  const data = [
-    {
-      name: "Page A",
-      uv: 400,
-    },
-    {
-      name: "Page B",
-      uv: 800,
-    },
-    {
-      name: "Page C",
-      uv: 2600,
-    },
-    {
-      name: "Page D",
-      uv: 780,
-    },
-    {
-      name: "Page E",
-      uv: 1890,
-    },
-    {
-      name: "Page F",
-      uv: 2390,
-    },
-    {
-      name: "Page G",
-      uv: 3490,
-    },
-  ];
+  const { currentBalance } = useBalance();
 
   useEffect(() => {
     if (!tokenPrice) return;
@@ -98,7 +71,14 @@ function LiveChart({
     setTotalLossesUSD(_totalLossesUSD);
   }, [totalWager, tokenPrice]);
 
-  function handleRefresh() {
+  useEffect(() => {
+    setData((prev) => [
+      ...prev,
+      { profit: Number(totalWinsUSD) < 0 ? 0 : Number(totalWinsUSD) },
+    ]);
+  }, [totalWinsUSD]);
+
+  useEffect(() => {
     setTotalWins(0);
     setTotalLoss(0);
     setTotalProfit({
@@ -115,7 +95,8 @@ function LiveChart({
       eth: 0,
       bnb: 0,
     });
-  }
+    setData([]);
+  }, [currentBalance?.name, isRefresh]);
 
   return (
     <div className="p-4 h-full">
@@ -127,8 +108,8 @@ function LiveChart({
               isDarkMode ? "/images/refresh-dark.png" : "/images/refresh.png"
             }
             alt=""
-            className="w-6 cursor-pointer"
-            onClick={handleRefresh}
+            className="w-8 cursor-pointer"
+            onClick={() => setIsRefresh((prev) => !prev)}
           />
         </div>
         <img
@@ -144,6 +125,13 @@ function LiveChart({
           <div className="flex justify-between items-center px-4">
             <TextBox
               title="Profit"
+              color={
+                totalWinsUSD == 0
+                  ? "text-white"
+                  : totalWinsUSD < 0
+                  ? "text-[#df4850]"
+                  : "text-[#6bbb60]"
+              }
               value={`${Number(totalWinsUSD).toFixed(8)}$`}
             />
             <TextBox title="Wins" value={totalWins} color="text-[#6bbb60]" />
@@ -160,10 +148,10 @@ function LiveChart({
             <ResponsiveContainer>
               <AreaChart data={data}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <Tooltip />
+                <Tooltip formatter={(val) => Number(val).toFixed(8)} />
                 <Area
                   type="monotone"
-                  dataKey="uv"
+                  dataKey="profit"
                   stroke={isDarkMode ? "#4d905c" : "#4b905d"}
                   fill={isDarkMode ? "#517261" : "#4e7162"}
                 />

@@ -6,7 +6,7 @@ import useGetTicketStatistics from "../lottery/useGetTicketStatistics";
 function InfoCard({ title, subTitle, titleIcon, subTitleIcon, className }) {
   return (
     <div className="space-y-1 tablet:space-y-2">
-      <div className="flex items-center gap-2">
+      <div className="hidden tablet:flex items-center gap-2">
         <p className="uppercase text-sm tablet:text-lg text-[#b4b3b3]">
           {title}
         </p>
@@ -45,9 +45,14 @@ function FeatureBanner() {
             <img
               src="/images/lottery-banner.png"
               alt=""
-              className="overflow-hidden h-[8rem] w-full tablet:h-full object-fill tablet:object-contain rounded-xl tablet:rounded-2xl"
+              className="hidden tablet:block overflow-hidden h-[8rem] w-full tablet:h-full object-fill tablet:object-contain rounded-xl tablet:rounded-2xl"
             />
-            <div className="absolute top-[3.9rem] tablet:top-[4.5rem] left-2 tablet:left-8 desktop:top-48 desktop:left-20 flex items-center gap-2 tablet:gap-6">
+            <img
+              src="/images/lottery-banner-sm.png"
+              alt=""
+              className="block tablet:hidden overflow-hidden h-[5rem] w-full tablet:h-full object-contain tablet:object-contain rounded-xl tablet:rounded-2xl"
+            />
+            <div className="absolute top-[2.5rem] tablet:top-[4.5rem] left-2 tablet:left-8 desktop:top-48 desktop:left-20 flex items-center gap-2 tablet:gap-6">
               <InfoCard
                 title="Minor Jackpot"
                 subTitle={
@@ -72,16 +77,26 @@ function FeatureBanner() {
         <div className="flex gap-4 tablet:gap-6 desktop:gap-8 mt-2 tablet:mt-6 desktop:mt-8">
           <Link to="/dice">
             <img
-              src="/images/dice.jpeg"
+              src="/images/dice-banner.png"
               alt=""
-              className="overflow-hidden h-[4rem] tablet:h-[8rem] desktop:h-[16rem] object-contain rounded-lg tablet:rounded-2xl"
+              className="hidden tablet:block overflow-hidden h-[4rem] tablet:h-[8rem] desktop:h-[16rem] object-contain rounded-lg tablet:rounded-2xl"
+            />
+            <img
+              src="/images/dice-banner-sm.png"
+              alt=""
+              className="block tablet:hidden overflow-hidden h-[4rem] tablet:h-[8rem] desktop:h-[16rem] object-contain rounded-lg tablet:rounded-2xl"
             />
           </Link>
           <Link to="/staking">
             <img
-              src="/images/staking.jpeg"
+              src="/images/staking-banner.png"
               alt=""
-              className="overflow-hidden h-[4rem] tablet:h-[8rem] desktop:h-[16rem] object-contain rounded-lg tablet:rounded-2xl"
+              className="hidden tablet:block overflow-hidden h-[4rem] tablet:h-[8rem] desktop:h-[16rem] object-contain rounded-lg tablet:rounded-2xl"
+            />
+            <img
+              src="/images/staking-banner-sm.png"
+              alt=""
+              className="block tablet:hidden overflow-hidden h-[4rem] tablet:h-[8rem] desktop:h-[16rem] object-contain rounded-lg tablet:rounded-2xl"
             />
           </Link>
         </div>

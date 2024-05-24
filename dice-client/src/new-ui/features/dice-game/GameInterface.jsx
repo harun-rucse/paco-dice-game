@@ -66,7 +66,7 @@ function GameInterface() {
   const [stopRoll, setStopRoll] = useState(false);
   const [playAudio, setPlayAudio] = useState(true);
   const [boost, setBoost] = useState(false);
-  const [callTime, setCallTime] = useState(300);
+  const [callTime, setCallTime] = useState(500);
   const [histories, setHistories] = useState([]);
   const [totalWins, setTotalWins] = useState(0);
   const [totalProfit, setTotalProfit] = useState({
@@ -197,6 +197,13 @@ function GameInterface() {
                         data.betAmount
                       ),
                     }));
+                    setTotalProfit((prev) => ({
+                      ...prev,
+                      [currentBalance?.name?.toLowerCase()]: decimal.subtract(
+                        prev[currentBalance?.name?.toLowerCase()],
+                        data.betAmount
+                      ),
+                    }));
                   } else {
                     // stop loss audio if win
                     loseAudio.pause();
@@ -207,6 +214,13 @@ function GameInterface() {
                       [currentBalance?.name?.toLowerCase()]: decimal.addition(
                         prev[currentBalance?.name?.toLowerCase()],
                         data.rewardAmount
+                      ),
+                    }));
+                    setTotalWager((prev) => ({
+                      ...prev,
+                      [currentBalance?.name?.toLowerCase()]: decimal.addition(
+                        prev[currentBalance?.name?.toLowerCase()],
+                        data.betAmount
                       ),
                     }));
                   }
@@ -279,14 +293,25 @@ function GameInterface() {
                     ]);
                     setResult(data.winNumber);
                     setBetStatus(data.status);
+
+                    // Total bet amount
+                    setTotalWager((prev) => ({
+                      ...prev,
+                      [currentBalance?.name?.toLowerCase()]: decimal.addition(
+                        prev[currentBalance?.name?.toLowerCase()],
+                        data.betAmount
+                      ),
+                    }));
+
                     if (data.status === "lost") {
                       // play audio
                       winAudio.pause();
                       loseAudio.play();
                       setTotalLoss((prev) => prev + 1);
-                      setTotalWager((prev) => ({
+
+                      setTotalProfit((prev) => ({
                         ...prev,
-                        [currentBalance?.name?.toLowerCase()]: decimal.addition(
+                        [currentBalance?.name?.toLowerCase()]: decimal.subtract(
                           prev[currentBalance?.name?.toLowerCase()],
                           data.betAmount
                         ),
@@ -406,15 +431,25 @@ function GameInterface() {
                     ]);
                     setResult(data.winNumber);
                     setBetStatus(data.status);
-                    // setReFetchHistory((reFetchHistory) => !reFetchHistory);
+
+                    // Total bet amount
+                    setTotalWager((prev) => ({
+                      ...prev,
+                      [currentBalance?.name?.toLowerCase()]: decimal.addition(
+                        prev[currentBalance?.name?.toLowerCase()],
+                        data.betAmount
+                      ),
+                    }));
+
                     if (data.status === "lost") {
                       // play audio
                       winAudio.pause();
                       loseAudio.play();
                       setTotalLoss((prev) => prev + 1);
-                      setTotalWager((prev) => ({
+
+                      setTotalProfit((prev) => ({
                         ...prev,
-                        [currentBalance?.name?.toLowerCase()]: decimal.addition(
+                        [currentBalance?.name?.toLowerCase()]: decimal.subtract(
                           prev[currentBalance?.name?.toLowerCase()],
                           data.betAmount
                         ),
@@ -624,6 +659,7 @@ function GameInterface() {
                 setStopRoll={setStopRoll}
                 winChance={winChance}
                 betAmount={betAmount}
+                multiplier={multiplier}
               />
             </div>
           </div>
