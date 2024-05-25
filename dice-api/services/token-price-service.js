@@ -1,4 +1,5 @@
 const Web3 = require("web3");
+const decimal = require("../utils/decimal");
 const TokenPrice = require("../models/TokenPrice");
 const BTC_PRICE_FEED = process.env.BTC_PRICE_FEED;
 const ETH_PRICE_FEED = process.env.ETH_PRICE_FEED;
@@ -53,6 +54,25 @@ const PRICE_FEED_ABI = [
   },
 ];
 
+const pair_address = "0x1F78dEDbA50a69207019b3dE66aE8670aa53Dfe8";
+
+const pairABI = [
+  // Only including relevant parts of the ABI for brevity
+  {
+    constant: true,
+    inputs: [],
+    name: "getReserves",
+    outputs: [
+      { internalType: "uint112", name: "_reserve0", type: "uint112" },
+      { internalType: "uint112", name: "_reserve1", type: "uint112" },
+      { internalType: "uint32", name: "_blockTimestampLast", type: "uint32" },
+    ],
+    payable: false,
+    stateMutability: "view",
+    type: "function",
+  },
+];
+
 // from chainlink with the pricefeed address
 const getCoinPrice = async (name = "btc") => {
   const web3 = new Web3(process.env.RPC);
@@ -73,7 +93,18 @@ const getCoinPrice = async (name = "btc") => {
     } else if (name === "usdt") {
       return 1;
     } else if (name === "paco") {
-      const price = 0.0000000392;
+      // const price = 0.0000000392;
+      const pairContract = new web3.eth.Contract(pairABI, pair_address);
+      const reserves = await pairContract.methods.getReserves().call();
+
+      const reserve0 = reserves._reserve0;
+      const reserve1 = reserves._reserve1;
+      const bnbPrice = decimal.divide(reserve0, reserve1);
+
+      const priceFeed = new web3.eth.Contract(PRICE_FEED_ABI, BNB_PRICE_FEED);
+      const { answer } = await priceFeed.methods.latestRoundData().call();
+      const price = decimal.multiply(answer / 10 ** 8, bnbPrice);
+
       tokenPrice[name] = price;
       await tokenPrice.save();
 
@@ -98,7 +129,7 @@ const getCoinPrice = async (name = "btc") => {
       return price;
     }
   } catch (err) {
-    console.log("Error of getting token price from api");
+    console.log("Error of getting token price from api", err);
     return tokenPrice[name] || 0;
   }
 };

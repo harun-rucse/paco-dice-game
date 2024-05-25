@@ -17,7 +17,7 @@ function Control({
   const { isDarkMode } = useDarkMode();
 
   function handleBoost() {
-    boost ? setCallTime(500) : setCallTime(300);
+    boost ? setCallTime(500) : setCallTime(350);
     setBoost((prev) => !prev);
   }
 
