@@ -11,6 +11,7 @@ const DiceGame = lazy(() => import("../pages/DiceGame"));
 const Staking = lazy(() => import("../pages/Staking"));
 const Lottery = lazy(() => import("../pages/Lottery"));
 const Profile = lazy(() => import("../pages/Profile"));
+const Referral = lazy(() => import("../pages/Referral"));
 const ResetPassword = lazy(() => import("../pages/ResetPassword"));
 const AdminDashboard = lazy(() => import("../pages/admin/Dashboard"));
 const AdminApproval = lazy(() => import("../pages/admin/Approval"));
@@ -31,7 +32,7 @@ function Routes() {
         { path: "dice", element: <DiceGame /> },
         { path: "staking", element: <Staking /> },
         { path: "lottery", element: <Lottery /> },
-        { path: "referral", element: <ComingSoon /> },
+        { path: "referral", element: <Referral /> },
         { path: "faucet", element: <ComingSoon /> },
         {
           path: "profile",
