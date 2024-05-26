@@ -41,11 +41,11 @@ function GameCard({
             </span>
           </div>
           <div className="hidden laptop:flex items-center gap-4">
-            <div className="bg-[#2a2955] p-4 rounded-3xl shadow-2xl flex flex-col items-center gap-1">
+            <div className="bg-[#2a2955] dark:bg-[#412869] p-4 rounded-3xl shadow-[0px_3px_8px_0px_rgba(0,0,0,0.25)] border border-[#24234c] dark:border-[#3c2763] flex flex-col items-center gap-1">
               <span className="uppercase tablet:text-lg">Win Chance</span>
               <span className="text-lg">{winChance}%</span>
             </div>
-            <div className="bg-[#2a2955] p-4 rounded-3xl shadow-2xl flex flex-col items-center gap-1">
+            <div className="bg-[#2a2955] dark:bg-[#412869] p-4 rounded-3xl shadow-[0px_3px_8px_0px_rgba(0,0,0,0.25)] flex flex-col items-center gap-1">
               <span className="uppercase tablet:text-lg">Multiplier</span>
               <span className="text-lg">x{Number(multiplier).toFixed(4)}</span>
             </div>
@@ -65,11 +65,11 @@ function GameCard({
         </div>
 
         <div className="laptop:hidden flex items-center gap-4 mb-8 tablet:mb-2">
-          <div className="bg-[#2a2955] p-4 rounded-3xl shadow-2xl flex flex-col items-center">
+          <div className="bg-[#2a2955] dark:bg-[#412869] p-4 rounded-3xl shadow-[0px_3px_8px_0px_rgba(0,0,0,0.25)] flex flex-col items-center">
             <span className="uppercase text-base">Win Chance</span>
             <span className="text-base">{winChance}%</span>
           </div>
-          <div className="bg-[#2a2955] p-4 rounded-3xl shadow-2xl flex flex-col items-center">
+          <div className="bg-[#2a2955] dark:bg-[#412869] p-4 rounded-3xl shadow-[0px_3px_8px_0px_rgba(0,0,0,0.25)] flex flex-col items-center">
             <span className="uppercase text-base">Multiplier</span>
             <span className="text-base">x{Number(multiplier).toFixed(4)}</span>
           </div>

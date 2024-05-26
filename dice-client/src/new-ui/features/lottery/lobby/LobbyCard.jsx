@@ -22,7 +22,7 @@ function LobbyCard() {
 
   return (
     <div>
-      <div className="flex flex-col tablet:flex-row justify-between items-center gap-6 tablet:gap-4 desktop:gap-32">
+      <div className="flex flex-col tablet:flex-row justify-between items-center gap-6 tablet:gap-4 desktop:gap-32 px-4 tablet:px-8">
         <InputBox
           label="Standard ticket"
           type="STANDARD"
@@ -47,32 +47,38 @@ function LobbyCard() {
         }
       />
 
-      <div className="flex flex-col md:flex-row text-white items-start gap-8">
-        <div className="w-full">
-          <h2 className="uppercase text-xl md:text-2xl mb-4">Rules</h2>
-          <ul className="text-sm md:text-base font-thin list-disc ml-4">
-            <li>Players purchase tickets.</li>
-            <li>A random draw determines outcomes based on winning chances.</li>
-            <li>Prize Distribution:</li>
-            <li>
-              Players receive prizes according to the winning tier of each
-              ticket.
-            </li>
-            <li>Each ticket is associated with a specific winning tier.</li>
-            <li>Note:</li>
-            <li>Mega Jackpot offers a chance for a substantial win.</li>
-            <li>Players should be aware of costs and winning chances.</li>
-            <li>Fairness and Transparency:</li>
-            <li>
-              Winning chances and ticket prices are clearly communicated for
-              transparency and fairness.
-            </li>
-            <li>Prizes are distributed at 3 pm UTC every day</li>
-          </ul>
+      <div className="flex flex-col tablet:flex-row text-white items-start justify-between gap-0 pb-6">
+        <div className="w-full h-full">
+          <div className="bg-[#323057] dark:bg-[#6f3977] rounded-l-xl pl-4 laptop:pl-8 py-4 tablet:h-[34rem] laptop:h-[26rem]">
+            <h2 className="uppercase text-xl tablet:text-2xl mb-4">Rules</h2>
+            <ul className="text-sm tablet:text-base font-thin list-disc ml-4">
+              <li>Players purchase tickets.</li>
+              <li>
+                A random draw determines outcomes based on winning chances.
+              </li>
+              <li>Prize Distribution:</li>
+              <li>
+                Players receive prizes according to the winning tier of each
+                ticket.
+              </li>
+              <li>Each ticket is associated with a specific winning tier.</li>
+              <li>Note:</li>
+              <li>Mega Jackpot offers a chance for a substantial win.</li>
+              <li>Players should be aware of costs and winning chances.</li>
+              <li>Fairness and Transparency:</li>
+              <li>
+                Winning chances and ticket prices are clearly communicated for
+                transparency and fairness.
+              </li>
+              <li>Prizes are distributed at 3 pm UTC every day</li>
+            </ul>
+          </div>
 
-          <div className="flex flex-col ml-4 md:w-[60%] mt-12">
-            <p>Mega Jackpot Feature:</p>
-            <span className="text-sm md:text-base">
+          <div className="flex flex-col ml-4 laptop:w-[60%] mt-8 tablet:mt-12">
+            <h2 className="uppercase text-center text-xl tablet:text-2xl mb-2">
+              Mega Jackpot Feature
+            </h2>
+            <span className="text-sm tablet:text-base">
               The Mega Jackpot feature is activated by purchasing MEGA lottery
               tickets priced at 200 PACO tokens each. The mega jackpot winner is
               entitled to up to 80% of the total mega jackpot, while 20% of the
@@ -81,10 +87,12 @@ function LobbyCard() {
             </span>
           </div>
         </div>
-        <div className="w-full space-y-8">
-          <div className="text-center">
-            <h2 className="uppercase text-xl md:text-2xl mb-2">Prize Table</h2>
-            <div className="text-xs md:text-base">
+        <div className="w-full space-y-8 mt-8 tablet:mt-0">
+          <div className="text-center bg-[#323057] dark:bg-[#6f3977] rounded-r-xl pr-4 laptop:pr-8 py-4 tablet:h-[34rem] laptop:h-[26rem]">
+            <h2 className="uppercase text-xl tablet:text-2xl mb-2">
+              Prize Table
+            </h2>
+            <div className="text-xs tablet:text-base">
               <p>25% chance to win 150 tokens.</p>
               <p>3% chance to win 750 tokens.</p>
               <p>0.25% chance to win 2,500 tokens.</p>
@@ -103,10 +111,10 @@ function LobbyCard() {
           </div>
 
           <div className="text-center">
-            <h2 className="uppercase text-xl md:text-2xl mb-2">
+            <h2 className="uppercase text-xl tablet:text-2xl mb-2">
               Lottery Distribution
             </h2>
-            <div className="text-xs md:text-base">
+            <div className="text-xs tablet:text-base">
               <p>
                 Lost lottery tickets are used to cover prizes. Any remaining
                 funds distributed accordingly:

@@ -25,7 +25,7 @@ function StakeHistoryTable() {
   return (
     <div>
       <div className="flex items-center gap-6 mb-5">
-        <h2 className="uppercase text-base tablet:text-2xl">Stake history</h2>
+        <h2 className="uppercase text-base tablet:text-2xl">Staking history</h2>
         <div className="flex items-center justify-between w-[10rem] laptop:w-[14rem] bg-[#1e1c3a] dark:bg-[#442c62] px-4 py-1 laptop:py-2 rounded-2xl">
           <button
             className="focus:outline-none border-none"

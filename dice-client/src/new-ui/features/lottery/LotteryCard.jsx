@@ -15,8 +15,8 @@ function LotteryCard() {
 
   return (
     <div>
-      <div className="bg-gradient-to-b from-[#302d5a] dark:from-[#532856] via-[#25234c] dark:via-[#341c3b] to-[#1d1b3f] dark:to-[#150f22] shadow-[0px_4px_4px_0px_#00000040] border-2 border-[#1c1a3e] dark:border-[#1f1329] rounded-2xl px-4 md:px-8 py-4 space-y-8 relative">
-        <div className="flex flex-col md:flex-row gap-4 md:gap-0 items-center md:items-start justify-between">
+      <div className="bg-gradient-to-b from-[#302d5a] dark:from-[#532856] via-[#25234c] dark:via-[#341c3b] to-[#1d1b3f] dark:to-[#150f22] shadow-[0px_4px_4px_0px_#00000040] border-2 border-[#1c1a3e] dark:border-[#1f1329] rounded-2xl space-y-4 relative">
+        <div className="flex flex-col md:flex-row gap-4 md:gap-0 items-center md:items-start justify-between px-4 md:px-8 py-4">
           <div className="lottery flex text-xs md:text-base space-x-1">
             <button
               className={cn(
