@@ -10,7 +10,7 @@ function AllBets() {
   if (isLoading) return <LoadingSpinner className="h-[36rem]" />;
 
   return (
-    <div className="text-white">
+    <div className="text-white px-4 md:px-8 py-4">
       <div className="flex flex-col tablet:flex-row mb-6 tablet:mb-0 tablet:justify-end gap-6 tablet:gap-10">
         <div className="tablet:self-end text-sm tablet:text-base desktop:text-lg text-center bg-[#53508d] dark:bg-[#753d89] border border-[#53508d] dark:border-[#955997] rounded-2xl px-8 py-2">
           <h4 className="uppercase">Total Tickets Purchased</h4>

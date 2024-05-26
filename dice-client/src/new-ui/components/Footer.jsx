@@ -93,7 +93,12 @@ function Footer() {
         <ul className="space-y-2">
           <li className="text-white">About</li>
           <li className="font-semibold text-[#4f4b92] dark:text-[#745b97]">
-            <Link to="/whitepaper">Whitepaper</Link>
+            <Link
+              to="https://drive.google.com/file/d/10rVdDHFvH_8M6jJ9ALfBPTCD6jjHN8_d/view?usp=sharing"
+              target="_blank"
+            >
+              Whitepaper
+            </Link>
           </li>
           <li className="font-semibold text-[#4f4b92] dark:text-[#745b97]">
             <Link to="/support">Support</Link>

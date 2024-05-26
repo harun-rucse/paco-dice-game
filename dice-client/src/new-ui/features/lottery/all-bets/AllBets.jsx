@@ -26,7 +26,7 @@ function AllBets() {
     return <LoadingSpinner className="h-[36rem]" />;
 
   return (
-    <div className="text-white">
+    <div className="text-white px-4 md:px-8 py-4">
       {/* TopBar */}
       <TopBar title="All Bets">
         <RoundCard round={round - 1} />

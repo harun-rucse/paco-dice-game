@@ -57,7 +57,7 @@ function Control({
       </div>
       <div className="flex items-center gap-8">
         <Modal>
-          <Modal.Open opens="limit">
+          <Modal.Open opens="fairness">
             <img
               src={
                 isDarkMode ? "/images/search-dark.png" : "/images/search.png"
@@ -66,11 +66,8 @@ function Control({
               className="w-6 cursor-pointer"
             />
           </Modal.Open>
-          <Modal.Body
-            name="limit"
-            className="rounded-2xl w-[22rem] tablet:min-w-[35rem] h-[30rem] tablet:min-h-[36rem] bg-transparent"
-          >
-            <Limit />
+          <Modal.Body name="fairness">
+            <Fairness />
           </Modal.Body>
         </Modal>
 
@@ -95,15 +92,18 @@ function Control({
         </Modal>
 
         <Modal>
-          <Modal.Open opens="fairness">
+          <Modal.Open opens="limit">
             <img
               src={isDarkMode ? "/images/scale-dark.png" : "/images/scale.png"}
               alt=""
               className="w-7 cursor-pointer"
             />
           </Modal.Open>
-          <Modal.Body name="fairness">
-            <Fairness />
+          <Modal.Body
+            name="limit"
+            className="rounded-2xl w-[22rem] tablet:min-w-[35rem] h-[30rem] tablet:min-h-[36rem] bg-transparent"
+          >
+            <Limit />
           </Modal.Body>
         </Modal>
       </div>
