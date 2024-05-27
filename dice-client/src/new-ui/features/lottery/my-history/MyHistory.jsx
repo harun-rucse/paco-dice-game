@@ -28,7 +28,7 @@ function MyHistory() {
     return <LoadingSpinner className="h-[36rem]" />;
 
   return (
-    <div className="text-white">
+    <div className="text-white px-4 md:px-8 py-4">
       <div className="absolute top-20 tablet:top-4 right-12 tablet:right-8 w-[240px] tablet:w-[220px] desktop:w-[300px] text-sm desktop:text-lg text-center bg-[#53508d] dark:bg-[#753d89] border border-[#53508d] dark:border-[#955997] rounded-2xl px-8 py-1 space-y-2 tablet:space-y-0">
         <h4 className="uppercase">My total winnings</h4>
         <p className="flex items-center justify-center uppercase gap-2">

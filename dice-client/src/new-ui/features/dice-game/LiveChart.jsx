@@ -113,7 +113,7 @@ function LiveChart({
           />
         </div>
         <img
-          src="/images/cross.png"
+          src={isDarkMode ? "/images/cross-dark.png" : "/images/cross.png"}
           alt=""
           className="w-6 cursor-pointer"
           onClick={() => setShowLiveChart((state) => !state)}

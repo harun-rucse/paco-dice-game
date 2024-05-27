@@ -213,7 +213,7 @@ function GameInterface() {
                       ...prev,
                       [currentBalance?.name?.toLowerCase()]: decimal.addition(
                         prev[currentBalance?.name?.toLowerCase()],
-                        data.rewardAmount
+                        data.rewardAmount - data.betAmount
                       ),
                     }));
                     setTotalWager((prev) => ({
@@ -341,7 +341,7 @@ function GameInterface() {
                         ...prev,
                         [currentBalance?.name?.toLowerCase()]: decimal.addition(
                           prev[currentBalance?.name?.toLowerCase()],
-                          data.rewardAmount
+                          data.rewardAmount - data.betAmount
                         ),
                       }));
 
@@ -478,7 +478,7 @@ function GameInterface() {
                         ...prev,
                         [currentBalance?.name?.toLowerCase()]: decimal.addition(
                           prev[currentBalance?.name?.toLowerCase()],
-                          data.rewardAmount
+                          data.rewardAmount - data.betAmount
                         ),
                       }));
 
