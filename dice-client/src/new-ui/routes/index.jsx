@@ -12,6 +12,7 @@ const Staking = lazy(() => import("../pages/Staking"));
 const Lottery = lazy(() => import("../pages/Lottery"));
 const Profile = lazy(() => import("../pages/Profile"));
 const Referral = lazy(() => import("../pages/Referral"));
+const JoinViaReferral = lazy(() => import("../pages/JoinViaReferral"));
 const ResetPassword = lazy(() => import("../pages/ResetPassword"));
 const AdminDashboard = lazy(() => import("../pages/admin/Dashboard"));
 const AdminApproval = lazy(() => import("../pages/admin/Approval"));
@@ -47,6 +48,14 @@ function Routes() {
           element: (
             <PublicRoute>
               <ResetPassword />
+            </PublicRoute>
+          ),
+        },
+        {
+          path: "referral/:referralCode",
+          element: (
+            <PublicRoute>
+              <JoinViaReferral />
             </PublicRoute>
           ),
         },

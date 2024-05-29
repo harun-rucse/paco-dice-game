@@ -3,7 +3,7 @@ import toast from "react-hot-toast";
 
 function ReferralLink() {
   const [referralLink, setReferralLink] = useState(
-    "https://game.paco.finance/LlFQtzUPmPhk"
+    `${import.meta.env.VITE_FRONTEND_URL}/referral/LlFQtzUPmPhk`
   );
 
   function handleCopy() {
@@ -26,7 +26,6 @@ function ReferralLink() {
           <div className="flex items-center bg-[#222143] dark:bg-[#1d172f] border border-[#42416a] dark:border-[#594c7a] px-3 py-3 w-full tablet:w-[23rem] laptop:w-[24rem]">
             <input
               type="text"
-              placeholder="https://game.paco.finance/LlFQtzUPmPhk"
               value={referralLink}
               className="bg-transparent w-full border-none focus:outline-none text-sm tablet:text-base text-[#6968a4] dark:text-[#9d7fc2] placeholder:text-[#6968a4] dark:placeholder:text-[#9d7fc2] font-thin"
               readOnly
