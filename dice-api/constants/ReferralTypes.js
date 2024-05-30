@@ -1,0 +1,13 @@
+const GAMINGREFERRAL = "gaming";
+const STAKINGREFERRAL = "staking";
+const FAUCETREFERRAL = "faucet";
+const LOTTERYREFERRAL = "lottery";
+const MININGREFERRAL = "mining";
+
+module.exports = {
+  GAMINGREFERRAL,
+  STAKINGREFERRAL,
+  FAUCETREFERRAL,
+  LOTTERYREFERRAL,
+  MININGREFERRAL,
+};
