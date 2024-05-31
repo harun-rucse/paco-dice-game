@@ -15,13 +15,14 @@ import {
 function StakeHistoryTable() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [limit, setLimit] = useState(10);
-  const [date, setDate] = useState(todaysDay());
+  const [date, setDate] = useState(subtractDay(todaysDay(), 1));
   const [selectedType, setSelectedType] = useState("All Payouts");
   const [showPayout, setShowPayout] = useState(false);
 
   const { isLoading, result, count } = useGetStakeHistories(
     limit,
-    formatDate(subtractDay(date, 1), "YYYY-MM-DD").toString()
+    formatDate(date, "YYYY-MM-DD").toString(),
+    selectedType
   );
 
   useEffect(() => {
@@ -53,7 +54,7 @@ function StakeHistoryTable() {
               className="focus:outline-none border-none"
               onClick={() => setDate((prevDay) => addDay(prevDay))}
               disabled={
-                formatDate(todaysDay(), "D/M/YYYY") ===
+                formatDate(subtractDay(todaysDay(), 1), "D/M/YYYY") ===
                 formatDate(date, "D/M/YYYY")
               }
             >
@@ -131,38 +132,42 @@ function StakeHistoryTable() {
             </select>
           </span>
         </Table.Header>
-        <Table.Body className="max-h-[40rem] overflow-y-auto">
+        <Table.Body className="max-h-[40rem] overflow-y-auto space-y-0">
           {isLoading ? (
             <LoadingSpinner className="h-[34rem]" />
           ) : (
             result?.map((item, i) => (
               <Table.Row
                 key={i}
-                className="text-sm tablet:text-xs laptop:text-lg"
+                className={`${
+                  Number(item?.index) % 2 === 0
+                    ? "bg-transparent"
+                    : "bg-[#373568]"
+                } text-sm tablet:text-xs laptop:text-lg py-2`}
               >
                 <span>{formatDate(item?.date, "D/MM/YYYY")}</span>
                 <span className="flex items-center gap-2">
                   <img
                     src="/images/paco.png"
                     alt=""
-                    className="w-8 tablet:w-5 laptop:w-8 h-8 tablet:h-5 laptop:h-8"
+                    className="w-7 tablet:w-5 laptop:w-7 h-7 tablet:h-5 laptop:h-7"
                   />
                   {numberFormat(item?.stakedPaco)}
                 </span>
                 <span className="flex items-center gap-2">
                   <img
-                    src="/images/currency.png"
+                    src={`/tokens/${item?.coinName}.png`}
                     alt=""
-                    className="w-8 tablet:w-5 laptop:w-8 h-8 tablet:h-5 laptop:h-8"
+                    className="w-7 tablet:w-5 laptop:w-7 h-7 tablet:h-5 laptop:h-7"
                   />
-                  {numberFormat(item?.payouts)}$
+                  {numberFormat(item?.payouts)}
                 </span>
               </Table.Row>
             ))
           )}
         </Table.Body>
         <Table.Footer>
-          <Pagination count={count} limit={limit} />
+          <Pagination count={count} limit={limit / 5} />
         </Table.Footer>
       </Table>
     </div>

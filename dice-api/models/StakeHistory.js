@@ -35,6 +35,7 @@ const stakeHistorySchema = new Schema(
       type: String,
       default: "0",
     },
+    date: Date,
   },
   {
     timestamps: true,

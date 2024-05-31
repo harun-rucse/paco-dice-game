@@ -9,7 +9,15 @@ import { cn } from "../../utils/index";
 import { multiply } from "../../utils/decimal";
 import { currencyFormat } from "../../utils/format";
 
-function BalanceItem({ name, value, imgUrl, onSelect, onHide, isFiat, price }) {
+function BalanceItem({
+  name,
+  value,
+  imgUrl,
+  onSelect,
+  onHide,
+  isDollar,
+  price,
+}) {
   return (
     <div
       onClick={() => {
@@ -25,17 +33,17 @@ function BalanceItem({ name, value, imgUrl, onSelect, onHide, isFiat, price }) {
         </strong>
       </div>
       <strong className="text-white font-extralight text-sm tablet:text-base">
-        {isFiat
-          ? Number(value)?.toFixed(8)
-          : currencyFormat(multiply(value, price?.[name.toLowerCase()]))}
-        {/* {isFiat ? Number(value)?.toFixed(8) : value} */}
+        {isDollar
+          ? currencyFormat(multiply(value, price?.[name.toLowerCase()]))
+          : Number(value)?.toFixed(8)}
+        {/* {isDollar ? Number(value)?.toFixed(8) : value} */}
       </strong>
     </div>
   );
 }
 
 function Balance({ className }) {
-  const [isFiat, setIsFiat] = useState(true);
+  const [isDollar, setShowDollar] = useState(false);
   const { showBalance, setShowBalance, currentBalance, setCurrentBalance } =
     useBalance();
   const { user: account } = useCurrentUser();
@@ -81,7 +89,7 @@ function Balance({ className }) {
                 imgUrl="/tokens/btc.png"
                 onHide={setShowBalance}
                 onSelect={setCurrentBalance}
-                isFiat={isFiat}
+                isDollar={isDollar}
                 price={price}
               />
 
@@ -91,7 +99,7 @@ function Balance({ className }) {
                 imgUrl="/tokens/usdt.png"
                 onHide={setShowBalance}
                 onSelect={setCurrentBalance}
-                isFiat={isFiat}
+                isDollar={isDollar}
                 price={price}
               />
 
@@ -101,7 +109,7 @@ function Balance({ className }) {
                 imgUrl="/tokens/paco.png"
                 onHide={setShowBalance}
                 onSelect={setCurrentBalance}
-                isFiat={isFiat}
+                isDollar={isDollar}
                 price={price}
               />
 
@@ -111,7 +119,7 @@ function Balance({ className }) {
                 imgUrl="/tokens/eth.png"
                 onHide={setShowBalance}
                 onSelect={setCurrentBalance}
-                isFiat={isFiat}
+                isDollar={isDollar}
                 price={price}
               />
 
@@ -121,7 +129,7 @@ function Balance({ className }) {
                 imgUrl="/tokens/bnb.png"
                 onHide={setShowBalance}
                 onSelect={setCurrentBalance}
-                isFiat={isFiat}
+                isDollar={isDollar}
                 price={price}
               />
             </>
@@ -132,8 +140,8 @@ function Balance({ className }) {
               Show in FIAT
             </span>
             <ToggleUSD
-              onSwitch={(state) => setIsFiat(state)}
-              defaultValue={isFiat}
+              onSwitch={(state) => setShowDollar(state)}
+              defaultValue={isDollar}
             />
           </div>
         </div>

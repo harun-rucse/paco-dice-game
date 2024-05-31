@@ -73,10 +73,10 @@ export const resetBurn = async () => {
   }
 };
 
-export const getStakeHistories = async (page, limit, date) => {
+export const getStakeHistories = async (page, limit, date, type) => {
   try {
     const { data } = await api.get(
-      `/stakes/stake-histories?page=${page}&limit=${limit}&date=${date}`
+      `/stakes/stake-histories?page=${page}&limit=${limit}&date=${date}&type=${type}`
     );
 
     return data;
