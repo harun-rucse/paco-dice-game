@@ -7,14 +7,22 @@ import useGetStakeHistories from "./useGetStakeHistories";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import { formatDate, todaysDay, addDay, subtractDay } from "../../../utils";
 import Pagination from "../../components/Pagination";
+import {
+  MdOutlineKeyboardArrowDown,
+  MdOutlineKeyboardArrowUp,
+} from "react-icons/md";
 
 function StakeHistoryTable() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [limit, setLimit] = useState(10);
-  const [date, setDate] = useState(todaysDay());
+  const [date, setDate] = useState(subtractDay(todaysDay(), 1));
+  const [selectedType, setSelectedType] = useState("All Payouts");
+  const [showPayout, setShowPayout] = useState(false);
+
   const { isLoading, result, count } = useGetStakeHistories(
     limit,
-    formatDate(subtractDay(date, 1), "YYYY-MM-DD").toString()
+    formatDate(date, "YYYY-MM-DD").toString(),
+    selectedType
   );
 
   useEffect(() => {
@@ -22,28 +30,77 @@ function StakeHistoryTable() {
     setSearchParams(searchParams);
   }, [date]);
 
+  function handleSelectPayout(val) {
+    setSelectedType(val);
+    setShowPayout(false);
+  }
+
   return (
     <div>
-      <div className="flex items-center gap-6 mb-5">
-        <h2 className="uppercase text-base tablet:text-2xl">Staking history</h2>
-        <div className="flex items-center justify-between w-[10rem] laptop:w-[14rem] bg-[#1e1c3a] dark:bg-[#442c62] px-4 py-1 laptop:py-2 rounded-2xl">
+      <div className="flex items-center justify-between flex-col tablet:flex-row">
+        <div className="flex items-center gap-6 mb-5">
+          <h2 className="uppercase text-base tablet:text-2xl">
+            Staking history
+          </h2>
+          <div className="flex items-center justify-between w-[10rem] laptop:w-[14rem] bg-[#1e1c3a] dark:bg-[#442c62] px-4 py-1 laptop:py-2 rounded-2xl">
+            <button
+              className="focus:outline-none border-none"
+              onClick={() => setDate((prevDay) => subtractDay(prevDay))}
+            >
+              <FaChevronLeft />
+            </button>
+            <span>{formatDate(date, "D/M/YYYY")}</span>
+            <button
+              className="focus:outline-none border-none"
+              onClick={() => setDate((prevDay) => addDay(prevDay))}
+              disabled={
+                formatDate(subtractDay(todaysDay(), 1), "D/M/YYYY") ===
+                formatDate(date, "D/M/YYYY")
+              }
+            >
+              <FaChevronRight />
+            </button>
+          </div>
+        </div>
+
+        <div className="self-end tablet:self-start relative mb-2 tablet:mb-0">
           <button
-            className="focus:outline-none border-none"
-            onClick={() => setDate((prevDay) => subtractDay(prevDay))}
+            className="w-[10rem] bg-[#1e1c3a] flex items-center justify-between px-4 py-2 rounded-xl border border-[#39376b]"
+            onClick={() => setShowPayout((state) => !state)}
           >
-            <FaChevronLeft />
+            <span className="text-sm tablet:text-base uppercase">
+              {selectedType}
+            </span>
+            {showPayout ? (
+              <MdOutlineKeyboardArrowUp size={26} color="#ffff" />
+            ) : (
+              <MdOutlineKeyboardArrowDown size={26} color="#ffff" />
+            )}
           </button>
-          <span>{formatDate(date, "D/M/YYYY")}</span>
-          <button
-            className="focus:outline-none border-none"
-            onClick={() => setDate((prevDay) => addDay(prevDay))}
-            disabled={
-              formatDate(todaysDay(), "D/M/YYYY") ===
-              formatDate(date, "D/M/YYYY")
-            }
-          >
-            <FaChevronRight />
-          </button>
+          {showPayout && (
+            <div className="absolute top-11 left-0 w-full bg-[#15142c] shadow-lg border border-[#39376b] rounded-xl z-[999] mt-2 text-center space-y-1">
+              <p
+                className={`text-sm tablet:text-base uppercase px-4 py-2 transition ${
+                  selectedType === "All Payouts"
+                    ? "bg-[#4f4b84]"
+                    : "bg-transparent"
+                } text-white rounded-xl cursor-pointer`}
+                onClick={() => handleSelectPayout("All Payouts")}
+              >
+                All Payouts
+              </p>
+              <p
+                className={`text-sm tablet:text-base uppercase px-4 py-2 transition ${
+                  selectedType === "My Payouts"
+                    ? "bg-[#4f4b84]"
+                    : "bg-transparent"
+                } text-white rounded-xl cursor-pointer`}
+                onClick={() => handleSelectPayout("My Payouts")}
+              >
+                My Payouts
+              </p>
+            </div>
+          )}
         </div>
       </div>
       <Table
@@ -75,38 +132,42 @@ function StakeHistoryTable() {
             </select>
           </span>
         </Table.Header>
-        <Table.Body className="max-h-[40rem] overflow-y-auto">
+        <Table.Body className="max-h-[40rem] overflow-y-auto space-y-0">
           {isLoading ? (
             <LoadingSpinner className="h-[34rem]" />
           ) : (
             result?.map((item, i) => (
               <Table.Row
                 key={i}
-                className="text-sm tablet:text-xs laptop:text-lg"
+                className={`${
+                  Number(item?.index) % 2 === 0
+                    ? "bg-transparent"
+                    : "bg-[#373568]"
+                } text-sm tablet:text-xs laptop:text-lg py-2`}
               >
                 <span>{formatDate(item?.date, "D/MM/YYYY")}</span>
                 <span className="flex items-center gap-2">
                   <img
                     src="/images/paco.png"
                     alt=""
-                    className="w-8 tablet:w-5 laptop:w-8 h-8 tablet:h-5 laptop:h-8"
+                    className="w-7 tablet:w-5 laptop:w-7 h-7 tablet:h-5 laptop:h-7"
                   />
                   {numberFormat(item?.stakedPaco)}
                 </span>
                 <span className="flex items-center gap-2">
                   <img
-                    src="/images/currency.png"
+                    src={`/tokens/${item?.coinName}.png`}
                     alt=""
-                    className="w-8 tablet:w-5 laptop:w-8 h-8 tablet:h-5 laptop:h-8"
+                    className="w-7 tablet:w-5 laptop:w-7 h-7 tablet:h-5 laptop:h-7"
                   />
-                  {numberFormat(item?.payouts)}$
+                  {numberFormat(item?.payouts)}
                 </span>
               </Table.Row>
             ))
           )}
         </Table.Body>
         <Table.Footer>
-          <Pagination count={count} limit={limit} />
+          <Pagination count={count} limit={limit / 5} />
         </Table.Footer>
       </Table>
     </div>
