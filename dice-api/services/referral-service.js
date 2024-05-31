@@ -56,18 +56,12 @@ const claimReferral = async (account_id) => {
     throw new AppError("No referral found", 404);
   }
 
-  let totalBtc = "0";
-  let totalUsdt = "0";
-  let totalPaco = "0";
-  let totalEth = "0";
-  let totalBnb = "0";
-
   for (let referral of referrals) {
-    totalBtc = decimal.addition(totalBtc, referral.btc);
-    totalUsdt = decimal.addition(totalUsdt, referral.usdt);
-    totalPaco = decimal.addition(totalPaco, referral.paco);
-    totalEth = decimal.addition(totalEth, referral.eth);
-    totalBnb = decimal.addition(totalBnb, referral.bnb);
+    totalBtc = decimal.addition(referral.totalBtc, referral.btc);
+    totalUsdt = decimal.addition(referral.totalUsdt, referral.usdt);
+    totalPaco = decimal.addition(referral.totalPaco, referral.paco);
+    totalEth = decimal.addition(referral.totalEth, referral.eth);
+    totalBnb = decimal.addition(referral.totalBnb, referral.bnb);
 
     referral.btc = "0";
     referral.usdt = "0";
@@ -84,7 +78,7 @@ const claimReferral = async (account_id) => {
     await referral.save();
   }
 
-  return { totalBtc, totalUsdt, totalPaco, totalEth, totalBnb };
+  return true;
 };
 
 module.exports = {
