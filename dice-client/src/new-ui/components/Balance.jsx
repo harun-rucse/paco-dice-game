@@ -1,9 +1,15 @@
+import { useState } from "react";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
-import { cn } from "../../utils/index";
 import { useBalance } from "../../context/BalanceContext";
 import { useCurrentUser } from "../features/authentication/useCurrentUser";
+import ToggleUSD from "./ToggleUSD";
+import useGetCoinPrice from "../../hooks/useGetCoinPrice";
+import LoadingSpinner from "./LoadingSpinner";
+import { cn } from "../../utils/index";
+import { multiply } from "../../utils/decimal";
+import { currencyFormat } from "../../utils/format";
 
-function BalanceItem({ name, value, imgUrl, onSelect, onHide }) {
+function BalanceItem({ name, value, imgUrl, onSelect, onHide, isFiat, price }) {
   return (
     <div
       onClick={() => {
@@ -19,16 +25,21 @@ function BalanceItem({ name, value, imgUrl, onSelect, onHide }) {
         </strong>
       </div>
       <strong className="text-white font-extralight text-sm tablet:text-base">
-        {Number(value)?.toFixed(8)}
+        {isFiat
+          ? Number(value)?.toFixed(8)
+          : currencyFormat(multiply(value, price?.[name.toLowerCase()]))}
+        {/* {isFiat ? Number(value)?.toFixed(8) : value} */}
       </strong>
     </div>
   );
 }
 
 function Balance({ className }) {
+  const [isFiat, setIsFiat] = useState(true);
   const { showBalance, setShowBalance, currentBalance, setCurrentBalance } =
     useBalance();
   const { user: account } = useCurrentUser();
+  const { isLoading, price } = useGetCoinPrice();
 
   return (
     <div className="relative">
@@ -60,45 +71,71 @@ function Balance({ className }) {
 
       {showBalance && (
         <div className="absolute min-w-[13rem] tablet:w-[20rem] top-12 tablet:top-14 left-0 bg-[#413e72] dark:bg-[#3a2354] p-2 rounded-2xl space-y-2 z-[999] shadow-md">
-          <BalanceItem
-            name="BTC"
-            value={account?.btc}
-            imgUrl="/tokens/btc.png"
-            onHide={setShowBalance}
-            onSelect={setCurrentBalance}
-          />
+          {isLoading ? (
+            <LoadingSpinner className="w-[20rem]" />
+          ) : (
+            <>
+              <BalanceItem
+                name="BTC"
+                value={account?.btc}
+                imgUrl="/tokens/btc.png"
+                onHide={setShowBalance}
+                onSelect={setCurrentBalance}
+                isFiat={isFiat}
+                price={price}
+              />
 
-          <BalanceItem
-            name="USDT"
-            value={account?.usdt}
-            imgUrl="/tokens/usdt.png"
-            onHide={setShowBalance}
-            onSelect={setCurrentBalance}
-          />
+              <BalanceItem
+                name="USDT"
+                value={account?.usdt}
+                imgUrl="/tokens/usdt.png"
+                onHide={setShowBalance}
+                onSelect={setCurrentBalance}
+                isFiat={isFiat}
+                price={price}
+              />
 
-          <BalanceItem
-            name="PACO"
-            value={account?.paco}
-            imgUrl="/tokens/paco.png"
-            onHide={setShowBalance}
-            onSelect={setCurrentBalance}
-          />
+              <BalanceItem
+                name="PACO"
+                value={account?.paco}
+                imgUrl="/tokens/paco.png"
+                onHide={setShowBalance}
+                onSelect={setCurrentBalance}
+                isFiat={isFiat}
+                price={price}
+              />
 
-          <BalanceItem
-            name="ETH"
-            value={account?.eth}
-            imgUrl="/tokens/eth.png"
-            onHide={setShowBalance}
-            onSelect={setCurrentBalance}
-          />
+              <BalanceItem
+                name="ETH"
+                value={account?.eth}
+                imgUrl="/tokens/eth.png"
+                onHide={setShowBalance}
+                onSelect={setCurrentBalance}
+                isFiat={isFiat}
+                price={price}
+              />
 
-          <BalanceItem
-            name="BNB"
-            value={account?.bnb}
-            imgUrl="/tokens/bnb.png"
-            onHide={setShowBalance}
-            onSelect={setCurrentBalance}
-          />
+              <BalanceItem
+                name="BNB"
+                value={account?.bnb}
+                imgUrl="/tokens/bnb.png"
+                onHide={setShowBalance}
+                onSelect={setCurrentBalance}
+                isFiat={isFiat}
+                price={price}
+              />
+            </>
+          )}
+
+          <div className="flex items-center justify-between px-2 py-1">
+            <span className="tablet:text-xl text-[#7d78c6] dark:text-[#774ca7]">
+              Show in FIAT
+            </span>
+            <ToggleUSD
+              onSwitch={(state) => setIsFiat(state)}
+              defaultValue={isFiat}
+            />
+          </div>
         </div>
       )}
     </div>
