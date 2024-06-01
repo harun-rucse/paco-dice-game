@@ -1,10 +1,18 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { useCurrentUser } from "../../../hooks/useCurrentUser";
 
 function ReferralLink() {
-  const [referralLink, setReferralLink] = useState(
-    `${import.meta.env.VITE_FRONTEND_URL}/referral/LlFQtzUPmPhk`
-  );
+  const [referralLink, setReferralLink] = useState("");
+
+  const { isLoading, user } = useCurrentUser();
+
+  useEffect(() => {
+    if (user?.referralCode)
+      setReferralLink(
+        `${import.meta.env.VITE_FRONTEND_URL}/referral/${user?.referralCode}`
+      );
+  }, [isLoading, user?.referralCode]);
 
   function handleCopy() {
     navigator.clipboard.writeText(referralLink);

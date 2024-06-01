@@ -10,6 +10,7 @@ const accountSchema = new Schema(
     },
     email: {
       type: String,
+      unique: true,
       required: true,
     },
     password: {
@@ -55,6 +56,10 @@ const accountSchema = new Schema(
       type: String,
       enum: ["user", "admin"],
       default: "user",
+    },
+    referralCode: {
+      type: String,
+      unique: true,
     },
     passwordChangeAt: Date,
     passwordResetToken: String,

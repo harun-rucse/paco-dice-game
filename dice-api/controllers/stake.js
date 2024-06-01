@@ -5,9 +5,6 @@ const StakePool = require("../models/StakePool");
 const AppError = require("../utils/app-error");
 const catchAsync = require("../utils/catch-async");
 const decimal = require("../utils/decimal");
-const redisClient = require("../config/redis-client");
-
-const STAKE_HISTORY_CACHE_KEY = "stake-histories";
 
 const _calcStakePercentage = (amount, totalAmount) => {
   return decimal.divide(decimal.multiply(100, amount), totalAmount);

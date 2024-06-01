@@ -4,6 +4,7 @@ import { multiply } from "../../../utils/decimal";
 import { currencyFormat, numberFormat } from "../../../utils/format";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import SingleToken from "./SingleToken";
+import useGetCommissionDetails from "./useGetCommissionDetails";
 
 function TokenCommissionCard({ title, tokens, price }) {
   return (
@@ -48,35 +49,36 @@ function CommissionCard({ title, icon, name, value, amount }) {
 function CommissionDetails() {
   const [isLoading] = useState(false);
   const { isLoading: isFetching, price } = useGetCoinPrice();
+  const { isLoading: isFetchingDetails, data } = useGetCommissionDetails();
 
   const gamingTokens = [
     {
       icon: "/tokens/btc.png",
-      title: 0.000005421,
+      title: data?.gaming?.btc,
       name: "WBTC",
       coin: "btc",
     },
     {
       icon: "/tokens/paco.png",
-      title: 94561615.21,
+      title: data?.gaming?.paco,
       name: "PACO",
       coin: "paco",
     },
     {
       icon: "/tokens/eth.png",
-      title: 0.007595421,
+      title: data?.gaming?.eth,
       name: "ETH",
       coin: "eth",
     },
     {
       icon: "/tokens/bnb.png",
-      title: 0.00642217,
+      title: data?.gaming?.bnb,
       name: "WBNB",
       coin: "bnb",
     },
     {
       icon: "/tokens/usdt.png",
-      title: 3.11642217,
+      title: data?.gaming?.usdt,
       name: "USDT",
       coin: "usdt",
     },
@@ -85,31 +87,31 @@ function CommissionDetails() {
   const stakingTokens = [
     {
       icon: "/tokens/btc.png",
-      title: 0.000005421,
+      title: data?.staking?.btc,
       name: "WBTC",
       coin: "btc",
     },
     {
       icon: "/tokens/paco.png",
-      title: 94561615.21,
+      title: data?.staking?.paco,
       name: "PACO",
       coin: "paco",
     },
     {
       icon: "/tokens/eth.png",
-      title: 0.007595421,
+      title: data?.staking?.eth,
       name: "ETH",
       coin: "eth",
     },
     {
       icon: "/tokens/bnb.png",
-      title: 0.00642217,
+      title: data?.staking?.bnb,
       name: "WBNB",
       coin: "bnb",
     },
     {
       icon: "/tokens/usdt.png",
-      title: 3.11642217,
+      title: data?.staking?.usdt,
       name: "USDT",
       coin: "usdt",
     },
@@ -118,7 +120,7 @@ function CommissionDetails() {
   return (
     <div className="p-2 space-y-4 bg-[#1f1e3e] dark:bg-[#2b2345]">
       <h4 className="text-xl">Commission Earnings</h4>
-      {isFetching || isLoading ? (
+      {isFetching || isLoading || isFetchingDetails ? (
         <LoadingSpinner className="h-[23rem]" />
       ) : (
         <div className="grid tablet:grid-cols-2 laptop:grid-cols-3 desktop:grid-cols-5 gap-5 pb-6">
@@ -137,22 +139,22 @@ function CommissionDetails() {
             title="Faucet"
             icon="/images/paco.png"
             name="PACO"
-            value={94561615.21}
-            amount={multiply(94561615.21, price.paco)}
+            value={data?.faucet?.paco}
+            amount={multiply(data?.faucet?.paco, price.paco)}
           />
           <CommissionCard
             title="Lottery"
             icon="/images/paco.png"
             name="PACO"
-            value={494561615}
-            amount={multiply(494561615, price.paco)}
+            value={data?.lottery?.paco}
+            amount={multiply(data?.lottery?.paco, price.paco)}
           />
           <CommissionCard
             title="Mined Tokens"
             icon="/images/paco.png"
             name="PACO"
-            value={494561615}
-            amount={multiply(494561615, price.paco)}
+            value={data?.mined?.paco}
+            amount={multiply(data?.mined?.paco, price.paco)}
           />
         </div>
       )}

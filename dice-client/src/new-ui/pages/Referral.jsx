@@ -1,7 +1,11 @@
 import { useEffect } from "react";
 import ReferralCard from "../features/referral/ReferralCard";
+import { useCurrentUser } from "../../hooks/useCurrentUser";
+import ReferralUnAuth from "../features/referral/ReferralUnAuth";
 
 function Referral() {
+  const { isLoading, isAuthenticated } = useCurrentUser();
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -9,7 +13,7 @@ function Referral() {
   return (
     <div className="px-4 desktop:px-8 pt-4 tablet:py-8 pb-60 space-y-6 tablet:mb-[12rem]">
       <h4 className="text-xl tablet:text-2xl">Referral</h4>
-      <ReferralCard />
+      {!isLoading && isAuthenticated ? <ReferralCard /> : <ReferralUnAuth />}
     </div>
   );
 }

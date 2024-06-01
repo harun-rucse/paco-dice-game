@@ -6,129 +6,19 @@ import { formatDate } from "../../../utils";
 import { currencyFormat } from "../../../utils/format";
 import { useDarkMode } from "../../../context/DarkModeContext";
 import CommissionDetailsInfo from "./CommissionDetailsInfo";
+import useGetMyReferredUsers from "./useGetMyReferredUsers";
+import { addition, multiply } from "../../../utils/decimal";
+import useGetCoinPrice from "../../../hooks/useGetCoinPrice";
 
 function ReferredUser() {
   const [limit, setLimit] = useState(10);
-  const [isLoading] = useState(false);
+  // const [isLoading] = useState(false);
   const [openDetailsId, setOpenDetailsId] = useState("");
-  const count = 12;
+  // const count = 12;
 
   const { isDarkMode } = useDarkMode();
-
-  const result = [
-    {
-      _id: "1",
-      user: "STROEM",
-      memberSince: new Date(),
-      wagered: "50",
-      commission: "0.05",
-      values: {
-        btc: 0.00000542,
-        paco: 94561615.21,
-        eth: 0.007595421,
-        bnb: 0.00642217,
-        usdt: 3.11642217,
-      },
-    },
-    {
-      _id: "2",
-      user: "STROEM",
-      memberSince: new Date(),
-      wagered: "50",
-      commission: "0.05",
-      values: {
-        btc: 0.00000542,
-        paco: 94561615.21,
-        eth: 0.007595421,
-        bnb: 0.00642217,
-        usdt: 3.11642217,
-      },
-    },
-    {
-      _id: "3",
-      user: "STROEM",
-      memberSince: new Date(),
-      wagered: "50",
-      commission: "0.05",
-      values: {
-        btc: 0.00000542,
-        paco: 94561615.21,
-        eth: 0.007595421,
-        bnb: 0.00642217,
-        usdt: 3.11642217,
-      },
-    },
-    {
-      _id: "4",
-      user: "STROEM",
-      memberSince: new Date(),
-      wagered: "50",
-      commission: "0.05",
-      values: {
-        btc: 0.00000542,
-        paco: 94561615.21,
-        eth: 0.007595421,
-        bnb: 0.00642217,
-        usdt: 3.11642217,
-      },
-    },
-    {
-      _id: "5",
-      user: "STROEM",
-      memberSince: new Date(),
-      wagered: "50",
-      commission: "0.05",
-      values: {
-        btc: 0.00000542,
-        paco: 94561615.21,
-        eth: 0.007595421,
-        bnb: 0.00642217,
-        usdt: 3.11642217,
-      },
-    },
-    {
-      _id: "6",
-      user: "STROEM",
-      memberSince: new Date(),
-      wagered: "50",
-      commission: "0.05",
-      values: {
-        btc: 0.00000542,
-        paco: 94561615.21,
-        eth: 0.007595421,
-        bnb: 0.00642217,
-        usdt: 3.11642217,
-      },
-    },
-    {
-      _id: "7",
-      user: "STROEM",
-      memberSince: new Date(),
-      wagered: "50",
-      commission: "0.05",
-      values: {
-        btc: 0.00000542,
-        paco: 94561615.21,
-        eth: 0.007595421,
-        bnb: 0.00642217,
-        usdt: 3.11642217,
-      },
-    },
-    {
-      _id: "8",
-      user: "STROEM",
-      memberSince: new Date(),
-      wagered: "50",
-      commission: "0.06",
-      values: {
-        btc: 0.00000542,
-        paco: 94561615.21,
-        eth: 0.007595421,
-        bnb: 0.00642217,
-        usdt: 3.11642217,
-      },
-    },
-  ];
+  const { isLoading: isFetching, price } = useGetCoinPrice();
+  const { isLoading, result, count } = useGetMyReferredUsers(limit);
 
   function handleOpenDetails(id) {
     if (openDetailsId) {
@@ -136,6 +26,16 @@ function ReferredUser() {
     } else {
       setOpenDetailsId(id);
     }
+  }
+
+  function calcTotalUSD(values) {
+    const btcUSD = multiply(values.btc, price?.btc);
+    const pacoUSD = multiply(values.paco, price?.paco);
+    const usdtUSD = multiply(values.usdt, price?.usdt);
+    const ethUSD = multiply(values.eth, price?.eth);
+    const bnbUSD = multiply(values.bnb, price?.bnb);
+
+    return addition(btcUSD, pacoUSD, usdtUSD, ethUSD, bnbUSD);
   }
 
   return (
@@ -170,8 +70,12 @@ function ReferredUser() {
             </select>
           </span>
         </Table.Header>
-        <Table.Body className="max-h-[40rem] overflow-y-auto bg-[#242248] dark:bg-[#382f54]">
-          {isLoading ? (
+        <Table.Body
+          className={`max-h-[40rem] ${
+            openDetailsId && "min-h-[20rem]"
+          } overflow-y-auto bg-[#242248] dark:bg-[#382f54]`}
+        >
+          {isLoading || isFetching ? (
             <LoadingSpinner className="h-[34rem]" />
           ) : (
             result?.map((item, i) => (
@@ -188,7 +92,7 @@ function ReferredUser() {
                     alt=""
                     className="w-5 tablet:w-5 desktop:w-6 h-5 tablet:h-5 desktop:h-6 object-contain"
                   />
-                  <span>{currencyFormat(item.wagered)}</span>
+                  <span>{currencyFormat(calcTotalUSD(item.wagered))}</span>
                   <button
                     className="relative"
                     onClick={() => handleOpenDetails(`wager_${item._id}`)}
@@ -204,9 +108,9 @@ function ReferredUser() {
                     />
 
                     {openDetailsId == `wager_${item._id}` && (
-                      <div className="absolute top-0 left-10 z-[9999]">
+                      <div className="absolute top-0 left-10 z-[99999999]">
                         <CommissionDetailsInfo
-                          value={item.values}
+                          value={item.wagered}
                           isLoading={false}
                           className="text-sm tablet:text-base"
                         />
@@ -220,7 +124,7 @@ function ReferredUser() {
                     alt=""
                     className="w-5 tablet:w-5 desktop:w-6 h-5 tablet:h-5 desktop:h-6 object-contain"
                   />
-                  <span>{currencyFormat(item.commission)}</span>
+                  <span>{currencyFormat(calcTotalUSD(item.commission))}</span>
                   <button
                     className="relative"
                     onClick={() => handleOpenDetails(`commission_${item._id}`)}
@@ -238,7 +142,7 @@ function ReferredUser() {
                     {openDetailsId == `commission_${item._id}` && (
                       <div className="absolute top-0 left-10 z-[9999]">
                         <CommissionDetailsInfo
-                          value={item.values}
+                          value={item.commission}
                           isLoading={false}
                           className="text-sm tablet:text-base"
                         />
