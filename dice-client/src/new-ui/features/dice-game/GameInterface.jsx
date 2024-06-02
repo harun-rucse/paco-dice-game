@@ -36,7 +36,10 @@ async function checkMaxBetAmount(amount, coinName, price) {
 
     return _betedUsd > 100 ? false : true;
   } else if (coinName === "paco") {
-    return parseFloat(amount) > 100000000 ? false : true;
+    const _pacoPrice = price["paco"];
+    const _betedUsd = parseFloat(amount) * _pacoPrice;
+
+    return _betedUsd > 100 ? false : true;
   }
 }
 

@@ -1,8 +1,12 @@
 const mongoose = require("mongoose");
 const { Schema, model } = mongoose;
 
-const stakeHistorySchema = new Schema(
+const myStakeHistorySchema = new Schema(
   {
+    account: {
+      type: Schema.Types.ObjectId,
+      ref: "Account",
+    },
     totalStakePaco: {
       type: String,
       required: true,
@@ -38,5 +42,5 @@ const stakeHistorySchema = new Schema(
   }
 );
 
-const StakeHistory = model("StakeHistory", stakeHistorySchema);
-module.exports = StakeHistory;
+const MyStakeHistory = model("MyStakeHistory", myStakeHistorySchema);
+module.exports = MyStakeHistory;
