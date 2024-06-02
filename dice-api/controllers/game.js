@@ -6,6 +6,11 @@ const catchAsync = require("../utils/catch-async");
 const AppError = require("../utils/app-error");
 const getCoinPrice = require("../services/token-price-service");
 const decimal = require("../utils/decimal");
+const Referral = require("../models/Referral");
+const {
+  GAMING_COMMISSION,
+  MINED_COMMISSION,
+} = require("../utils/referral-constants");
 
 /*
 
@@ -147,17 +152,36 @@ const createGame = catchAsync(async (req, res, next) => {
   });
 
   // reduce balance amount of betAmount
-  // account[paymentType] = account[paymentType] - betAmount;
   account[paymentType] = decimal.subtract(account[paymentType], betAmount);
 
   // add paco balance reward
+  const pacoReward = await caclPacoReward(betAmount, paymentType);
   if (paymentType !== "paco") {
-    // account["paco"] =
-    //   account["paco"] + Number(await caclPacoReward(betAmount, paymentType));
-    account["paco"] = decimal.addition(
-      account["paco"],
-      await caclPacoReward(betAmount, paymentType)
+    account["paco"] = decimal.addition(account["paco"], pacoReward);
+  }
+
+  // Add commission reward to the referral
+  const gamingReferral = await Referral.findOne({
+    account: req.account._id,
+    type: "gaming",
+  });
+  const mindReferral = await Referral.findOne({
+    account: req.account._id,
+    type: "mining",
+  });
+  if (gamingReferral) {
+    // Referral bonus
+    const referralBonus = decimal.multiply(betAmount, GAMING_COMMISSION);
+    gamingReferral[paymentType] = decimal.addition(
+      gamingReferral[paymentType],
+      referralBonus
     );
+    gamingReferral.save();
+
+    // Mind token bonus
+    const bonus = decimal.multiply(pacoReward, MINED_COMMISSION);
+    mindReferral["paco"] = decimal.addition(mindReferral["paco"], bonus);
+    mindReferral.save();
   }
 
   // If win add win Reward
