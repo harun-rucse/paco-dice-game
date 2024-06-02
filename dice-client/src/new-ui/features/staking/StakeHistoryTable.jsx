@@ -11,6 +11,7 @@ import {
   MdOutlineKeyboardArrowUp,
 } from "react-icons/md";
 import useGetMyStakeHistories from "./useGetMyStakeHistories";
+import { useCurrentUser } from "../../../hooks/useCurrentUser";
 
 const formatDateString = (item) => {
   const [year, month, day] = String(item).slice(0, 10).split("-");
@@ -25,6 +26,8 @@ function StakeHistoryTable() {
   const [showPayout, setShowPayout] = useState(false);
   const [result, setResult] = useState([]);
   const [count, setCount] = useState([]);
+
+  const { isAuthenticated, isLoading } = useCurrentUser();
 
   const {
     isLoading: isFetchingAllPayouts,
@@ -91,6 +94,7 @@ function StakeHistoryTable() {
           <button
             className="w-[10rem] bg-[#1e1c3a] flex items-center justify-between px-4 py-2 rounded-xl border border-[#39376b]"
             onClick={() => setShowPayout((state) => !state)}
+            disabled={!isLoading && !isAuthenticated}
           >
             <span className="text-sm tablet:text-base uppercase">
               {selectedType}
