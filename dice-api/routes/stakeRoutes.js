@@ -1,10 +1,11 @@
 const express = require("express");
 const stakeController = require("../controllers/stake");
-const { auth, restrictTo, checkAuth } = require("../middlewares/auth");
+const { auth, restrictTo } = require("../middlewares/auth");
 
 const router = express.Router();
 
-router.get("/stake-histories", checkAuth, stakeController.getStakeHistories);
+router.get("/stake-histories", stakeController.getStakeHistories);
+router.get("/my-stake-histories", auth, stakeController.getMyStakeHistories);
 router.post("/", auth, stakeController.createStake);
 router.get("/payouts", auth, stakeController.getMyStakePayouts);
 router.get("/pool", stakeController.getStakePool);
