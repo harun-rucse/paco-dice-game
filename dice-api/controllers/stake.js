@@ -1,19 +1,13 @@
 const Account = require("../models/Account");
-<<<<<<< HEAD
 const Referral = require("../models/Referral");
-=======
 const MyStakeHistory = require("../models/MyStakeHistory");
->>>>>>> dd7d21e86078ff30069a9c05b78ddede483c4175
 const Stake = require("../models/Stake");
 const StakeHistory = require("../models/StakeHistory");
 const StakePool = require("../models/StakePool");
 const AppError = require("../utils/app-error");
 const catchAsync = require("../utils/catch-async");
 const decimal = require("../utils/decimal");
-<<<<<<< HEAD
 const { STAKING_COMMISSION } = require("../utils/referral-constants");
-=======
->>>>>>> dd7d21e86078ff30069a9c05b78ddede483c4175
 
 const _calcStakePercentage = (amount, totalAmount) => {
   return decimal.divide(decimal.multiply(100, amount), totalAmount);
@@ -498,7 +492,6 @@ const transferPoolToStakeHolder = async () => {
       myStakeHistory.eth = rewardEth;
       myStakeHistory.bnb = rewardBnb;
 
-<<<<<<< HEAD
       await stakeHistory.save();
 
       // Add commission reward to the referral
@@ -555,9 +548,7 @@ const transferPoolToStakeHolder = async () => {
 
         stakingReferral.save();
       }
-=======
       await myStakeHistory.save();
->>>>>>> dd7d21e86078ff30069a9c05b78ddede483c4175
     })
   );
 
