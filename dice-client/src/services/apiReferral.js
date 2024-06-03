@@ -19,3 +19,23 @@ export const getCommissionDetails = async () => {
     throw new Error(err?.response?.data?.message);
   }
 };
+
+export const getReferralStats = async () => {
+  try {
+    const { data } = await api.get("/referrals/stats");
+
+    return data;
+  } catch (err) {
+    throw new Error(err?.response?.data?.message);
+  }
+};
+
+export const claimCommission = async () => {
+  try {
+    const { data } = await api.post("/referrals/claim-commission");
+
+    return data;
+  } catch (err) {
+    throw new Error(err?.response?.data?.message);
+  }
+};

@@ -1,7 +1,11 @@
 import { useState } from "react";
 import useGetCoinPrice from "../../../hooks/useGetCoinPrice";
 import { multiply } from "../../../utils/decimal";
-import { currencyFormat, numberFormat } from "../../../utils/format";
+import {
+  abbreviateNumber,
+  currencyFormat,
+  numberFormat,
+} from "../../../utils/format";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import SingleToken from "./SingleToken";
 import useGetCommissionDetails from "./useGetCommissionDetails";
@@ -36,7 +40,9 @@ function CommissionCard({ title, icon, name, value, amount }) {
         </div>
 
         <div className="flex flex-col items-center">
-          <span className="text-lg">{numberFormat(value)}</span>
+          <span className="text-lg">
+            {value === "0" ? 0 : abbreviateNumber(Number(value), 2)}
+          </span>
           <span className="text-xs text-gray-400">
             {currencyFormat(amount)}
           </span>

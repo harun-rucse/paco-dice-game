@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useCurrentUser } from "../../../hooks/useCurrentUser";
+import { useClaimCommission } from "./useClaimCommission";
 
 function ReferralLink() {
   const [referralLink, setReferralLink] = useState("");
 
   const { isLoading, user } = useCurrentUser();
+  const { isLoading: isClaiming, claim } = useClaimCommission();
 
   useEffect(() => {
     if (user?.referralCode)
@@ -24,7 +26,7 @@ function ReferralLink() {
   }
 
   function handleClaim() {
-    console.log("Handle claim");
+    claim();
   }
 
   return (
@@ -58,6 +60,7 @@ function ReferralLink() {
         <button
           className="bg-[#359633] rounded-lg text-sm tablet:text-base shadow-md px-12 tablet:px-10 laptop:px-12 py-3 uppercase mt-3 tablet:mt-0"
           onClick={handleClaim}
+          disabled={isClaiming}
         >
           Claim
         </button>

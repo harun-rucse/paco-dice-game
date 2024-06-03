@@ -4,6 +4,7 @@ const { generateFromEmail } = require("unique-username-generator");
 const Account = require("../models/Account");
 const ReferredUser = require("../models/ReferredUser");
 const Referral = require("../models/Referral");
+const ReferralEarned = require("../models/ReferralEarned");
 const tokenService = require("../services/token-service");
 const Email = require("../services/email-service");
 const catchAsync = require("../utils/catch-async");
@@ -107,6 +108,11 @@ const register = catchAsync(async (req, res, next) => {
       referral.save();
     });
   }
+
+  // Initialize referral earned
+  const referralEarned = new ReferralEarned();
+  referralEarned.account = newAccount._id;
+  await referralEarned.save();
 
   _generateAndSendTokens(201, newAccount, res);
 });

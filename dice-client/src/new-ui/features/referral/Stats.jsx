@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { numberFormat } from "../../../utils/format";
 import CommissionDetailsInfo from "./CommissionDetailsInfo";
+import useGetReferralStats from "./useGetReferralStats";
+import useGetCoinPrice from "../../../hooks/useGetCoinPrice";
+import { addition, multiply } from "../../../utils/decimal";
 
 function StatItem({
   img,
@@ -11,7 +14,19 @@ function StatItem({
   openDetailsName,
   handleClick,
   isLoading,
+  price,
 }) {
+  let totalUsd = 0;
+  if (detailsValue && price) {
+    const pacoUsd = multiply(detailsValue?.paco, price?.paco);
+    const btcUsd = multiply(detailsValue?.btc, price?.btc);
+    const ethUsd = multiply(detailsValue?.eth, price?.eth);
+    const usdtUsd = multiply(detailsValue?.usdt, price?.usdt);
+    const bnbUsd = multiply(detailsValue?.bnb, price?.bnb);
+
+    totalUsd = addition(pacoUsd, btcUsd, ethUsd, usdtUsd, bnbUsd);
+  }
+
   return (
     <div className="bg-[#181734] dark:bg-[#120e1e] border border-[#121128] dark:border-[#0e0b17] shadow-md rounded-lg px-4 tablet:px-6 laptop:px-1 desktop:px-6 py-4 tablet:py-4 flex flex-col gap-4">
       <div className="flex items-center justify-between">
@@ -40,7 +55,7 @@ function StatItem({
         )}
       </div>
       <div className="self-center bg-[#292850] dark:bg-[#241c38] shadow-lg shadow-[#1f1e3d] dark:shadow-[#1d172d] w-[14rem] laptop:w-[11rem] desktop:w-[14rem] rounded-md p-3 tablet:p-4 flex justify-center items-center">
-        {value}
+        {value ? value : `${numberFormat(totalUsd)}$`}
       </div>
     </div>
   );
@@ -49,13 +64,8 @@ function StatItem({
 function Stats() {
   const [openDetailsName, setOpenDetailsName] = useState("");
 
-  const detailsValue = {
-    btc: 0.00000542,
-    paco: 94561615.21,
-    eth: 0.007595421,
-    bnb: 0.00642217,
-    usdt: 3.11642217,
-  };
+  const { isLoading, data } = useGetReferralStats();
+  const { isLoading: isFetchingPrice, price } = useGetCoinPrice();
 
   function handleClick(name) {
     if (openDetailsName) {
@@ -71,37 +81,37 @@ function Stats() {
         <StatItem
           title="Referrals"
           img="/images/referral/referral.png"
-          value={numberFormat(253)}
+          value={numberFormat(data?.totalReferral)}
         />
         <StatItem
           title="Wager"
           img="/images/referral/stock.png"
-          value={`${numberFormat(129326)}$`}
-          detailsValue={detailsValue}
+          detailsValue={data?.wagered}
           openDetailsName={openDetailsName}
           handleClick={handleClick}
-          isLoading={false}
+          isLoading={isLoading || isFetchingPrice}
           isQuestion
+          price={price}
         />
         <StatItem
           title="Total Earned"
           img="/images/referral/currency.png"
-          value={`${numberFormat(129326)}$`}
-          detailsValue={detailsValue}
+          detailsValue={data?.totalEarned}
           openDetailsName={openDetailsName}
           handleClick={handleClick}
-          isLoading={false}
+          isLoading={isLoading || isFetchingPrice}
           isQuestion
+          price={price}
         />
         <StatItem
           title="Commission"
           img="/images/referral/money.png"
-          value={`${numberFormat(0.005)}$`}
-          detailsValue={detailsValue}
+          detailsValue={data?.commission}
           openDetailsName={openDetailsName}
           handleClick={handleClick}
-          isLoading={false}
+          isLoading={isLoading || isFetchingPrice}
           isQuestion
+          price={price}
         />
       </div>
     </div>
