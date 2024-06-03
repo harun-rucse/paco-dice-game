@@ -118,7 +118,7 @@ function BetHistoryTable() {
                 </span>
                 <span className="flex items-center gap-2">
                   <img
-                    src="/images/paco.png"
+                    src={`/tokens/${item?.betCoin}.png`}
                     alt=""
                     className="w-8 tablet:w-5 desktop:w-8 h-8 tablet:h-5 desktop:h-8"
                   />

@@ -18,10 +18,10 @@ export function todaysDay() {
   return dayjs();
 }
 
-export function addDay(date) {
-  return dayjs(date).add(1, "day");
+export function addDay(date, numberOfDate = 1) {
+  return dayjs(date).add(numberOfDate, "day");
 }
 
-export function subtractDay(date) {
-  return dayjs(date).subtract(1, "day");
+export function subtractDay(date, numberOfDate = 1) {
+  return dayjs(date).subtract(numberOfDate, "day");
 }

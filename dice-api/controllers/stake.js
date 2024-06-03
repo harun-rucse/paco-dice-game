@@ -1,12 +1,19 @@
 const Account = require("../models/Account");
+<<<<<<< HEAD
 const Referral = require("../models/Referral");
+=======
+const MyStakeHistory = require("../models/MyStakeHistory");
+>>>>>>> dd7d21e86078ff30069a9c05b78ddede483c4175
 const Stake = require("../models/Stake");
 const StakeHistory = require("../models/StakeHistory");
 const StakePool = require("../models/StakePool");
 const AppError = require("../utils/app-error");
 const catchAsync = require("../utils/catch-async");
 const decimal = require("../utils/decimal");
+<<<<<<< HEAD
 const { STAKING_COMMISSION } = require("../utils/referral-constants");
+=======
+>>>>>>> dd7d21e86078ff30069a9c05b78ddede483c4175
 
 const _calcStakePercentage = (amount, totalAmount) => {
   return decimal.divide(decimal.multiply(100, amount), totalAmount);
@@ -240,79 +247,157 @@ const resetBurn = catchAsync(async (req, res, next) => {
 });
 
 /**
- * @desc    Get live chart statistics
- * @route   GET /api/stakes/stake-histories?page=1&limit=10&date=date&type=type
- * @param   page number
- * @param   limit number
- * @param   date 2024-04-24
- * @param   type All Payouts | My Payouts
- * @access  Public/Private
+ * @desc    Get All Payouts stake histories
+ * @route   GET /api/stakes/stake-histories?fromDate=date&toDate=date
+ * @param   fromDate 2024-04-23
+ * @param   toDate 2024-04-24
+ * @access  Public
  */
 const getStakeHistories = catchAsync(async (req, res) => {
-  const type = req.query.type;
+  const fromDate = new Date(req.query.fromDate);
+  const toDate = new Date(req.query.toDate);
 
-  const date = new Date(req.query.date);
-  const page = Number(req.query.page) || 1;
-  let limit = Number(req.query.limit) || 10;
-  limit = limit / 5;
-
-  let query = {
+  const query = {
     $expr: {
-      $eq: [
-        { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
-        { $dateToString: { format: "%Y-%m-%d", date: date } },
+      $or: [
+        {
+          $eq: [
+            { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
+            { $dateToString: { format: "%Y-%m-%d", date: fromDate } },
+          ],
+        },
+        {
+          $eq: [
+            { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
+            { $dateToString: { format: "%Y-%m-%d", date: toDate } },
+          ],
+        },
       ],
     },
   };
 
-  if (type === "My Payouts" && req.account) {
-    query = { ...query, account: req.account?._id };
-  }
-
   const count = await StakeHistory.countDocuments(query);
-  const stakeHistories = await StakeHistory.find(query)
-    .sort({
-      date: -1,
-    })
-    .limit(limit)
-    .skip(limit * (page - 1));
+  const stakeHistories = await StakeHistory.find(query).sort({
+    date: -1,
+  });
 
   const resData = [];
 
   await Promise.all(
-    stakeHistories.map(async (stakeHolder, i) => {
+    stakeHistories.map(async (stakeHistory, i) => {
       resData.push({
-        date: stakeHolder.date,
-        stakedPaco: stakeHolder.amount,
-        payouts: stakeHolder.btc,
+        date: stakeHistory.date,
+        stakedPaco: stakeHistory.totalStakePaco,
+        payouts: stakeHistory.btc,
         coinName: "btc",
         index: i + 1,
       });
       resData.push({
-        date: stakeHolder.date,
-        stakedPaco: stakeHolder.amount,
-        payouts: stakeHolder.paco,
+        date: stakeHistory.date,
+        stakedPaco: stakeHistory.totalStakePaco,
+        payouts: stakeHistory.paco,
         coinName: "paco",
         index: i + 1,
       });
       resData.push({
-        date: stakeHolder.date,
-        stakedPaco: stakeHolder.amount,
-        payouts: stakeHolder.eth,
+        date: stakeHistory.date,
+        stakedPaco: stakeHistory.totalStakePaco,
+        payouts: stakeHistory.eth,
         coinName: "eth",
         index: i + 1,
       });
       resData.push({
-        date: stakeHolder.date,
-        stakedPaco: stakeHolder.amount,
-        payouts: stakeHolder.usdt,
+        date: stakeHistory.date,
+        stakedPaco: stakeHistory.totalStakePaco,
+        payouts: stakeHistory.usdt,
         coinName: "usdt",
         index: i + 1,
       });
       resData.push({
-        date: stakeHolder.date,
-        stakedPaco: stakeHolder.amount,
-        payouts: stakeHolder.bnb,
+        date: stakeHistory.date,
+        stakedPaco: stakeHistory.totalStakePaco,
+        payouts: stakeHistory.bnb,
+        coinName: "bnb",
+        index: i + 1,
+      });
+    })
+  );
+
+  res.status(200).json({ result: resData, count });
+});
+
+/**
+ * @desc    Get My Payouts stake histories
+ * @route   GET /api/stakes/my-stake-histories?fromDate=date&toDate=date
+ * @param   fromDate 2024-04-23
+ * @param   toDate 2024-04-24
+ * @access  Private
+ */
+const getMyStakeHistories = catchAsync(async (req, res) => {
+  const fromDate = new Date(req.query.fromDate);
+  const toDate = new Date(req.query.toDate);
+
+  const query = {
+    $expr: {
+      $or: [
+        {
+          $eq: [
+            { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
+            { $dateToString: { format: "%Y-%m-%d", date: fromDate } },
+          ],
+        },
+        {
+          $eq: [
+            { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
+            { $dateToString: { format: "%Y-%m-%d", date: toDate } },
+          ],
+        },
+      ],
+    },
+    account: req.account._id,
+  };
+
+  const count = await MyStakeHistory.countDocuments(query);
+  const myStakeHistories = await MyStakeHistory.find(query).sort({
+    date: -1,
+  });
+
+  const resData = [];
+
+  await Promise.all(
+    myStakeHistories.map(async (myStakeHistory, i) => {
+      resData.push({
+        date: myStakeHistory.date,
+        stakedPaco: myStakeHistory.totalStakePaco,
+        payouts: myStakeHistory.btc,
+        coinName: "btc",
+        index: i + 1,
+      });
+      resData.push({
+        date: myStakeHistory.date,
+        stakedPaco: myStakeHistory.totalStakePaco,
+        payouts: myStakeHistory.paco,
+        coinName: "paco",
+        index: i + 1,
+      });
+      resData.push({
+        date: myStakeHistory.date,
+        stakedPaco: myStakeHistory.totalStakePaco,
+        payouts: myStakeHistory.eth,
+        coinName: "eth",
+        index: i + 1,
+      });
+      resData.push({
+        date: myStakeHistory.date,
+        stakedPaco: myStakeHistory.totalStakePaco,
+        payouts: myStakeHistory.usdt,
+        coinName: "usdt",
+        index: i + 1,
+      });
+      resData.push({
+        date: myStakeHistory.date,
+        stakedPaco: myStakeHistory.totalStakePaco,
+        payouts: myStakeHistory.bnb,
         coinName: "bnb",
         index: i + 1,
       });
@@ -346,6 +431,13 @@ const transferPoolToStakeHolder = async () => {
 
   const stakePool = await StakePool.findOne();
   const stakeHolders = await Stake.find();
+
+  let totalStakePaco = 0;
+  let totalPayoutPaco = 0;
+  let totalPayoutBtc = 0;
+  let totalPayoutUsdt = 0;
+  let totalPayoutBnb = 0;
+  let totalPayoutEth = 0;
 
   await Promise.all(
     stakeHolders.map(async (stakeHolder) => {
@@ -381,23 +473,32 @@ const transferPoolToStakeHolder = async () => {
 
       await stakeHolder.save();
 
-      // Save stake history
-      const stakeHistory = new StakeHistory();
-      stakeHistory.account = stakeHolder?.account;
-      stakeHistory.amount = stakeHolder?.amount;
-      stakeHistory.tokenName = "paco";
+      // Calculate total payout amount for all payout histories
+      totalStakePaco = decimal.addition(totalStakePaco, stakeHolder?.amount);
+      totalPayoutPaco = decimal.addition(totalPayoutPaco, rewardPaco);
+      totalPayoutBtc = decimal.addition(totalPayoutBtc, rewardBtc);
+      totalPayoutBnb = decimal.addition(totalPayoutBnb, rewardBnb);
+      totalPayoutEth = decimal.addition(totalPayoutEth, rewardEth);
+      totalPayoutUsdt = decimal.addition(totalPayoutUsdt, rewardUsdt);
+
+      // Save stake history for My Payouts
+      const myStakeHistory = new MyStakeHistory();
+      myStakeHistory.account = stakeHolder?.account;
+      myStakeHistory.totalStakePaco = stakeHolder?.amount;
+      myStakeHistory.tokenName = "paco";
 
       // Save previous day because this script run 12:00 AM (next day)
       const date = new Date();
-      stakeHistory.date = date.setDate(date.getDate() - 1);
+      myStakeHistory.date = date.setDate(date.getDate() - 1);
 
       // Save payout amount
-      stakeHistory.paco = rewardPaco;
-      stakeHistory.btc = rewardBtc;
-      stakeHistory.usdt = rewardUsdt;
-      stakeHistory.eth = rewardEth;
-      stakeHistory.bnb = rewardBnb;
+      myStakeHistory.paco = rewardPaco;
+      myStakeHistory.btc = rewardBtc;
+      myStakeHistory.usdt = rewardUsdt;
+      myStakeHistory.eth = rewardEth;
+      myStakeHistory.bnb = rewardBnb;
 
+<<<<<<< HEAD
       await stakeHistory.save();
 
       // Add commission reward to the referral
@@ -454,10 +555,31 @@ const transferPoolToStakeHolder = async () => {
 
         stakingReferral.save();
       }
+=======
+      await myStakeHistory.save();
+>>>>>>> dd7d21e86078ff30069a9c05b78ddede483c4175
     })
   );
 
   await stakePool.save();
+
+  // Save stake history for All Payouts
+  const stakeHistory = new StakeHistory();
+  stakeHistory.totalStakePaco = totalStakePaco;
+  stakeHistory.tokenName = "paco";
+
+  // Save previous day because this script run 12:00 AM (next day)
+  const date = new Date();
+  stakeHistory.date = date.setDate(date.getDate() - 1);
+
+  // Save payout amount
+  stakeHistory.paco = totalPayoutPaco;
+  stakeHistory.btc = totalPayoutBtc;
+  stakeHistory.usdt = totalPayoutUsdt;
+  stakeHistory.eth = totalPayoutEth;
+  stakeHistory.bnb = totalPayoutBnb;
+
+  await stakeHistory.save();
 };
 
 module.exports = {
@@ -470,4 +592,5 @@ module.exports = {
   unStake,
   resetBurn,
   getStakeHistories,
+  getMyStakeHistories,
 };

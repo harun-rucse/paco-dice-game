@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 import Table from "../../components/Table";
 import { numberFormat } from "../../../utils/format";
@@ -11,24 +10,52 @@ import {
   MdOutlineKeyboardArrowDown,
   MdOutlineKeyboardArrowUp,
 } from "react-icons/md";
+import useGetMyStakeHistories from "./useGetMyStakeHistories";
+import { useCurrentUser } from "../../../hooks/useCurrentUser";
+
+const formatDateString = (item) => {
+  const [year, month, day] = String(item).slice(0, 10).split("-");
+
+  return `${year}/${month}/${day}`;
+};
 
 function StakeHistoryTable() {
-  const [searchParams, setSearchParams] = useSearchParams();
   const [limit, setLimit] = useState(10);
   const [date, setDate] = useState(subtractDay(todaysDay(), 1));
   const [selectedType, setSelectedType] = useState("All Payouts");
   const [showPayout, setShowPayout] = useState(false);
+  const [result, setResult] = useState([]);
+  const [count, setCount] = useState([]);
 
-  const { isLoading, result, count } = useGetStakeHistories(
-    limit,
-    formatDate(date, "YYYY-MM-DD").toString(),
-    selectedType
+  const { isAuthenticated, isLoading } = useCurrentUser();
+
+  const {
+    isLoading: isFetchingAllPayouts,
+    result: allPayoutsData,
+    count: allPayoutsCount,
+  } = useGetStakeHistories(
+    formatDate(subtractDay(date, 1), "YYYY-MM-DD").toString(),
+    formatDate(date, "YYYY-MM-DD").toString()
+  );
+
+  const {
+    isLoading: isFetchingMyPayouts,
+    result: myPayoutsData,
+    count: myPayoutsCount,
+  } = useGetMyStakeHistories(
+    formatDate(subtractDay(date, 1), "YYYY-MM-DD").toString(),
+    formatDate(date, "YYYY-MM-DD").toString()
   );
 
   useEffect(() => {
-    searchParams.set("page", 1);
-    setSearchParams(searchParams);
-  }, [date]);
+    if (selectedType === "All Payouts") {
+      setResult(allPayoutsData);
+      setCount(allPayoutsCount);
+    } else {
+      setResult(myPayoutsData);
+      setCount(myPayoutsCount);
+    }
+  }, [selectedType, allPayoutsData, myPayoutsData]);
 
   function handleSelectPayout(val) {
     setSelectedType(val);
@@ -45,14 +72,14 @@ function StakeHistoryTable() {
           <div className="flex items-center justify-between w-[10rem] laptop:w-[14rem] bg-[#1e1c3a] dark:bg-[#442c62] px-4 py-1 laptop:py-2 rounded-2xl">
             <button
               className="focus:outline-none border-none"
-              onClick={() => setDate((prevDay) => subtractDay(prevDay))}
+              onClick={() => setDate((prevDay) => subtractDay(prevDay, 2))}
             >
               <FaChevronLeft />
             </button>
             <span>{formatDate(date, "D/M/YYYY")}</span>
             <button
               className="focus:outline-none border-none"
-              onClick={() => setDate((prevDay) => addDay(prevDay))}
+              onClick={() => setDate((prevDay) => addDay(prevDay, 2))}
               disabled={
                 formatDate(subtractDay(todaysDay(), 1), "D/M/YYYY") ===
                 formatDate(date, "D/M/YYYY")
@@ -67,6 +94,7 @@ function StakeHistoryTable() {
           <button
             className="w-[10rem] bg-[#1e1c3a] flex items-center justify-between px-4 py-2 rounded-xl border border-[#39376b]"
             onClick={() => setShowPayout((state) => !state)}
+            disabled={!isLoading && !isAuthenticated}
           >
             <span className="text-sm tablet:text-base uppercase">
               {selectedType}
@@ -111,7 +139,7 @@ function StakeHistoryTable() {
           <span>DATE</span>
           <span>STAKED PACO</span>
           <span>PAYOUTS</span>
-          <span className="px-4 py-2 rounded-3xl">
+          {/* <span className="px-4 py-2 rounded-3xl">
             <select
               className="bg-transparent focus:outline-none cursor-pointer"
               value={limit}
@@ -130,10 +158,10 @@ function StakeHistoryTable() {
                 50
               </option>
             </select>
-          </span>
+          </span> */}
         </Table.Header>
         <Table.Body className="max-h-[40rem] overflow-y-auto space-y-0">
-          {isLoading ? (
+          {isFetchingAllPayouts || isFetchingMyPayouts ? (
             <LoadingSpinner className="h-[34rem]" />
           ) : (
             result?.map((item, i) => (
@@ -145,7 +173,7 @@ function StakeHistoryTable() {
                     : "bg-[#373568]"
                 } text-sm tablet:text-xs laptop:text-lg py-2`}
               >
-                <span>{formatDate(item?.date, "D/MM/YYYY")}</span>
+                <span>{formatDateString(item?.date)}</span>
                 <span className="flex items-center gap-2">
                   <img
                     src="/images/paco.png"
