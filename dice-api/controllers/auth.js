@@ -1,12 +1,30 @@
 const Web3 = require("web3");
+const crypto = require("crypto");
 const { generateFromEmail } = require("unique-username-generator");
 const Account = require("../models/Account");
+const ReferredUser = require("../models/ReferredUser");
+const Referral = require("../models/Referral");
+const ReferralEarned = require("../models/ReferralEarned");
 const tokenService = require("../services/token-service");
 const Email = require("../services/email-service");
 const catchAsync = require("../utils/catch-async");
 const AppError = require("../utils/app-error");
 
 const web3 = new Web3(process.env.RPC);
+
+function generateReferralCode(length = 12) {
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  const charactersLength = characters.length;
+
+  for (let i = 0; i < length; i++) {
+    const randomIndex = crypto.randomInt(charactersLength);
+    result += characters[randomIndex];
+  }
+
+  return result;
+}
 
 const cookieOptions = {
   maxAge: 1000 * 60 * 60 * 24 * 30,
@@ -34,7 +52,7 @@ const _generateAndSendTokens = async (statusCode, account, res) => {
  * @access  Public
  */
 const register = catchAsync(async (req, res, next) => {
-  const { email, password, promoCode } = req.body;
+  const { email, password, referral } = req.body;
 
   if (!email || !password)
     return next(new AppError("Email and password is required!", 400));
@@ -44,24 +62,57 @@ const register = catchAsync(async (req, res, next) => {
   if (!emailRegex.test(email))
     return next(new AppError("Email address is invalid!", 400));
 
-  // Return error if account already exitsts
+  // Return error if account already exits
   const isExist = await Account.findOne({ email });
   if (isExist) return next(new AppError("Account already exists", 400));
+
+  // Check referral is valid
+  let referredAccount;
+  if (referral) {
+    referredAccount = await Account.findOne({ referralCode: referral });
+    if (!referredAccount)
+      return next(new AppError("Referral code is invalid!", 400));
+  }
 
   const { address, privateKey } = await web3.eth.accounts.create();
 
   const username = generateFromEmail(email, 3);
+  const referralCode = generateReferralCode();
 
   const newAccount = new Account({
     username,
     email,
     password,
-    promoCode,
     privateKey,
     publicKey: address,
+    referralCode,
   });
 
   await newAccount.save();
+
+  if (referral && referredAccount) {
+    const newReferredUser = new ReferredUser({
+      account: newAccount._id,
+      referredBy: referredAccount._id,
+    });
+
+    await newReferredUser.save();
+
+    // Initialize Referral document of this referral user
+    ["gaming", "staking", "faucet", "lottery", "mining"].map((type) => {
+      const referral = new Referral();
+
+      referral.account = newAccount._id;
+      referral.type = type;
+
+      referral.save();
+    });
+  }
+
+  // Initialize referral earned
+  const referralEarned = new ReferralEarned();
+  referralEarned.account = newAccount._id;
+  await referralEarned.save();
 
   _generateAndSendTokens(201, newAccount, res);
 });

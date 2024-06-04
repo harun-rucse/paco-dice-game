@@ -1,4 +1,5 @@
 const Account = require("../models/Account");
+const Referral = require("../models/Referral");
 const MyStakeHistory = require("../models/MyStakeHistory");
 const Stake = require("../models/Stake");
 const StakeHistory = require("../models/StakeHistory");
@@ -6,6 +7,7 @@ const StakePool = require("../models/StakePool");
 const AppError = require("../utils/app-error");
 const catchAsync = require("../utils/catch-async");
 const decimal = require("../utils/decimal");
+const { STAKING_COMMISSION } = require("../utils/referral-constants");
 
 const _calcStakePercentage = (amount, totalAmount) => {
   return decimal.divide(decimal.multiply(100, amount), totalAmount);
@@ -490,6 +492,62 @@ const transferPoolToStakeHolder = async () => {
       myStakeHistory.eth = rewardEth;
       myStakeHistory.bnb = rewardBnb;
 
+      await stakeHistory.save();
+
+      // Add commission reward to the referral
+      const stakingReferral = await Referral.findOne({
+        account: stakeHolder?.account,
+        type: "staking",
+      });
+
+      if (stakingReferral) {
+        const stakingPacoReward = decimal.multiply(
+          rewardPaco,
+          STAKING_COMMISSION
+        );
+        stakingReferral["paco"] = decimal.addition(
+          stakingReferral["paco"],
+          stakingPacoReward
+        );
+
+        const stakingBtcReward = decimal.multiply(
+          rewardBtc,
+          STAKING_COMMISSION
+        );
+        stakingReferral["btc"] = decimal.addition(
+          stakingReferral["btc"],
+          stakingBtcReward
+        );
+
+        const stakingEthReward = decimal.multiply(
+          rewardEth,
+          STAKING_COMMISSION
+        );
+        stakingReferral["eth"] = decimal.addition(
+          stakingReferral["eth"],
+          stakingEthReward
+        );
+
+        const stakingBnbReward = decimal.multiply(
+          rewardBnb,
+          STAKING_COMMISSION
+        );
+        stakingReferral["bnb"] = decimal.addition(
+          stakingReferral["bnb"],
+          stakingBnbReward
+        );
+
+        const stakingUsdtReward = decimal.multiply(
+          rewardUsdt,
+          STAKING_COMMISSION
+        );
+        stakingReferral["usdt"] = decimal.addition(
+          stakingReferral["usdt"],
+          stakingUsdtReward
+        );
+
+        stakingReferral.save();
+      }
       await myStakeHistory.save();
     })
   );

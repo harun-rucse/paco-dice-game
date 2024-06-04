@@ -1,18 +1,20 @@
 import { useForm } from "react-hook-form";
+import { useParams } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useRegister } from "./useRegister";
 import FormRow from "../../components/FormRow";
 import { useState } from "react";
 
 function RegisterForm({ setCurrent }) {
+  const { referralCode } = useParams();
   const [showPassword, setShowPassword] = useState(false);
   const { register, handleSubmit, reset, formState, getValues } = useForm();
   const { errors } = formState;
   const { isLoading, register: handleRegister } = useRegister();
 
-  function onSubmit({ email, password, promoCode }) {
+  function onSubmit({ email, password, referral }) {
     handleRegister(
-      { email, password, promoCode },
+      { email, password, referral },
       {
         onSuccess: () => {
           reset();
@@ -114,17 +116,19 @@ function RegisterForm({ setCurrent }) {
         </FormRow>
 
         <FormRow
-          name="promoCode"
-          label="Promo Code"
-          error={errors?.promoCode?.message}
+          name="referral"
+          label="Referral Code"
+          error={errors?.referral?.message}
         >
           <input
             type="text"
-            id="promoCode"
-            placeholder="Enter Promo Code"
+            id="referral"
+            placeholder="Enter Referral Code"
             className="w-full bg-transparent focus:outline-none placeholder:text-sm font-extralight px-4 py-2 tablet:py-3 rounded-lg border border-gray-600"
             disabled={isLoading}
-            {...register("promoCode")}
+            value={referralCode}
+            readOnly={Boolean(referralCode)}
+            {...register("referral")}
           />
         </FormRow>
 
@@ -132,15 +136,17 @@ function RegisterForm({ setCurrent }) {
           Register
         </button>
 
-        <p className="text-gray-300 text-center font-extralight">
-          Already have an account?
-          <span
-            className="ml-2 text-white underline cursor-pointer"
-            onClick={() => setCurrent("login")}
-          >
-            Login
-          </span>
-        </p>
+        {!referralCode && (
+          <p className="text-gray-300 text-center font-extralight">
+            Already have an account?
+            <span
+              className="ml-2 text-white underline cursor-pointer"
+              onClick={() => setCurrent("login")}
+            >
+              Login
+            </span>
+          </p>
+        )}
       </form>
     </>
   );

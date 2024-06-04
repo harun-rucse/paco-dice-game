@@ -8,6 +8,8 @@ const DailyTicket = require("../models/DailyTicket");
 const AppError = require("../utils/app-error");
 const decimal = require("../utils/decimal");
 const db = require("../config/db");
+const Referral = require("../models/Referral");
+const { LOTTERY_COMMISSION } = require("../utils/referral-constants");
 
 function weightedRandomNumber() {
   const strings = [
@@ -434,6 +436,22 @@ const createTicket = async () => {
     // Reduce paco balance from account
     account.paco = decimal.subtract(account.paco, requiredPaco);
     account.save();
+
+    // Add commission reward to the referral
+    const lotteryReferral = await Referral.findOne({
+      account: accountId,
+      type: "lottery",
+    });
+
+    if (lotteryReferral) {
+      const lotteryReward = decimal.multiply(requiredPaco, LOTTERY_COMMISSION);
+      lotteryReferral["paco"] = decimal.addition(
+        lotteryReferral["paco"],
+        lotteryReward
+      );
+
+      lotteryReferral.save();
+    }
 
     // Post message to parent thread with success response
     parentPort.postMessage(`${amount} Tickets bought successfully`);

@@ -9,7 +9,9 @@
     "client": "yarn dev --prefix ui",
     "development": "concurrently \"yarn dev\" \"yarn client\"",
     "seed": "NODE_ENV=development node seeder/index.js",
-    "seed:prod": "NODE_ENV=production node seeder/index.js"
+    "seed:prod": "NODE_ENV=production node seeder/index.js",
+    "script": "NODE_ENV=development node scripts/index.js",
+    "script:prod": "NODE_ENV=production node scripts/index.js"
   },
   "license": "MIT",
   "dependencies": {

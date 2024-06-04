@@ -8,6 +8,7 @@ const accountRoutes = require("./routes/accountRoutes");
 const stakeRoutes = require("./routes/stakeRoutes");
 const ticketRoutes = require("./routes/ticketRoutes");
 const commonRoutes = require("./routes/commonRoutes");
+const referralRoutes = require("./routes/referralRoutes");
 const globalErrorHandler = require("./controllers/error");
 const AppError = require("./utils/app-error");
 
@@ -40,6 +41,7 @@ app.use("/api/account", accountRoutes);
 app.use("/api/stakes", stakeRoutes);
 app.use("/api/tickets", ticketRoutes);
 app.use("/api/common", commonRoutes);
+app.use("/api/referrals", referralRoutes);
 
 app.all("*", (req, res, next) => {
   next(
