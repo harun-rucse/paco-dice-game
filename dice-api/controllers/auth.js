@@ -12,6 +12,21 @@ const AppError = require("../utils/app-error");
 
 const web3 = new Web3(process.env.RPC);
 
+async function generateUniqueReferralCode() {
+  let referralCode;
+  let isUnique = false;
+
+  while (!isUnique) {
+    referralCode = generateReferralCode();
+    const existingAccount = await Account.findOne({ referralCode });
+    if (!existingAccount) {
+      isUnique = true;
+    }
+  }
+
+  return referralCode;
+}
+
 function generateReferralCode(length = 12) {
   const characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -77,7 +92,7 @@ const register = catchAsync(async (req, res, next) => {
   const { address, privateKey } = await web3.eth.accounts.create();
 
   const username = generateFromEmail(email, 3);
-  const referralCode = generateReferralCode();
+  const referralCode = await generateUniqueReferralCode();
 
   const newAccount = new Account({
     username,
