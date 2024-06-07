@@ -7,31 +7,31 @@ const items = [
     image: "/images/dice.png",
     title: "Dice",
     link: "/dice",
-    isNew: false,
+    subTitle: "",
   },
   {
     image: "/images/ticket.png",
     title: "Lottery",
     link: "/lottery",
-    isNew: false,
+    subTitle: "",
   },
   {
     image: "/images/money.png",
     title: "Staking",
     link: "/staking",
-    isNew: false,
+    subTitle: "",
   },
   {
     image: "/images/referral.png",
     title: "Referral",
     link: "/referral",
-    isNew: false,
+    subTitle: "beta",
   },
   {
     image: "/images/paco.png",
     title: "Faucet",
     link: "/faucet",
-    isNew: true,
+    subTitle: "new",
   },
 ];
 
@@ -66,9 +66,9 @@ function Sidebar() {
               className="w-12 object-cover"
             />
             <span className="text-lg">{item.title}</span>
-            {item.isNew && (
+            {item.subTitle && (
               <span className="uppercase text-xs bg-[#322849] text-[#81cb88] px-4 py-1 rounded-2xl absolute top-3 right-0">
-                new
+                {item.subTitle}
               </span>
             )}
           </NavLink>
