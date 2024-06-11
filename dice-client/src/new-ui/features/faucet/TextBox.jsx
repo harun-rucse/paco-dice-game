@@ -11,7 +11,9 @@ function TextBox({
     <div
       className={cn(
         `w-[5.2rem] flex items-center justify-between px-1 tablet:px-3 py-1 ${
-          isCompleted ? "bg-[#6c6bb6]" : "bg-[#1d1d3b]"
+          isCompleted
+            ? "bg-[#6c6bb6] dark:bg-[#9c73c1]"
+            : "bg-[#1d1d3b] dark:bg-[#342546]"
         } rounded-lg shadow-lg`,
         className
       )}

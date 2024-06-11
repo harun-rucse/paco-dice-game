@@ -66,7 +66,7 @@ function BonusCard() {
   const progressWidth = calculateProgressWidth(secondsElapsed);
 
   return (
-    <div className="bg-[#24224a] w-full flex flex-col border border-[#3d3b72] rounded-2xl tablet:px-8 py-3 pb-9">
+    <div className="bg-[#24224a] dark:bg-[#594a80] w-full flex flex-col border border-[#3d3b72] dark:border-[#917ec2] rounded-2xl tablet:px-8 py-3 pb-9">
       <div className="flex items-center justify-between px-2 tablet:px-0">
         <div className="flex items-center gap-2">
           <img src="/images/paco.png" alt="" className="w-6 tablet:w-12" />
@@ -76,7 +76,7 @@ function BonusCard() {
         <div className="flex items-center gap-1 tablet:gap-4">
           <h3 className="uppercase hidden tablet:block">Available to claim:</h3>
           <h3 className="uppercase block text-sm tablet:hidden">Available:</h3>
-          <TextBox amount={currentReward} className="px-2" />
+          <TextBox amount={currentReward} />
         </div>
       </div>
 
@@ -85,7 +85,8 @@ function BonusCard() {
           <TextBox
             amount={5}
             icon="/images/ticket.png"
-            className="bg-[#6c6bb6] mb-2 px-2"
+            className="mb-2 px-2"
+            isCompleted
           />
 
           <div className="bg-[#1d1d3b] w-[6rem] flex items-center justify-between px-3 py-1 rounded-xl shadow-lg mb-2">

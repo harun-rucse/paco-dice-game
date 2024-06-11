@@ -71,8 +71,8 @@ function LevelCard() {
   const currentReward = getReward(levelTimes);
 
   return (
-    <div className="bg-[#24224a] flex flex-col gap-4 border border-[#3d3b72] rounded-2xl px-4 py-3 pb-6">
-      <div className="flex justify-between gap-20">
+    <div className="bg-[#24224a] dark:bg-[#594a80] flex flex-col gap-4 border border-[#3d3b72] dark:border-[#917ec2] rounded-2xl px-4 py-3 pb-6">
+      <div className="flex justify-between gap-20 laptop:gap-5 desktop:gap-20">
         <div className="flex flex-col gap-8">
           <span>Level 1</span>
           <div className="bg-[#1c1b37] w-28 h-28 rounded-full flex items-center justify-center">
@@ -81,7 +81,7 @@ function LevelCard() {
         </div>
         <div className="flex flex-col space-y-2">
           <div className="flex flex-col items-center gap-2">
-            <h3 className="uppercase">Available to gamble:</h3>
+            <h3 className="uppercase text-sm">Available to gamble:</h3>
             <TextBox amount={currentReward} className="w-full py-2" />
           </div>
 
@@ -89,7 +89,7 @@ function LevelCard() {
             Gamble
           </button>
           <button
-            className="button !bg-[#3c983a] !py-2"
+            className="button !bg-[#696969] !py-2"
             onClick={handleCollect}
           >
             Collect

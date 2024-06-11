@@ -1,8 +1,8 @@
 function ProgressBar({ progressWidth }) {
   return (
-    <div className="bg-[#1f1e47] rounded-xl h-8 w-full flex items-center justify-start p-2 shadow-[inset_0px_4px_10px_0px_rgba(0,0,0,0.5)]">
+    <div className="bg-[#1f1e47] dark:bg-[#36254c] rounded-xl h-8 w-full flex items-center justify-start p-2 shadow-[inset_0px_4px_10px_0px_rgba(0,0,0,0.5)]">
       <div
-        className="bg-[#365ada] rounded-2xl border border-[#6b92f9] h-6 min-w-[1.5rem] relative"
+        className="bg-[#365ada] dark:bg-[#7d36da] rounded-2xl border border-[#6b92f9] dark:border-[#a967ff] h-6 min-w-[1.5rem] relative"
         style={{
           width: `${progressWidth}%`,
         }}

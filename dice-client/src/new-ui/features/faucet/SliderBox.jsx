@@ -26,7 +26,7 @@ function SliderBox({
             isCompleted={secondsElapsed >= reward.time}
             className={
               isLevelCard
-                ? "w-[3.5rem] tablet:w-[5.2rem] px-2"
+                ? "w-[3.5rem] tablet:w-[5rem] px-2"
                 : "w-[2.8rem] tablet:w-[5.2rem]"
             }
           />
