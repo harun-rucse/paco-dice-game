@@ -81,7 +81,7 @@ function BonusCard() {
       </div>
 
       <div className="px-2 py-6">
-        <div className="flex items-center justify-between max-w-[24rem] mx-auto">
+        <div className="flex items-center justify-between max-w-[16rem] laptop:max-w-[24rem] mx-auto">
           <TextBox
             amount={5}
             icon="/images/ticket.png"
