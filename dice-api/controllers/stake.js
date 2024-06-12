@@ -492,7 +492,7 @@ const transferPoolToStakeHolder = async () => {
       myStakeHistory.eth = rewardEth;
       myStakeHistory.bnb = rewardBnb;
 
-      await stakeHistory.save();
+      await myStakeHistory.save();
 
       // Add commission reward to the referral
       const stakingReferral = await Referral.findOne({
