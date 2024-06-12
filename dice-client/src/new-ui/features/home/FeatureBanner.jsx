@@ -52,7 +52,7 @@ function FeatureBanner() {
               alt=""
               className="block tablet:hidden overflow-hidden h-[5rem] w-full tablet:h-full object-contain tablet:object-contain rounded-xl tablet:rounded-2xl"
             />
-            <div className="absolute top-[2.5rem] tablet:top-[4.5rem] left-2 tablet:left-8 desktop:top-48 desktop:left-20 flex items-center gap-2 tablet:gap-6">
+            <div className="absolute top-[2.5rem] tablet:top-[4.5rem] left-2 tablet:left-8 laptop:top-28 laptop:left-12 desktop:top-48 desktop:left-20 flex items-center gap-2 tablet:gap-6">
               <InfoCard
                 title="Minor Jackpot"
                 subTitle={
