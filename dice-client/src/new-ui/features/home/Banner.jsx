@@ -4,7 +4,12 @@ function Banner() {
       <img
         src="/images/banner.png"
         alt=""
-        className="hidden tablet:block w-full h-full object-fill"
+        className="hidden desktop:block w-full h-full object-cover"
+      />
+      <img
+        src="/images/banner-md.png"
+        alt=""
+        className="hidden tablet:block desktop:hidden w-full h-full object-cover"
       />
       <img
         src="/images/banner-sm.png"
