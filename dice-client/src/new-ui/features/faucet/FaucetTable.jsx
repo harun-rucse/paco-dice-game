@@ -1,23 +1,11 @@
-import { useState } from "react";
 import Table from "../../components/Table";
 import LoadingSpinner from "../../components/LoadingSpinner";
 import Pagination from "../../components/Pagination";
+import useGetFaucetTournament from "./useGetFaucetTournament";
 
 function FaucetTable() {
   const count = 10;
-  const [isLoading, setIsLoading] = useState(false);
-  const [result, setResult] = useState([
-    {
-      player: "STROEM",
-      wager: 660798101488,
-      reward: 500000,
-    },
-    {
-      player: "Mightybeast951",
-      wager: 660798101488,
-      reward: 500000,
-    },
-  ]);
+  const { isLoading, data: result } = useGetFaucetTournament();
 
   return (
     <div>
@@ -39,14 +27,14 @@ function FaucetTable() {
                 key={i}
                 className="text-sm tablet:text-xs desktop:text-lg"
               >
-                <span>{item?.player}</span>
+                <span>{item?.account?.username}</span>
                 <span className="flex items-center gap-2">
                   <img
                     src="/tokens/paco.png"
                     alt=""
                     className="w-8 tablet:w-5 desktop:w-8 h-8 tablet:h-5 desktop:h-8"
                   />
-                  <span>{item?.wager}</span>
+                  <span>{item?.totalWagerAmount}</span>
                 </span>
                 <span className="flex items-center gap-2">
                   <img

@@ -29,3 +29,13 @@ export const gambleReward = async (reward) => {
     throw new Error(err?.response?.data?.message);
   }
 };
+
+export const getFaucetTournament = async () => {
+  try {
+    const { data } = await api.get("/faucet/tournament");
+
+    return data;
+  } catch (err) {
+    throw new Error(err?.response?.data?.message);
+  }
+};

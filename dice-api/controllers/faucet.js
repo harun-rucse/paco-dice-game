@@ -31,6 +31,7 @@ const claimFaucetReward = catchAsync(async (req, res, next) => {
     faucet.totalClaimedAmount,
     reward
   );
+  faucet.totalWagerAmount = decimal.addition(faucet.totalWagerAmount, reward);
   await faucet.save();
 
   // if reward === 125 create standard ticket
@@ -119,8 +120,55 @@ const gambleReward = catchAsync(async (req, res, next) => {
   res.status(200).json({ status });
 });
 
+/**
+ * @desc    Get faucet tournament prize
+ * @route   POST /api/faucet/tournament
+ * @access  Public
+ */
+const getFaucetTournament = catchAsync(async (req, res, next) => {
+  const totalPaco = 1000000; // 1M paco
+  const distributionPercentages = [
+    0.5, 0.25, 0.1, 0.06, 0.03, 0.02, 0.01, 0.01, 0.01, 0.01,
+  ];
+
+  const faucets = await Faucet.find()
+    .populate("account", "username")
+    .sort({ totalWagerAmount: -1 })
+    .limit(10);
+
+  const resData = [];
+
+  for (let i = 0; i < faucets.length; i++) {
+    const prizeAmount = totalPaco * distributionPercentages[i];
+
+    resData.push({ ...faucets[i]._doc, reward: prizeAmount });
+  }
+
+  res.status(200).json(resData);
+});
+
+// Schedule of Transfer faucet reward of 1M PACO to 10 users
+const transferFaucetPrize = async () => {
+  const totalPaco = 1000000; // 1M paco
+  const distributionPercentages = [
+    0.5, 0.25, 0.1, 0.06, 0.03, 0.02, 0.01, 0.01, 0.01, 0.01,
+  ];
+
+  const faucets = await Faucet.find().sort({ totalWagerAmount: -1 }).limit(10);
+
+  for (let i = 0; i < faucets.length; i++) {
+    const prizeAmount = totalPaco * distributionPercentages[i];
+
+    const account = await Account.findById(faucets[i].account);
+    account.paco = decimal.addition(account.paco, prizeAmount);
+    await account.save();
+  }
+};
+
 module.exports = {
   getMyFaucet,
   claimFaucetReward,
   gambleReward,
+  getFaucetTournament,
+  transferFaucetPrize,
 };

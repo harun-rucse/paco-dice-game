@@ -28,12 +28,14 @@ function getLevelNumber(lastMultiplier) {
 
 function LevelCard() {
   const [progressWidth, setProgressWidth] = useState(0);
+  const [winwinAnimate, setWinwinAnimate] = useState(false);
+  const [winloseAnimate, setWinloseAnimate] = useState(false);
 
   const { currentReward: faucetReward, lastMultiplier } = useGetReward();
 
   const rewards = prepareRewards(faucetReward, getLevelNumber(lastMultiplier));
 
-  const { gamble } = useGamble();
+  const { gamble, data } = useGamble();
 
   useEffect(() => {
     const calculateProgressWidth = (elapsed) => {
@@ -54,6 +56,20 @@ function LevelCard() {
     const _progressWidth = calculateProgressWidth(lastMultiplier);
     setProgressWidth(_progressWidth);
   }, [lastMultiplier, rewards]);
+
+  useEffect(() => {
+    let timeoutId;
+    if (data) {
+      data.status === "won" ? setWinwinAnimate(true) : setWinloseAnimate(true);
+
+      timeoutId = setTimeout(() => {
+        setWinwinAnimate(false);
+        setWinloseAnimate(false);
+      }, 500);
+    }
+
+    return () => clearTimeout(timeoutId);
+  }, [data]);
 
   const handleGamble = () => {
     gamble(faucetReward);
@@ -90,7 +106,20 @@ function LevelCard() {
         <div className="flex flex-col gap-8">
           <span>Level {level}</span>
           <div className="bg-[#1c1b37] w-28 h-28 rounded-full flex items-center justify-center">
-            <img src="/images/faucet/lost.png" alt="" className="w-24" />
+            {/* <img src="/images/faucet/lost.png" alt="" className="w-24" /> */}
+            <img
+              src={
+                winwinAnimate
+                  ? "/images/animation/winwin.gif"
+                  : winloseAnimate
+                  ? "/images/animation/winlose.gif"
+                  : data && data.status === "won"
+                  ? "/images/faucet/win.png"
+                  : "/images/faucet/lost.png"
+              }
+              alt=""
+              className="w-24"
+            />
           </div>
         </div>
         <div className="flex flex-col space-y-2">

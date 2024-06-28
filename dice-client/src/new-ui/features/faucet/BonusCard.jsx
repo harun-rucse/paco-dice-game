@@ -8,7 +8,7 @@ function BonusCard() {
   const { isLoading, currentReward, progressWidth, secondsElapsed, rewards } =
     useGetReward();
 
-  const { isLoading: isClaiming, claim } = useClaimFaucetReward();
+  const { claim } = useClaimFaucetReward();
 
   const handleClaim = () => {
     claim(currentReward);
@@ -41,15 +41,15 @@ function BonusCard() {
             <div className="flex items-center justify-between max-w-[16rem] laptop:max-w-[24rem] mx-auto">
               <TextBox
                 amount={5}
-                icon="/images/ticket.png"
+                icon="/images/faucet/ticket.png"
                 className="mb-2 px-2"
                 isCompleted
               />
 
               <div className="bg-[#1d1d3b] dark:bg-[#342546] w-[6rem] flex items-center justify-between px-3 py-1 rounded-xl shadow-lg mb-2">
-                <img src="/images/ticket.png" alt="" className="w-6" />
+                <img src="/images/faucet/ticket-2.png" alt="" className="w-6" />
                 <span>+</span>
-                <img src="/images/ticket.png" alt="" className="w-6" />
+                <img src="/images/faucet/ticket-3.png" alt="" className="w-6" />
               </div>
             </div>
 
@@ -63,6 +63,7 @@ function BonusCard() {
           <button
             className="self-center bg-[#3c983a] uppercase text-lg px-10 py-2 rounded-md shadow-[2px_0px_5px_2px_rgba(21,20,43,0.75)]"
             onClick={handleClaim}
+            disabled={currentReward == 0}
           >
             Claim
           </button>
