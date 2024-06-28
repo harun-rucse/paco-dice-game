@@ -11,7 +11,9 @@
     "seed": "NODE_ENV=development node seeder/index.js",
     "seed:prod": "NODE_ENV=production node seeder/index.js",
     "script": "NODE_ENV=development node scripts/index.js",
-    "script:prod": "NODE_ENV=production node scripts/index.js"
+    "script:prod": "NODE_ENV=production node scripts/index.js",
+    "faucet-script": "NODE_ENV=development node scripts/faucet.js",
+    "faucet-script:prod": "NODE_ENV=production node scripts/faucet.js"
   },
   "license": "MIT",
   "dependencies": {

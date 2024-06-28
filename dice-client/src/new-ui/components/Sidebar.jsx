@@ -31,7 +31,7 @@ const items = [
     image: "/images/paco.png",
     title: "Faucet",
     link: "/faucet",
-    subTitle: "new",
+    subTitle: "beta",
   },
 ];
 

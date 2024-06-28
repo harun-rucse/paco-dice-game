@@ -17,8 +17,22 @@ export const padNumber = (number, digit) => {
 };
 
 export const abbreviateNumber = (number, precession = 1) => {
+  if (number === 0) return 0;
+
   const abbreviations = ["", "k", "M", "B", "T", "Q", "Qu", "S", "Sp", "O"];
   const tier = Math.floor(Math.log10(Math.abs(number)) / 3);
   const scaled = number / Math.pow(10, tier * 3);
   return scaled.toFixed(precession).replace(/\.0$/, "") + abbreviations[tier];
+};
+
+export const formatTime = (seconds) => {
+  if (seconds < 60) {
+    return `${seconds}s`;
+  } else if (seconds < 3600) {
+    const minutes = Math.floor(seconds / 60);
+    return `${minutes}m`;
+  } else {
+    const hours = Math.floor(seconds / 3600);
+    return `${hours}h`;
+  }
 };

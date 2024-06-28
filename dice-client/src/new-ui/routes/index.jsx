@@ -12,6 +12,7 @@ const Staking = lazy(() => import("../pages/Staking"));
 const Lottery = lazy(() => import("../pages/Lottery"));
 const Profile = lazy(() => import("../pages/Profile"));
 const Referral = lazy(() => import("../pages/Referral"));
+const Faucet = lazy(() => import("../pages/Faucet"));
 const JoinViaReferral = lazy(() => import("../pages/JoinViaReferral"));
 const ResetPassword = lazy(() => import("../pages/ResetPassword"));
 const AdminDashboard = lazy(() => import("../pages/admin/Dashboard"));
@@ -20,7 +21,6 @@ const AdminWithdrawable = lazy(() => import("../pages/admin/Withdrawable"));
 const AdminDeposit = lazy(() => import("../pages/admin/Deposit"));
 const AdminBurn = lazy(() => import("../pages/admin/Burn"));
 const AdminComingSoon = lazy(() => import("../pages/admin/ComingSoon"));
-const ComingSoon = lazy(() => import("../pages/ComingSoon"));
 const PageNotFound = lazy(() => import("../pages/PageNotFound"));
 
 function Routes() {
@@ -34,7 +34,7 @@ function Routes() {
         { path: "staking", element: <Staking /> },
         { path: "lottery", element: <Lottery /> },
         { path: "referral", element: <Referral /> },
-        { path: "faucet", element: <ComingSoon /> },
+        { path: "faucet", element: <Faucet /> },
         {
           path: "profile",
           element: (
