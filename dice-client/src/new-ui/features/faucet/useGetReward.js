@@ -14,6 +14,7 @@ const rewards = [
 function useGetReward() {
   const [secondsElapsed, setSecondsElapsed] = useState(null);
   const [lastMultiplier, setLastMultiplier] = useState("1");
+  const [availableGambleAmount, setAvailableGambleAmount] = useState("1");
   const { isLoading, data } = useGetMyFaucet();
 
   useEffect(() => {
@@ -26,6 +27,7 @@ function useGetReward() {
 
       setSecondsElapsed(differenceInSeconds);
       setLastMultiplier(data.lastMultiplier);
+      setAvailableGambleAmount(data.availableGambleAmount);
     }
   }, [data]);
 
@@ -75,6 +77,7 @@ function useGetReward() {
     progressWidth,
     rewards,
     lastMultiplier,
+    availableGambleAmount,
   };
 }
 
