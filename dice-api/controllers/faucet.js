@@ -98,8 +98,7 @@ const gambleReward = catchAsync(async (req, res, next) => {
   const { reward } = req.body;
 
   let randomNumber = Math.floor(Math.random() * 100);
-  // const status = randomNumber < 50 ? "lost" : "won";
-  const status = "won";
+  const status = randomNumber < 50 ? "lost" : "won";
 
   const faucet = await Faucet.findOne({ account: req.account._id });
   if (faucet.lastMultiplier == "1048576")
