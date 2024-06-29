@@ -1,27 +1,26 @@
 import toast from "react-hot-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { claimFaucetReward } from "../../../services/apiFaucet";
+import { collectGambleReward } from "../../../services/apiFaucet";
 
-export function useClaimFaucetReward() {
+export function useCollectReward() {
   const queryClient = useQueryClient();
 
-  const { isLoading, mutate: claim } = useMutation({
-    mutationFn: claimFaucetReward,
+  const { isLoading, mutate: collect } = useMutation({
+    mutationFn: collectGambleReward,
     onSuccess: (data) => {
       if (data?.success) {
-        toast.success("Claim successful");
+        toast.success("Collect successful");
       } else {
-        toast.error("Claim failed");
+        toast.error("Collect failed");
       }
 
       queryClient.invalidateQueries(["user"]);
       queryClient.invalidateQueries(["my-faucet"]);
-      // queryClient.invalidateQueries(["faucet-tournament"]);
     },
     onError: (error) => {
       toast.error(error.message);
     },
   });
 
-  return { claim, isLoading };
+  return { collect, isLoading };
 }

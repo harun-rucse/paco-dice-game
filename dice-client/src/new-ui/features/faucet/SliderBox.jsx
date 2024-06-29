@@ -1,6 +1,7 @@
 import ProgressBar from "./ProgressBar";
 import TextBox from "./TextBox";
 import { formatTime } from "./../../../utils/format";
+import { divide } from "../../../utils/decimal";
 
 function TimeLaps({ time, isLevelCard }) {
   return (
@@ -14,6 +15,7 @@ function SliderBox({
   rewards,
   secondsElapsed,
   progressWidth,
+  lastMultiplier,
   isLevelCard = false,
 }) {
   return (
@@ -22,7 +24,11 @@ function SliderBox({
         {rewards.map((reward, index) => (
           <TextBox
             key={index}
-            amount={reward.coins}
+            amount={
+              isLevelCard && secondsElapsed >= reward.time
+                ? divide(reward.coins, lastMultiplier)
+                : reward.coins
+            }
             isCompleted={secondsElapsed >= reward.time}
             className={
               isLevelCard

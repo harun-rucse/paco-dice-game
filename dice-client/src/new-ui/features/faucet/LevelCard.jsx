@@ -3,6 +3,7 @@ import TextBox from "./TextBox";
 import SliderBox from "./SliderBox";
 import useGetReward from "./useGetReward";
 import { useGamble } from "./useGamble";
+import { useCollectReward } from "./useCollectReward";
 
 function prepareRewards(value, level = 1) {
   const rewards = [
@@ -31,9 +32,20 @@ function LevelCard() {
   const [winwinAnimate, setWinwinAnimate] = useState(false);
   const [winloseAnimate, setWinloseAnimate] = useState(false);
 
-  const { currentReward: faucetReward, lastMultiplier } = useGetReward();
+  const {
+    currentReward: faucetReward,
+    lastMultiplier,
+    availableGambleAmount,
+  } = useGetReward();
 
-  const rewards = prepareRewards(faucetReward, getLevelNumber(lastMultiplier));
+  const { collect } = useCollectReward();
+
+  const rewards = prepareRewards(
+    parseFloat(availableGambleAmount) > 0
+      ? availableGambleAmount
+      : faucetReward,
+    getLevelNumber(lastMultiplier)
+  );
 
   const { gamble, data } = useGamble();
 
@@ -65,32 +77,24 @@ function LevelCard() {
       timeoutId = setTimeout(() => {
         setWinwinAnimate(false);
         setWinloseAnimate(false);
-      }, 500);
+      }, 650);
     }
 
     return () => clearTimeout(timeoutId);
   }, [data]);
 
   const handleGamble = () => {
-    gamble(faucetReward);
+    gamble(
+      parseFloat(availableGambleAmount) > 0
+        ? availableGambleAmount
+        : faucetReward
+    );
   };
 
-  // const handleCollect = () => {
-  //   const reward = getReward(lastMultiplier);
-  //   setGambleCoins(gambleCoins + reward);
-  //   setProgressWidth(0);
-  // };
-
-  const getReward = (elapsed) => {
-    for (let i = 0; i <= rewards.length - 1; i++) {
-      if (elapsed === rewards[i].time) {
-        return rewards[i].coins;
-      }
-    }
-    return 0;
+  const handleCollect = () => {
+    collect();
   };
 
-  const currentReward = getReward(lastMultiplier);
   const level =
     getLevelNumber(lastMultiplier) === 32
       ? 2
@@ -106,7 +110,6 @@ function LevelCard() {
         <div className="flex flex-col gap-8">
           <span>Level {level}</span>
           <div className="bg-[#1c1b37] w-28 h-28 rounded-full flex items-center justify-center">
-            {/* <img src="/images/faucet/lost.png" alt="" className="w-24" /> */}
             <img
               src={
                 winwinAnimate
@@ -126,7 +129,11 @@ function LevelCard() {
           <div className="flex flex-col items-center gap-2">
             <h3 className="uppercase text-sm">Available to gamble:</h3>
             <TextBox
-              amount={currentReward ? currentReward : faucetReward}
+              amount={
+                parseFloat(availableGambleAmount) > 0
+                  ? availableGambleAmount
+                  : faucetReward
+              }
               className="w-full py-2"
             />
           </div>
@@ -136,16 +143,17 @@ function LevelCard() {
               lastMultiplier == 1048576 ? "!bg-[#696969]" : "!bg-[#d11f1f]"
             }  !py-2`}
             onClick={handleGamble}
-            disabled={faucetReward == 0}
+            disabled={faucetReward == 0 && availableGambleAmount == 0}
           >
-            {lastMultiplier == 1048576 ? "Collect" : "Gamble"}
+            Gamble
           </button>
-          {/* <button
+          <button
             className="button !bg-[#696969] !py-2"
             onClick={handleCollect}
+            disabled={availableGambleAmount == 0}
           >
             Collect
-          </button> */}
+          </button>
         </div>
       </div>
 
@@ -154,6 +162,7 @@ function LevelCard() {
           progressWidth={progressWidth}
           rewards={rewards}
           secondsElapsed={lastMultiplier}
+          lastMultiplier={lastMultiplier}
           isLevelCard
         />
       </div>
