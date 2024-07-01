@@ -27,6 +27,10 @@ const faucetSchema = new Schema(
       type: String,
       default: "1",
     },
+    initialGambleAmount: {
+      type: String,
+      default: "0",
+    },
     level: {
       type: Number,
       default: 1,

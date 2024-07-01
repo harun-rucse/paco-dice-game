@@ -40,13 +40,23 @@ function BonusCard() {
           <div className="px-2 py-6">
             <div className="flex items-center justify-between max-w-[16rem] laptop:max-w-[24rem] mx-auto">
               <TextBox
-                amount={5}
+                amount={1}
                 icon="/images/faucet/ticket.png"
-                className="mb-2 px-2"
+                className={`mb-2 px-2 ${
+                  currentReward == "125"
+                    ? "shadow-[1px_1px_20px_5px_rgba(60,152,58,0.6)]"
+                    : "shadow-lg"
+                }`}
                 isCompleted
               />
 
-              <div className="bg-[#1d1d3b] dark:bg-[#342546] w-[6rem] flex items-center justify-between px-3 py-1 rounded-xl shadow-lg mb-2">
+              <div
+                className={`bg-[#1d1d3b] dark:bg-[#342546] w-[6rem] flex items-center justify-between px-3 py-1 rounded-xl ${
+                  currentReward == "500"
+                    ? "shadow-[1px_1px_20px_5px_rgba(60,152,58,0.6)]"
+                    : "shadow-lg"
+                } mb-2`}
+              >
                 <img src="/images/faucet/ticket-2.png" alt="" className="w-6" />
                 <span>+</span>
                 <img src="/images/faucet/ticket-3.png" alt="" className="w-6" />

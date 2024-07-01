@@ -31,19 +31,19 @@ function LevelCard() {
   const [progressWidth, setProgressWidth] = useState(0);
   const [winwinAnimate, setWinwinAnimate] = useState(false);
   const [winloseAnimate, setWinloseAnimate] = useState(false);
+  const [isCollectClick, setIsCollectClick] = useState(false);
 
   const {
     currentReward: faucetReward,
     lastMultiplier,
+    initialGambleAmount,
     availableGambleAmount,
   } = useGetReward();
 
   const { collect } = useCollectReward();
 
   const rewards = prepareRewards(
-    parseFloat(availableGambleAmount) > 0
-      ? availableGambleAmount
-      : faucetReward,
+    parseFloat(initialGambleAmount) > 0 ? initialGambleAmount : faucetReward,
     getLevelNumber(lastMultiplier)
   );
 
@@ -77,7 +77,7 @@ function LevelCard() {
       timeoutId = setTimeout(() => {
         setWinwinAnimate(false);
         setWinloseAnimate(false);
-      }, 650);
+      }, 1200);
     }
 
     return () => clearTimeout(timeoutId);
@@ -85,14 +85,14 @@ function LevelCard() {
 
   const handleGamble = () => {
     gamble(
-      parseFloat(availableGambleAmount) > 0
-        ? availableGambleAmount
-        : faucetReward
+      parseFloat(initialGambleAmount) > 0 ? initialGambleAmount : faucetReward
     );
+    setIsCollectClick(false);
   };
 
   const handleCollect = () => {
     collect();
+    setIsCollectClick(true);
   };
 
   const level =
@@ -148,7 +148,11 @@ function LevelCard() {
             Gamble
           </button>
           <button
-            className="button !bg-[#696969] !py-2"
+            className={`button ${
+              data?.status === "won" && !isCollectClick
+                ? "!bg-[#3c983a]"
+                : "!bg-[#696969]"
+            } !py-2`}
             onClick={handleCollect}
             disabled={availableGambleAmount == 0}
           >
