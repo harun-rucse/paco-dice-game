@@ -25,13 +25,34 @@ const items = [
     image: "/images/referral.png",
     title: "Referral",
     link: "/referral",
-    subTitle: "beta",
   },
   {
     image: "/images/paco.png",
     title: "Faucet",
     link: "/faucet",
     subTitle: "beta",
+    color: "text-[#81cb88]",
+  },
+  {
+    image: "/images/swap-icon.png",
+    title: "Swap",
+    link: "/swap",
+    subTitle: "soon",
+    color: "text-[#f2bb68]",
+  },
+  {
+    image: "/images/bridge-icon.png",
+    title: "Bridge",
+    link: "/bridge",
+    subTitle: "soon",
+    color: "text-[#f2bb68]",
+  },
+  {
+    image: "/images/news.png",
+    title: "News",
+    link: "/news",
+    subTitle: "new",
+    color: "text-[#81cb88]",
   },
 ];
 
@@ -39,7 +60,7 @@ function Sidebar() {
   const { toggleDarkMode } = useDarkMode();
 
   return (
-    <aside className="hidden laptop:block fixed w-[21rem] h-full laptop:w-[18rem] bg-[#24224a] dark:bg-[#1b152a] border-r border-[#444187] dark:border-[#40335f]">
+    <aside className="hidden laptop:block fixed w-[21rem] laptop:w-[18rem] bg-[#24224a] dark:bg-[#1b152a] border-r border-[#444187] dark:border-[#40335f] tablet:h-[90vh] pb-8 desktop:h-screen overflow-y-auto">
       <div className="flex items-center gap-4">
         <img src="/images/sidebar-logo.png" alt="" className="w-20" />
         <div className="flex flex-col items-center uppercase">
@@ -53,7 +74,7 @@ function Sidebar() {
         </div>
       </div>
 
-      <ul className="space-y-4 py-8 px-4 sidebar">
+      <ul className="space-y-3 desktop:space-y-4 py-4 px-4 sidebar">
         {items.map((item, i) => (
           <NavLink
             key={i}
@@ -67,7 +88,9 @@ function Sidebar() {
             />
             <span className="text-lg">{item.title}</span>
             {item.subTitle && (
-              <span className="uppercase text-xs bg-[#322849] text-[#81cb88] px-4 py-1 rounded-2xl absolute top-3 right-0">
+              <span
+                className={`uppercase text-xs bg-[#322849] ${item.color} px-4 py-1 rounded-2xl absolute top-3 right-0`}
+              >
                 {item.subTitle}
               </span>
             )}
@@ -75,7 +98,7 @@ function Sidebar() {
         ))}
       </ul>
 
-      <div className="flex items-center justify-center gap-14 py-4">
+      <div className="flex items-center justify-center gap-14 py-2">
         <Link to="https://t.me/PacoDeLlama" target="_blank">
           <img src="/images/telegram.png" alt="" className="w-9" />
         </Link>
@@ -84,7 +107,7 @@ function Sidebar() {
         </Link>
       </div>
 
-      <div className="flex justify-center items-center gap-4 py-6">
+      <div className="flex justify-center items-center gap-4 py-2">
         <img src="/images/sun.png" alt="" className="w-10 object-cover" />
         <ToggleDarkMode onSwitch={(state) => toggleDarkMode(!state)} />
         <img src="/images/moon.png" alt="" className="w-10 object-cover" />
