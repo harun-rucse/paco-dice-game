@@ -21,7 +21,9 @@ const AdminWithdrawable = lazy(() => import("../pages/admin/Withdrawable"));
 const AdminDeposit = lazy(() => import("../pages/admin/Deposit"));
 const AdminBurn = lazy(() => import("../pages/admin/Burn"));
 const AdminComingSoon = lazy(() => import("../pages/admin/ComingSoon"));
+const News = lazy(() => import("../pages/News"));
 const PageNotFound = lazy(() => import("../pages/PageNotFound"));
+const ComingSoon = lazy(() => import("../pages/ComingSoon"));
 
 function Routes() {
   const routingElements = useRoutes([
@@ -35,6 +37,9 @@ function Routes() {
         { path: "lottery", element: <Lottery /> },
         { path: "referral", element: <Referral /> },
         { path: "faucet", element: <Faucet /> },
+        { path: "swap", element: <ComingSoon /> },
+        { path: "bridge", element: <ComingSoon /> },
+        { path: "news", element: <News /> },
         {
           path: "profile",
           element: (

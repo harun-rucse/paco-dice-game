@@ -44,6 +44,13 @@ function Footer() {
               className="w-20 laptop:w-[6.2rem]"
             />
           </Link>
+          <Link to="https://nuls.io/" target="_blank">
+            <img
+              src="/images/nuls.png"
+              alt=""
+              className="w-12 laptop:w-[4rem]"
+            />
+          </Link>
         </div>
       </div>
 

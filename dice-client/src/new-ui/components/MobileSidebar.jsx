@@ -26,13 +26,34 @@ const items = [
     image: "/images/referral.png",
     title: "Referral",
     link: "/referral",
-    subTitle: "beta",
   },
   {
     image: "/images/paco.png",
     title: "Faucet",
     link: "/faucet",
     subTitle: "beta",
+    color: "text-[#81cb88]",
+  },
+  {
+    image: "/images/swap-icon.png",
+    title: "Swap",
+    link: "/swap",
+    subTitle: "soon",
+    color: "text-[#f2bb68]",
+  },
+  {
+    image: "/images/bridge-icon.png",
+    title: "Bridge",
+    link: "/bridge",
+    subTitle: "soon",
+    color: "text-[#f2bb68]",
+  },
+  {
+    image: "/images/news.png",
+    title: "News",
+    link: "/news",
+    subTitle: "new",
+    color: "text-[#81cb88]",
   },
 ];
 
@@ -73,7 +94,9 @@ function MobileSidebar({ open, setOpen }) {
               />
               <span className="text-base">{item.title}</span>
               {item.subTitle && (
-                <span className="uppercase text-xs bg-[#322849] text-[#81cb88] px-4 py-1 rounded-2xl absolute top-3 right-0">
+                <span
+                  className={`uppercase text-xs bg-[#322849] ${item.color} px-4 py-1 rounded-2xl absolute top-3 right-0`}
+                >
                   {item.subTitle}
                 </span>
               )}
