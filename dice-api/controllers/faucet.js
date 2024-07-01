@@ -106,6 +106,7 @@ const gambleReward = catchAsync(async (req, res, next) => {
 
   if (faucet.lastMultiplier === "1") {
     faucet.lastClaimedDate = new Date();
+    faucet.initialGambleAmount = reward;
   }
 
   faucet.totalWagerAmount = decimal.addition(faucet.totalWagerAmount, reward);
@@ -113,18 +114,12 @@ const gambleReward = catchAsync(async (req, res, next) => {
   if (status === "lost") {
     faucet.availableGambleAmount = "0";
     faucet.lastMultiplier = "1";
+    faucet.initialGambleAmount = "0";
   } else {
     faucet.lastMultiplier = decimal.multiply(faucet.lastMultiplier, 2);
-
-    console.log({
-      mul: faucet.lastMultiplier,
-      reward,
-      ava: faucet.lastMultiplier * reward,
-    });
-
     faucet.availableGambleAmount = decimal.multiply(
       faucet.lastMultiplier,
-      reward
+      faucet.initialGambleAmount
     );
 
     // Add gamble reward to the referral
@@ -193,6 +188,7 @@ const collectGambleReward = catchAsync(async (req, res, next) => {
 
   faucet.availableGambleAmount = "0";
   faucet.lastMultiplier = "1";
+  faucet.initialGambleAmount = "0";
   await faucet.save();
 
   res.status(200).json({ success: true });

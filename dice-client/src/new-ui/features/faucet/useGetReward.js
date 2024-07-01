@@ -15,6 +15,7 @@ function useGetReward() {
   const [secondsElapsed, setSecondsElapsed] = useState(null);
   const [lastMultiplier, setLastMultiplier] = useState("1");
   const [availableGambleAmount, setAvailableGambleAmount] = useState("1");
+  const [initialGambleAmount, setInitialGambleAmount] = useState("1");
   const { isLoading, data } = useGetMyFaucet();
 
   useEffect(() => {
@@ -28,6 +29,7 @@ function useGetReward() {
       setSecondsElapsed(differenceInSeconds);
       setLastMultiplier(data.lastMultiplier);
       setAvailableGambleAmount(data.availableGambleAmount);
+      setInitialGambleAmount(data.initialGambleAmount);
     }
   }, [data]);
 
@@ -78,6 +80,7 @@ function useGetReward() {
     rewards,
     lastMultiplier,
     availableGambleAmount,
+    initialGambleAmount,
   };
 }
 

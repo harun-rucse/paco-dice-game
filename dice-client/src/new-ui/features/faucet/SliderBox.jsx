@@ -26,7 +26,8 @@ function SliderBox({
             key={index}
             amount={
               isLevelCard && secondsElapsed >= reward.time
-                ? divide(reward.coins, lastMultiplier)
+                ? // ? divide(reward.coins, lastMultiplier)
+                  reward.coins
                 : reward.coins
             }
             isCompleted={secondsElapsed >= reward.time}
