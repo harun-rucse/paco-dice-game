@@ -3,10 +3,10 @@ import Countdown from "react-countdown";
 const formatNumber = (num) => (num < 10 ? `0${num}` : num);
 
 function FaucetStats() {
-  // Calculate the time until the next 12:00 AM
+  // Calculate the time until the next 11:00 PM
   const now = new Date();
   const midnight = new Date();
-  midnight.setHours(24, 0, 0, 0);
+  midnight.setHours(23, 0, 0, 0);
   const timeUntilMidnight = midnight - now;
 
   const renderer = ({ hours, minutes, seconds }) => {
@@ -30,7 +30,7 @@ function FaucetStats() {
       </div>
 
       <div className="flex items-center gap-2 w-[14rem]">
-        <img src="/images/paco.png" alt="" className="w-7" />
+        <img src="/images/timer.png" alt="" className="w-6" />
         <span className="uppercase laptop:text-lg">
           Time left:{" "}
           {

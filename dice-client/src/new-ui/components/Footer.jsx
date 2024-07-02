@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 function Footer() {
   return (
-    <div className="flex flex-col tablet:flex-row gap-8 tablet:gap-0 absolute left-0 bottom-0 w-full h-[33rem] tablet:h-[10rem] z-50 bg-[#24224a] dark:bg-[#2a223e] items-center tablet:items-end px-2 laptop:px-16 py-4 pb-6 tablet:justify-between border-t border-[#433761]">
+    <div className="flex flex-col tablet:flex-row gap-8 tablet:gap-0 absolute left-0 bottom-0 w-full h-[33rem] tablet:h-[12rem] z-50 bg-[#24224a] dark:bg-[#2a223e] items-center tablet:items-end px-2 laptop:px-16 py-4 pb-6 tablet:justify-between border-t border-[#433761]">
       <div className="px-4 self-start space-y-1 w-full tablet:w-[50%] laptop:w-[30%]">
         <p className="text-center text-white uppercase">Partners & Investors</p>
         <div className="pt-3 flex flex-wrap justify-center tablet:justify-start gap-x-5 gap-y-5 tablet:gap-x-8 laptop:gap-x-8 desktop:gap-x-16">
@@ -65,6 +65,11 @@ function Footer() {
           </li>
           <li className="font-semibold text-[#4f4b92] dark:text-[#745b97]">
             <Link to="/lottery">Lottery</Link>
+          </li>
+          <li className="font-semibold text-[#4f4b92] dark:text-[#745b97]">
+            <Link to="https://bridge.nerve.network/" target="_blank">
+              Bridge
+            </Link>
           </li>
         </ul>
 

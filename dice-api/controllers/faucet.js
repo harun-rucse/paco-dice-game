@@ -35,6 +35,7 @@ const claimFaucetReward = catchAsync(async (req, res, next) => {
     faucet.totalClaimedAmount,
     reward
   );
+  faucet.totalWagerAmount = decimal.addition(faucet.totalWagerAmount, reward);
   await faucet.save();
 
   // Add claim reward to the referral
@@ -210,6 +211,9 @@ const transferFaucetPrize = async () => {
     account.paco = decimal.addition(account.paco, prizeAmount);
     await account.save();
   }
+
+  // Reset totalWagerAmount for all faucet users
+  await Faucet.updateMany({}, { $set: { totalWagerAmount: "0" } });
 };
 
 module.exports = {

@@ -6,6 +6,7 @@ const { listEvent } = require("./services/event-service");
 const Web3 = require("web3");
 const scheduleStakingJob = require("./utils/scheduleStakingJob");
 const scheduleLotteryJob = require("./utils/scheduleLotteryJob");
+const scheduleFaucetJob = require("./utils/scheduleFaucetJob");
 
 // database connection
 db()
@@ -17,6 +18,9 @@ scheduleStakingJob();
 
 // Schedule automatic transfer daily ticket to ticket pool & distribute reward
 scheduleLotteryJob();
+
+// Schedule automatic transfer faucet reward
+scheduleFaucetJob();
 
 const PORT = process.env.PORT || 4000;
 
