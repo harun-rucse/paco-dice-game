@@ -31,7 +31,7 @@ const items = [
     image: "/images/paco.png",
     title: "Faucet",
     link: "/faucet",
-    subTitle: "beta",
+    subTitle: "new",
     color: "text-[#81cb88]",
   },
   {
@@ -44,9 +44,10 @@ const items = [
   {
     image: "/images/bridge-icon.png",
     title: "Bridge",
-    link: "/bridge",
-    subTitle: "soon",
-    color: "text-[#f2bb68]",
+    link: "https://bridge.nerve.network/",
+    isExternal: true,
+    subTitle: "new",
+    color: "text-[#81cb88]",
   },
   {
     image: "/images/news.png",
@@ -74,9 +75,11 @@ function MobileSidebar({ open, setOpen }) {
           <div className="flex flex-col items-center uppercase text-sm">
             <span>Play Lottery</span>
             <span className="text-[#c475f5]">Hit The Jackpot</span>
-            <button className="bg-[#413e72] dark:bg-[#5b4675] rounded-xl px-4 py-1 uppercase mt-2">
-              Buy a ticket
-            </button>
+            <Link to="/lottery">
+              <button className="bg-[#413e72] dark:bg-[#5b4675] rounded-xl px-4 py-1 uppercase mt-2">
+                Buy a ticket
+              </button>
+            </Link>
           </div>
         </div>
 
@@ -85,6 +88,7 @@ function MobileSidebar({ open, setOpen }) {
             <NavLink
               key={i}
               to={item.link}
+              target={item?.isExternal ? "_blank" : ""}
               className="flex items-center gap-5 transition-all hover:bg-gradient-to-r from-[#5d4599] to-[#27254d] px-2 rounded-2xl relative"
             >
               <img

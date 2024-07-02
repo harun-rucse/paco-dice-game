@@ -141,7 +141,7 @@ function LevelCard() {
           <button
             className={`button ${
               lastMultiplier == 1048576 ? "!bg-[#696969]" : "!bg-[#d11f1f]"
-            }  !py-2`}
+            }  !py-2 uppercase`}
             onClick={handleGamble}
             disabled={faucetReward == 0 && availableGambleAmount == 0}
           >
@@ -152,7 +152,7 @@ function LevelCard() {
               data?.status === "won" && !isCollectClick
                 ? "!bg-[#3c983a]"
                 : "!bg-[#696969]"
-            } !py-2`}
+            } !py-2 uppercase`}
             onClick={handleCollect}
             disabled={availableGambleAmount == 0}
           >

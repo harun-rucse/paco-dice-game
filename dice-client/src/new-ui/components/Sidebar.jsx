@@ -30,7 +30,7 @@ const items = [
     image: "/images/paco.png",
     title: "Faucet",
     link: "/faucet",
-    subTitle: "beta",
+    subTitle: "new",
     color: "text-[#81cb88]",
   },
   {
@@ -43,9 +43,10 @@ const items = [
   {
     image: "/images/bridge-icon.png",
     title: "Bridge",
-    link: "/bridge",
-    subTitle: "soon",
-    color: "text-[#f2bb68]",
+    link: "https://bridge.nerve.network/",
+    isExternal: true,
+    subTitle: "new",
+    color: "text-[#81cb88]",
   },
   {
     image: "/images/news.png",
@@ -79,6 +80,7 @@ function Sidebar() {
           <NavLink
             key={i}
             to={item.link}
+            target={item?.isExternal ? "_blank" : ""}
             className="flex items-center gap-5 transition-all hover:bg-gradient-to-r from-[#5d4599] to-[#27254d] px-2 rounded-2xl relative"
           >
             <img
