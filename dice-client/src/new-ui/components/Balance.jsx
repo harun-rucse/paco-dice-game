@@ -35,8 +35,9 @@ function BalanceItem({
       <strong className="text-white font-extralight text-sm tablet:text-base">
         {isDollar
           ? currencyFormat(multiply(value, price?.[name.toLowerCase()]))
+          : name === "PACO"
+          ? Number(value)?.toFixed(2)
           : Number(value)?.toFixed(8)}
-        {/* {isDollar ? Number(value)?.toFixed(8) : value} */}
       </strong>
     </div>
   );

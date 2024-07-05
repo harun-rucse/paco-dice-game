@@ -16,7 +16,7 @@ export function useClaimFaucetReward() {
 
       queryClient.invalidateQueries(["user"]);
       queryClient.invalidateQueries(["my-faucet"]);
-      // queryClient.invalidateQueries(["faucet-tournament"]);
+      queryClient.invalidateQueries(["faucet-tournament"]);
     },
     onError: (error) => {
       toast.error(error.message);
