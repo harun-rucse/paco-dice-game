@@ -116,9 +116,9 @@ function LevelCard() {
                   ? "/images/animation/winwin.gif"
                   : winloseAnimate
                   ? "/images/animation/winlose.gif"
-                  : data && data.status === "won"
-                  ? "/images/faucet/win.png"
-                  : "/images/faucet/lost.png"
+                  : data && data.status === "lost"
+                  ? "/images/faucet/lost.png"
+                  : "/images/faucet/win.png"
               }
               alt=""
               className="w-24"

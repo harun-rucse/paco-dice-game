@@ -5,7 +5,7 @@ import useGetTicketStatistics from "../lottery/useGetTicketStatistics";
 
 function InfoCard({ title, subTitle, titleIcon, subTitleIcon, className }) {
   return (
-    <div className="space-y-1 tablet:space-y-2">
+    <div className="space-y-0 desktop:space-y-0">
       <div className="hidden tablet:flex items-center gap-2">
         <p className="uppercase text-sm tablet:text-lg text-[#b4b3b3]">
           {title}
@@ -52,7 +52,7 @@ function FeatureBanner() {
               alt=""
               className="block tablet:hidden overflow-hidden tablet:h-full object-contain rounded-xl tablet:rounded-2xl"
             />
-            <div className="absolute w-full top-[2.5rem] tablet:top-[4.5rem] left-2 tablet:left-8 laptop:top-28 laptop:left-12 desktop:top-48 desktop:left-20 flex items-center gap-2 tablet:gap-6">
+            <div className="absolute w-full top-[55%] tablet:top-[50%] left-2 tablet:left-8 laptop:top-[55%] laptop:left-12 desktop:top-[60%] desktop:left-20 flex items-center gap-2 tablet:gap-6">
               <InfoCard
                 title="Minor Jackpot"
                 subTitle={

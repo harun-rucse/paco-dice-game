@@ -100,6 +100,7 @@ const gambleReward = catchAsync(async (req, res, next) => {
 
   let randomNumber = Math.floor(Math.random() * 100);
   const status = randomNumber < 50 ? "lost" : "won";
+  // const status = "lost";
 
   const faucet = await Faucet.findOne({ account: req.account._id });
   if (faucet.lastMultiplier == "1048576")
@@ -184,7 +185,24 @@ const collectGambleReward = catchAsync(async (req, res, next) => {
   }
 
   const account = await Account.findById(faucet.account._id);
-  account.paco = decimal.addition(account.paco, faucet.availableGambleAmount);
+  // calculate collect amount
+  let calAmount = 0;
+
+  while (
+    decimal.compare(
+      faucet.initialGambleAmount,
+      faucet.availableGambleAmount,
+      "lt"
+    )
+  ) {
+    calAmount = decimal.addition(calAmount, faucet.availableGambleAmount);
+    faucet.availableGambleAmount = decimal.divide(
+      faucet.availableGambleAmount,
+      2
+    );
+  }
+
+  account.paco = decimal.addition(account.paco, calAmount);
   await account.save();
 
   faucet.availableGambleAmount = "0";

@@ -6,6 +6,7 @@ function TextBox({
   isCompleted = false,
   icon = "/images/paco.png",
   className,
+  isHighlight,
 }) {
   return (
     <div
@@ -21,7 +22,14 @@ function TextBox({
       <span className="text-xs tablet:text-base">
         {abbreviateNumber(Number(amount))}
       </span>
-      <img src={icon} alt="" className="w-4 tablet:w-5" />
+      <img
+        src={icon}
+        alt=""
+        className={`w-4 tablet:w-5 ${
+          isHighlight &&
+          "shadow-[1px_1px_10px_5px_rgba(60,152,58,0.9)]_ rounded-md animate-bounce"
+        }`}
+      />
     </div>
   );
 }

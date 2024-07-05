@@ -47,7 +47,9 @@ function BonusCard() {
                     ? "shadow-[1px_1px_20px_5px_rgba(60,152,58,0.6)]"
                     : "shadow-lg"
                 }`}
+                // className="mb-2 px-2 shadow-lg"
                 isCompleted
+                isHighlight={currentReward == "125"}
               />
 
               <div
@@ -57,9 +59,21 @@ function BonusCard() {
                     : "shadow-lg"
                 } mb-2`}
               >
-                <img src="/images/faucet/ticket-2.png" alt="" className="w-6" />
+                <img
+                  src="/images/faucet/ticket-2.png"
+                  alt=""
+                  className={`w-6 ${
+                    currentReward == "500" && "animate-bounce"
+                  }`}
+                />
                 <span>+</span>
-                <img src="/images/faucet/ticket-3.png" alt="" className="w-6" />
+                <img
+                  src="/images/faucet/ticket-3.png"
+                  alt=""
+                  className={`w-6 ${
+                    currentReward == "500" && "animate-bounce"
+                  }`}
+                />
               </div>
             </div>
 
