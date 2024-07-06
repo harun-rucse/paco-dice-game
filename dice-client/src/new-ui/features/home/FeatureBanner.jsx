@@ -74,7 +74,7 @@ function FeatureBanner() {
             </div>
           </div>
         </Link>
-        <div className="flex gap-4 tablet:gap-6 desktop:gap-8 mt-2 tablet:mt-6 desktop:mt-8">
+        <div className="flex px-1 gap-4 tablet:gap-6 desktop:gap-8 mt-2 tablet:mt-6 desktop:mt-8">
           <Link to="/dice">
             <img
               src="/images/dice-banner.png"

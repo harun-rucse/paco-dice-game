@@ -85,7 +85,9 @@ function LevelCard() {
 
   const handleGamble = () => {
     gamble(
-      parseFloat(initialGambleAmount) > 0 ? initialGambleAmount : faucetReward
+      parseFloat(availableGambleAmount) > 0
+        ? availableGambleAmount
+        : faucetReward
     );
     setIsCollectClick(false);
   };

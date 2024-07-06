@@ -100,11 +100,13 @@ const gambleReward = catchAsync(async (req, res, next) => {
 
   let randomNumber = Math.floor(Math.random() * 100);
   const status = randomNumber < 50 ? "lost" : "won";
-  // const status = "lost";
+  // const status = "won";
 
   const faucet = await Faucet.findOne({ account: req.account._id });
   if (faucet.lastMultiplier == "1048576")
-    return res.status(400).json({ message: "Already in Final multiplier!" });
+    return res
+      .status(400)
+      .json({ status, message: "Already in Final multiplier!" });
 
   if (faucet.lastMultiplier === "1") {
     faucet.lastClaimedDate = new Date();
