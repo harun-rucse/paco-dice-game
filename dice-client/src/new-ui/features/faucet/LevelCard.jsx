@@ -40,14 +40,14 @@ function LevelCard() {
     availableGambleAmount,
   } = useGetReward();
 
-  const { collect } = useCollectReward();
+  const { isLoading: isCollecting, collect } = useCollectReward();
 
   const rewards = prepareRewards(
     parseFloat(initialGambleAmount) > 0 ? initialGambleAmount : faucetReward,
     getLevelNumber(lastMultiplier)
   );
 
-  const { gamble, data } = useGamble();
+  const { isLoading: isGambling, gamble, data } = useGamble();
 
   useEffect(() => {
     const calculateProgressWidth = (elapsed) => {
@@ -145,7 +145,11 @@ function LevelCard() {
               lastMultiplier == 1048576 ? "!bg-[#696969]" : "!bg-[#d11f1f]"
             }  !py-2 uppercase`}
             onClick={handleGamble}
-            disabled={faucetReward == 0 && availableGambleAmount == 0}
+            disabled={
+              (faucetReward == 0 && availableGambleAmount == 0) ||
+              isGambling ||
+              data?.status === "lost"
+            }
           >
             Gamble
           </button>
@@ -156,7 +160,7 @@ function LevelCard() {
                 : "!bg-[#696969]"
             } !py-2 uppercase`}
             onClick={handleCollect}
-            disabled={availableGambleAmount == 0}
+            disabled={availableGambleAmount == 0 || isCollecting}
           >
             Collect
           </button>

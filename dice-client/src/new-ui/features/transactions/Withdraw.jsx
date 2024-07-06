@@ -117,7 +117,7 @@ function Withdraw() {
               : currentBalance?.name == "USDT"
               ? "1"
               : currentBalance?.name == "PACO"
-              ? "50000000"
+              ? "100000"
               : ""}{" "}
             {currentBalance?.name == "BNB" ? "WBNB" : currentBalance?.name}.
             BEP-20 (BNB Smart Chain) ONLY.
@@ -142,7 +142,7 @@ function Withdraw() {
               : currentBalance?.name == "USDT"
               ? "0.50"
               : currentBalance?.name == "PACO"
-              ? "25000000"
+              ? "1000"
               : ""}
             &nbsp;
             {currentBalance?.name}.
