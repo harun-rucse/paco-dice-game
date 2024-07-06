@@ -19,7 +19,7 @@ const getWeb3 = () => {
 const getFee = (tokenName) => {
   if (tokenName === "usdt") return 0.5;
   else if (tokenName === "btc") return 0.000025;
-  else if (tokenName === "paco") return 25000000;
+  else if (tokenName === "paco") return 1000;
   else if (tokenName === "eth") return 0.0005;
   else if (tokenName === "bnb") return 0.001;
   else return 0;
@@ -28,7 +28,7 @@ const getFee = (tokenName) => {
 const isValidAmount = (tokenName, amount) => {
   if (tokenName === "usdt") return amount >= 1;
   else if (tokenName === "btc") return amount >= 0.00005;
-  else if (tokenName === "paco") return amount >= 50000000;
+  else if (tokenName === "paco") return amount >= 100000;
   else if (tokenName === "eth") return amount >= 0.001;
   else if (tokenName === "bnb") return amount >= 0.005;
   else return false;

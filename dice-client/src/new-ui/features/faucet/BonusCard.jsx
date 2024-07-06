@@ -43,18 +43,28 @@ function BonusCard() {
                 amount={1}
                 icon="/images/faucet/ticket.png"
                 className={`mb-2 px-2 ${
-                  currentReward == "125"
+                  currentReward == "125" ||
+                  currentReward == "500" ||
+                  currentReward == "2000"
                     ? "shadow-[1px_1px_20px_5px_rgba(60,152,58,0.6)]"
                     : "shadow-lg"
                 }`}
                 // className="mb-2 px-2 shadow-lg"
-                isCompleted={currentReward == "125"}
-                isHighlight={currentReward == "125"}
+                isCompleted={
+                  currentReward == "125" ||
+                  currentReward == "500" ||
+                  currentReward == "2000"
+                }
+                isHighlight={
+                  currentReward == "125" ||
+                  currentReward == "500" ||
+                  currentReward == "2000"
+                }
               />
 
               <div
                 className={`w-[6rem] flex items-center justify-between px-3 py-1 rounded-xl ${
-                  currentReward == "500"
+                  currentReward == "500" || currentReward == "2000"
                     ? "shadow-[1px_1px_20px_5px_rgba(60,152,58,0.6)] bg-[#6c6bb6] dark:bg-[#9c73c1]"
                     : "bg-[#1d1d3b] dark:bg-[#342546] shadow-lg"
                 } mb-2`}
@@ -63,7 +73,8 @@ function BonusCard() {
                   src="/images/faucet/ticket-2.png"
                   alt=""
                   className={`w-6 ${
-                    currentReward == "500" && "animate-bounce"
+                    (currentReward == "500" || currentReward == "2000") &&
+                    "animate-bounce"
                   }`}
                 />
                 <span>+</span>
@@ -71,7 +82,8 @@ function BonusCard() {
                   src="/images/faucet/ticket-3.png"
                   alt=""
                   className={`w-6 ${
-                    currentReward == "500" && "animate-bounce"
+                    (currentReward == "500" || currentReward == "2000") &&
+                    "animate-bounce"
                   }`}
                 />
               </div>

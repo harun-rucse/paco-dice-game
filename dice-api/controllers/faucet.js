@@ -51,7 +51,7 @@ const claimFaucetReward = catchAsync(async (req, res, next) => {
   }
 
   // if reward === 125 create standard ticket
-  if (reward == 125) {
+  if (reward == 125 || reward == 500 || reward == 2000) {
     const worker = new Worker("./workers/create-tickets.js", {
       workerData: {
         reqBody: { type: "STANDARD", amount: 1 },
@@ -68,7 +68,7 @@ const claimFaucetReward = catchAsync(async (req, res, next) => {
     });
   }
 
-  if (reward == 500) {
+  if (reward == 500 || reward == 2000) {
     const worker = new Worker("./workers/create-tickets.js", {
       workerData: {
         reqBody: { type: "MEGA", amount: 1 },
