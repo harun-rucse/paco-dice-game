@@ -41,7 +41,13 @@ function BonusCard() {
             <div className="flex items-center justify-between max-w-[16rem] laptop:max-w-[24rem] mx-auto">
               <TextBox
                 amount={1}
-                icon="/images/faucet/ticket.png"
+                icon={
+                  currentReward == "125" ||
+                  currentReward == "500" ||
+                  currentReward == "2000"
+                    ? "/images/faucet/standard-color.png"
+                    : "/images/faucet/standard-gray.png"
+                }
                 className={`mb-2 px-2 ${
                   currentReward == "125" ||
                   currentReward == "500" ||
@@ -70,7 +76,11 @@ function BonusCard() {
                 } mb-2`}
               >
                 <img
-                  src="/images/faucet/ticket-2.png"
+                  src={
+                    currentReward == "500" || currentReward == "2000"
+                      ? "/images/faucet/standard-color.png"
+                      : "/images/faucet/standard-gray.png"
+                  }
                   alt=""
                   className={`w-6 ${
                     (currentReward == "500" || currentReward == "2000") &&
@@ -79,7 +89,11 @@ function BonusCard() {
                 />
                 <span>+</span>
                 <img
-                  src="/images/faucet/ticket-3.png"
+                  src={
+                    currentReward == "500" || currentReward == "2000"
+                      ? "/images/faucet/mega-color.png"
+                      : "/images/faucet/mega-gray.png"
+                  }
                   alt=""
                   className={`w-6 ${
                     (currentReward == "500" || currentReward == "2000") &&
