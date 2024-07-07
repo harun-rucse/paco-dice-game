@@ -54,7 +54,7 @@ function weightedRandomNumber() {
 }
 
 const { reqBody, accountId } = workerData;
-const { type, amount } = reqBody;
+const { type, amount, isTicketReward = false } = reqBody;
 
 // database connection
 db()
@@ -82,7 +82,7 @@ const createTicket = async () => {
     if (!ticketPool) throw new AppError("Ticket pool not found", 404);
 
     const price = ticketSetting[type];
-    const requiredPaco = amount * price;
+    const requiredPaco = isTicketReward ? 0 : amount * price;
 
     // Check account has sufficient paco balance to buy ticket
     const id = new mongoose.Types.ObjectId(accountId);

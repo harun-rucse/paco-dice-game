@@ -21,7 +21,7 @@ const formatDateString = (item) => {
 
 function StakeHistoryTable() {
   const [limit, setLimit] = useState(10);
-  const [date, setDate] = useState(subtractDay(todaysDay(), 1));
+  const [date, setDate] = useState(subtractDay(todaysDay(), 0));
   const [selectedType, setSelectedType] = useState("All Payouts");
   const [showPayout, setShowPayout] = useState(false);
   const [result, setResult] = useState([]);
@@ -81,7 +81,7 @@ function StakeHistoryTable() {
               className="focus:outline-none border-none"
               onClick={() => setDate((prevDay) => addDay(prevDay, 2))}
               disabled={
-                formatDate(subtractDay(todaysDay(), 1), "D/M/YYYY") ===
+                formatDate(subtractDay(todaysDay(), 0), "D/M/YYYY") ===
                 formatDate(date, "D/M/YYYY")
               }
             >
