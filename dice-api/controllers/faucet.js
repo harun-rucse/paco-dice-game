@@ -54,13 +54,13 @@ const claimFaucetReward = catchAsync(async (req, res, next) => {
   if (reward == 125 || reward == 500 || reward == 2000) {
     const worker = new Worker("./workers/create-tickets.js", {
       workerData: {
-        reqBody: { type: "STANDARD", amount: 1 },
+        reqBody: { type: "STANDARD", amount: 1, isTicketReward: true },
         accountId: req.account._id?.toString(),
       },
     });
 
-    worker.on("message", (message) => {
-      account.paco = decimal.addition(account.paco, 100);
+    worker.on("message", async (message) => {
+      console.log("Ticket reward successfully");
     });
 
     worker.on("error", (error) => {
@@ -71,13 +71,13 @@ const claimFaucetReward = catchAsync(async (req, res, next) => {
   if (reward == 500 || reward == 2000) {
     const worker = new Worker("./workers/create-tickets.js", {
       workerData: {
-        reqBody: { type: "MEGA", amount: 1 },
+        reqBody: { type: "MEGA", amount: 1, isTicketReward: true },
         accountId: req.account._id?.toString(),
       },
     });
 
-    worker.on("message", (message) => {
-      account.paco = decimal.addition(account.paco, 200);
+    worker.on("message", async (message) => {
+      console.log("Ticket reward successfully");
     });
 
     worker.on("error", (error) => {
@@ -222,7 +222,19 @@ const transferFaucetPrize = async () => {
     0.5, 0.25, 0.1, 0.06, 0.03, 0.02, 0.01, 0.01, 0.01, 0.01,
   ];
 
-  const faucets = await Faucet.find().sort({ totalWagerAmount: -1 }).limit(10);
+  const faucets = await Faucet.aggregate([
+    {
+      $addFields: {
+        totalWagerAmountDouble: { $toDouble: "$totalWagerAmount" },
+      },
+    },
+    {
+      $sort: { totalWagerAmountDouble: -1 },
+    },
+    {
+      $limit: 10,
+    },
+  ]);
 
   for (let i = 0; i < faucets.length; i++) {
     const prizeAmount = totalPaco * distributionPercentages[i];

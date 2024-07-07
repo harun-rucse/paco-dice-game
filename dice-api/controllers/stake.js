@@ -559,9 +559,9 @@ const transferPoolToStakeHolder = async () => {
   stakeHistory.totalStakePaco = totalStakePaco;
   stakeHistory.tokenName = "paco";
 
-  // Save previous day because this script run 12:00 AM (next day)
+  // Save todays date
   const date = new Date();
-  stakeHistory.date = date.setDate(date.getDate() - 1);
+  stakeHistory.date = date.setDate(date.getDate());
 
   // Save payout amount
   stakeHistory.paco = totalPayoutPaco;
