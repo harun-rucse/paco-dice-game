@@ -43,14 +43,18 @@ function BonusCard() {
                 amount={1}
                 icon={
                   currentReward == "125" ||
+                  currentReward == "250" ||
                   currentReward == "500" ||
+                  currentReward == "1000" ||
                   currentReward == "2000"
                     ? "/images/faucet/standard-color.png"
                     : "/images/faucet/standard-gray.png"
                 }
                 className={`mb-2 px-2 ${
                   currentReward == "125" ||
+                  currentReward == "250" ||
                   currentReward == "500" ||
+                  currentReward == "1000" ||
                   currentReward == "2000"
                     ? "shadow-[1px_1px_20px_5px_rgba(60,152,58,0.6)]"
                     : "shadow-lg"
@@ -58,45 +62,59 @@ function BonusCard() {
                 // className="mb-2 px-2 shadow-lg"
                 isCompleted={
                   currentReward == "125" ||
+                  currentReward == "250" ||
                   currentReward == "500" ||
+                  currentReward == "1000" ||
                   currentReward == "2000"
                 }
                 isHighlight={
                   currentReward == "125" ||
+                  currentReward == "250" ||
                   currentReward == "500" ||
+                  currentReward == "1000" ||
                   currentReward == "2000"
                 }
               />
 
               <div
                 className={`w-[6rem] flex items-center justify-between px-3 py-1 rounded-xl ${
-                  currentReward == "500" || currentReward == "2000"
+                  currentReward == "500" ||
+                  currentReward == "1000" ||
+                  currentReward == "2000"
                     ? "shadow-[1px_1px_20px_5px_rgba(60,152,58,0.6)] bg-[#6c6bb6] dark:bg-[#9c73c1]"
                     : "bg-[#1d1d3b] dark:bg-[#342546] shadow-lg"
                 } mb-2`}
               >
                 <img
                   src={
-                    currentReward == "500" || currentReward == "2000"
+                    currentReward == "500" ||
+                    currentReward == "1000" ||
+                    currentReward == "2000"
                       ? "/images/faucet/standard-color.png"
                       : "/images/faucet/standard-gray.png"
                   }
                   alt=""
                   className={`w-6 ${
-                    (currentReward == "500" || currentReward == "2000") &&
+                    (currentReward == "500" ||
+                      currentReward == "1000" ||
+                      currentReward == "2000") &&
                     "animate-bounce"
                   }`}
                 />
                 <span>+</span>
                 <img
                   src={
-                    currentReward == "500" || currentReward == "2000"
+                    currentReward == "500" ||
+                    currentReward == "1000" ||
+                    currentReward == "2000"
                       ? "/images/faucet/mega-color.png"
                       : "/images/faucet/mega-gray.png"
                   }
                   alt=""
                   className={`w-6 ${
-                    (currentReward == "500" || currentReward == "2000") &&
+                    (currentReward == "500" ||
+                      currentReward == "1000" ||
+                      currentReward == "2000") &&
                     "animate-bounce"
                   }`}
                 />

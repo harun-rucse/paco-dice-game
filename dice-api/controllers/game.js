@@ -116,10 +116,11 @@ const createGame = catchAsync(async (req, res, next) => {
     return next(new AppError("Account not found with that public key", 400));
 
   const isInsufficientBalance = decimal.compare(
-    account[paymentType ? paymentType : "btc"],
+    Number(account[paymentType ? paymentType : "btc"]).toFixed(8),
     betAmount,
     "lt"
   );
+
   if (isInsufficientBalance)
     return next(new AppError("Insufficient Balance for play", 400));
 
@@ -152,7 +153,10 @@ const createGame = catchAsync(async (req, res, next) => {
   });
 
   // reduce balance amount of betAmount
-  account[paymentType] = decimal.subtract(account[paymentType], betAmount);
+  account[paymentType] = decimal.subtract(
+    Number(account[paymentType]).toFixed(8),
+    betAmount
+  );
 
   // add paco balance reward
   const pacoReward = await caclPacoReward(betAmount, paymentType);
