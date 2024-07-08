@@ -36,3 +36,15 @@ export const formatTime = (seconds) => {
     return `${hours}h`;
   }
 };
+
+export const truncateToDecimals = (val, digit = 8) => {
+  let str = val;
+  if (typeof val === "number") str = val.toString();
+
+  // Find the index of the decimal point
+  let decimalIndex = str.indexOf(".");
+  // If there is no decimal point or less than 9 characters after it, return the string as is
+  if (decimalIndex === -1 || decimalIndex + digit + 1 > str.length) return str;
+  // Truncate the string to 8 decimal places
+  return str.slice(0, decimalIndex + digit + 1);
+};
