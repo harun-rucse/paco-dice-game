@@ -74,29 +74,35 @@ function FeatureBanner() {
             </div>
           </div>
         </Link>
-        <div className="flex px-1 gap-4 tablet:gap-6 desktop:gap-8 mt-2 tablet:mt-6 desktop:mt-8">
+        <div className="flex px-1 gap-2 overflow-hidden tablet:gap-6 desktop:gap-12 mt-2 tablet:mt-6 desktop:mt-8 justify-center laptop:px-auto">
           <Link to="/dice">
             <img
-              src="/images/dice-banner.png"
+              src="/images/banners/4.png"
               alt=""
-              className="hidden tablet:block overflow-hidden h-[4rem] tablet:h-[8rem] desktop:h-[16rem] object-contain rounded-lg tablet:rounded-2xl"
-            />
-            <img
-              src="/images/dice-banner-sm.png"
-              alt=""
-              className="block tablet:hidden overflow-hidden h-[4rem] tablet:h-[8rem] desktop:h-[16rem] object-contain rounded-lg tablet:rounded-2xl"
+              className="overflow-hidden h-[8rem] tablet:h-[12rem] desktop:h-[20rem] object-contain rounded-2xl tablet:rounded-2xl"
             />
           </Link>
           <Link to="/staking">
             <img
-              src="/images/staking-banner.png"
+              src="/images/banners/2.png"
               alt=""
-              className="hidden tablet:block overflow-hidden h-[4rem] tablet:h-[8rem] desktop:h-[16rem] object-contain rounded-lg tablet:rounded-2xl"
+              className="overflow-hidden h-[8rem] tablet:h-[12rem] desktop:h-[20rem] object-contain rounded-2xl tablet:rounded-2xl"
             />
+          </Link>
+
+          <Link to="/faucet">
             <img
-              src="/images/staking-banner-sm.png"
+              src="/images/banners/5.png"
               alt=""
-              className="block tablet:hidden overflow-hidden h-[4rem] tablet:h-[8rem] desktop:h-[16rem] object-contain rounded-lg tablet:rounded-2xl"
+              className="overflow-hidden h-[8rem] tablet:h-[12rem] desktop:h-[20rem] object-contain rounded-2xl tablet:rounded-2xl"
+            />
+          </Link>
+
+          <Link to="/referral">
+            <img
+              src="/images/banners/3.png"
+              alt=""
+              className="overflow-hidden h-[8rem] tablet:h-[12rem] desktop:h-[20rem] object-contain rounded-2xl tablet:rounded-2xl"
             />
           </Link>
         </div>
