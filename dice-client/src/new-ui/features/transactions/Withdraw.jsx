@@ -119,8 +119,14 @@ function Withdraw() {
               : currentBalance?.name == "PACO"
               ? "100000"
               : ""}{" "}
-            {currentBalance?.name == "BNB" ? "WBNB" : currentBalance?.name}.
-            BEP-20 (BNB Smart Chain) ONLY.
+            {currentBalance?.name == "BTC"
+              ? "WBTC"
+              : currentBalance?.name === "BNB"
+              ? "WBNB"
+              : currentBalance?.name === "ETH"
+              ? "WETH"
+              : currentBalance?.name}
+            . BEP-20 (BNB Smart Chain) ONLY.
           </span>
         </div>
 
@@ -145,7 +151,14 @@ function Withdraw() {
               ? "1000"
               : ""}
             &nbsp;
-            {currentBalance?.name}.
+            {currentBalance?.name == "BTC"
+              ? "WBTC"
+              : currentBalance?.name === "BNB"
+              ? "WBNB"
+              : currentBalance?.name === "ETH"
+              ? "WETH"
+              : currentBalance?.name}
+            .
           </p>
         </div>
       </form>

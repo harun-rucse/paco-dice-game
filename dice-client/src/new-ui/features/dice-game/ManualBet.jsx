@@ -75,6 +75,8 @@ function ManualBet({
                   ? "WBNB"
                   : currentBalance?.name === "BTC"
                   ? "WBTC"
+                  : currentBalance?.name === "ETH"
+                  ? "WETH"
                   : currentBalance?.name}
               </span>
             </div>

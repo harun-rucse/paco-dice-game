@@ -106,7 +106,7 @@ function CommissionDetails() {
     {
       icon: "/tokens/eth.png",
       title: data?.staking?.eth,
-      name: "ETH",
+      name: "WETH",
       coin: "eth",
     },
     {

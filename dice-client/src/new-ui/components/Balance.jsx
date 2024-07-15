@@ -29,7 +29,13 @@ function BalanceItem({
       <div className="flex items-center gap-2 text-sm tablet:text-base">
         <img src={imgUrl} alt="" className="h-7" />
         <strong className="text-gray-300 hidden tablet:block font-extralight">
-          {name == "BNB" ? "WBNB" : name === "BTC" ? "WBTC" : name}
+          {name == "BNB"
+            ? "WBNB"
+            : name === "BTC"
+            ? "WBTC"
+            : name === "ETH"
+            ? "WETH"
+            : name}
         </strong>
       </div>
       <strong className="text-white font-extralight text-sm tablet:text-base">
