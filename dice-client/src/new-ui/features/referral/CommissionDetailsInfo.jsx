@@ -31,7 +31,7 @@ function CommissionDetailsInfo({ value, isLoading, className }) {
             icon="/tokens/eth.png"
             title={eth}
             subTitle={multiply(eth, price.eth)}
-            name="ETH"
+            name="WETH"
             className={className}
           />
           <SingleToken

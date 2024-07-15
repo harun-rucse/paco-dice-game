@@ -25,7 +25,14 @@ function Deposite() {
 
       <div className="flex flex-col gap-3 pt-6 text-white">
         <strong className="text-lg">
-          YOUR {currentBalance?.name === "BTC" ? "WBTC" : currentBalance?.name}{" "}
+          YOUR{" "}
+          {currentBalance?.name === "BTC"
+            ? "WBTC"
+            : currentBalance?.name === "BNB"
+            ? "WBNB"
+            : currentBalance?.name === "ETH"
+            ? "WETH"
+            : currentBalance?.name}{" "}
           DEPOSIT ADDRESS
         </strong>
         <strong className="text-sm text-gray-300">
@@ -74,7 +81,14 @@ function Deposite() {
                   ? "100"
                   : ""}
                 &nbsp;
-                {currentBalance?.name == "BNB" ? "WBNB" : currentBalance?.name}.
+                {currentBalance?.name == "BTC"
+                  ? "WBTC"
+                  : currentBalance?.name === "BNB"
+                  ? "WBNB"
+                  : currentBalance?.name === "ETH"
+                  ? "WETH"
+                  : currentBalance?.name}
+                .
               </span>
             </div>
 
